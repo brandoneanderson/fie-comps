@@ -5,4 +5,8 @@ import extractor
 '''
 
 if __name__ == "__main__":
-    extracted_files = extractor.exctract()
+    Extension = extractor.Extension()
+    Extension.extractExtension()
+    print(Extension.getFolderPath())
+    print(Extension.getManifestPath())
+    print(Extension.getIndexPath())
