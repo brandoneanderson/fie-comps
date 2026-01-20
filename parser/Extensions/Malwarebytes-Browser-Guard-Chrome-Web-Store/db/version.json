@@ -1,0 +1,234 @@
+{
+    "mbgc.db.ads.2": {
+        "md5": "8a304e02bfe6683ec44cbe4dd99770af",
+        "name": "mbgc.db.ads.2",
+        "sha256": "e93e2f606da6170cb640058bae95df650cfc7aaf08e109e9314538febe854657",
+        "size": 310317,
+        "url": "cdn.mwbsys.com/packages/mbgc.db.ads.2/8/a/3/0/8a304e02bfe6683ec44cbe4dd99770af/d491a218-2029-4c71-be36-32f44589d33e.2",
+        "version": "2.0.202511212205"
+    },
+    "mbgc.db.adware.2": {
+        "md5": "5b38eb1fb2cc732b14869befb4211d2e",
+        "name": "mbgc.db.adware.2",
+        "sha256": "f68692035e986d00d4a627750d5c96e43ae774543de6d078cf1a90978b319777",
+        "size": 1918,
+        "url": "cdn.mwbsys.com/packages/mbgc.db.adware.2/5/b/3/8/5b38eb1fb2cc732b14869befb4211d2e/6a55a3dd-daad-42df-bcb8-ced543574178.2",
+        "version": "2.0.202511230605"
+    },
+    "mbgc.db.featureflags.2": {
+        "md5": "530bdd212e3d719eabae150a71fb3421",
+        "name": "mbgc.db.featureflags.2",
+        "sha256": "4dbb488512060623a8529f7ba3726d8d2ecf2c5f0212b39154677201478e5ff7",
+        "size": 214,
+        "url": "cdn.mwbsys.com/packages/mbgc.db.featureflags.2/5/3/0/b/530bdd212e3d719eabae150a71fb3421/505af5bd-e28d-45a9-aab1-5f8434827a22.2",
+        "version": "2.0.202510202135"
+    },
+    "mbgc.db.fraud.2": {
+        "md5": "150226c56a1cbb0a681396464a409037",
+        "name": "mbgc.db.fraud.2",
+        "sha256": "ce01895d29deeaa33c2404a093d5783b0b1f6eda29267bd00843f6fc1a8cd45e",
+        "size": 92067,
+        "url": "cdn.mwbsys.com/packages/mbgc.db.fraud.2/1/5/0/2/150226c56a1cbb0a681396464a409037/012f79b5-cfac-463e-9008-fbfa7e9a5133.2",
+        "version": "2.0.202511250105"
+    },
+    "mbgc.db.heuristics.json.2": {
+        "md5": "3c109d4e179d12d46a54573287bfcfa7",
+        "name": "mbgc.db.heuristics.json.2",
+        "sha256": "225455aa9fd7cf8644fa9b76095afa1bff57b8eb2301913bea7beb7847325091",
+        "size": 26066,
+        "url": "cdn.mwbsys.com/packages/mbgc.db.heuristics.json.2/3/c/1/0/3c109d4e179d12d46a54573287bfcfa7/3dfefdf9-0410-456b-a46b-dd2d19dc1c7c.2",
+        "version": "3.0.202511250935"
+    },
+    "mbgc.db.hijack.2": {
+        "md5": "7db8cb530cb707d6e2a3544a0a785e57",
+        "name": "mbgc.db.hijack.2",
+        "sha256": "7d449aa16f3014f2c9ba781fde528f3d2cdf668a3dfed193c8200a54ffd95cc3",
+        "size": 17087,
+        "url": "cdn.mwbsys.com/packages/mbgc.db.hijack.2/7/d/b/8/7db8cb530cb707d6e2a3544a0a785e57/68e35acf-b1c5-49a9-a082-e082c65fa9f9.2",
+        "version": "2.0.202511251035"
+    },
+    "mbgc.db.malvertising.2": {
+        "md5": "9b54a40605ef8fc7ddc4c4ae9fe15a15",
+        "name": "mbgc.db.malvertising.2",
+        "sha256": "c42a3dbd8946845c0949702ead1073e8d209294db1829b8bd7319e8c8cc65954",
+        "size": 45788,
+        "url": "cdn.mwbsys.com/packages/mbgc.db.malvertising.2/9/b/5/4/9b54a40605ef8fc7ddc4c4ae9fe15a15/7ee4f548-5152-4d52-b031-8ab8b596a00d.2",
+        "version": "2.0.202511250105"
+    },
+    "mbgc.db.malware.partial.urls.json.2": {
+        "md5": "a4d8987a5b543594f164cb5e88765961",
+        "name": "mbgc.db.malware.partial.urls.json.2",
+        "sha256": "480b3fd87573a9e81945b17378792f51f33e20e951670b888dc3c1407f521750",
+        "size": 563757,
+        "url": "cdn.mwbsys.com/packages/mbgc.db.malware.partial.urls.json.2/a/4/d/8/a4d8987a5b543594f164cb5e88765961/c09e4ae2-41a8-4841-892e-fee3b4ef4f52.2",
+        "version": "3.0.202511250935"
+    },
+    "mbgc.db.malware.patterns.json.2": {
+        "md5": "b94dc725e8836ddc30f0057ea613c206",
+        "name": "mbgc.db.malware.patterns.json.2",
+        "sha256": "a93398a238ad68c9afbd6fd78c51b965da4441b828a57efbe27ba728a1f22d43",
+        "size": 6241,
+        "url": "cdn.mwbsys.com/packages/mbgc.db.malware.patterns.json.2/b/9/4/d/b94dc725e8836ddc30f0057ea613c206/4b7271de-b02a-4097-804f-a2dd81fe7ed4.2",
+        "version": "3.0.202511210835"
+    },
+    "mbgc.db.malware.urls.2": {
+        "md5": "9b2d9eda5e032c5348cc6502d5711816",
+        "name": "mbgc.db.malware.urls.2",
+        "sha256": "45a76e7d80eaa71ae27ae4d3947d187742aaca6de36b98b22ec1434486c35440",
+        "size": 89819,
+        "url": "cdn.mwbsys.com/packages/mbgc.db.malware.urls.2/9/b/2/d/9b2d9eda5e032c5348cc6502d5711816/cba20e13-e496-4a00-abeb-9fa4bcf42dab.2",
+        "version": "2.0.202511250435"
+    },
+    "mbgc.db.pharma.2": {
+        "md5": "20286bcf1de7955e02ed5f899b6263d0",
+        "name": "mbgc.db.pharma.2",
+        "sha256": "759c1154fe1fa27a7b1ce80f46c27fd41b59d884c07bd222f37eaec759e461ca",
+        "size": 1305,
+        "url": "cdn.mwbsys.com/packages/mbgc.db.pharma.2/2/0/2/8/20286bcf1de7955e02ed5f899b6263d0/016d4a21-db23-4d1a-af57-a3a48f204725.2",
+        "version": "2.0.202511230605"
+    },
+    "mbgc.db.phishing.2": {
+        "md5": "c6b7a1adeab963b5a06c84053da97afd",
+        "name": "mbgc.db.phishing.2",
+        "sha256": "6b3744ec03f3ea62990da1ca67583ab5f5b240fa3914df16f832a5dfcb45984f",
+        "size": 678507,
+        "url": "cdn.mwbsys.com/packages/mbgc.db.phishing.2/c/6/b/7/c6b7a1adeab963b5a06c84053da97afd/8c19c5ff-729c-4654-96db-82e3152b03d7.2",
+        "version": "2.0.202511251035"
+    },
+    "mbgc.db.ransomware.2": {
+        "md5": "177752c9a73893ca5720301da4e72560",
+        "name": "mbgc.db.ransomware.2",
+        "sha256": "32f0d61d816f09a74f028c36ed9c69bac3c7a49034cb36acdb87e3919cb8f734",
+        "size": 5314,
+        "url": "cdn.mwbsys.com/packages/mbgc.db.ransomware.2/1/7/7/7/177752c9a73893ca5720301da4e72560/e2ca53af-f233-473a-ac43-4836e69c5c65.2",
+        "version": "2.0.202511230605"
+    },
+    "mbgc.db.reputation.2": {
+        "md5": "445cd5f8b7810499c6ff7a0e9a757d60",
+        "name": "mbgc.db.reputation.2",
+        "sha256": "59a318f5e852a5632dbedea45b4ec9dd7e190be60647814600cee48dafbfd4d2",
+        "size": 630755,
+        "url": "cdn.mwbsys.com/packages/mbgc.db.reputation.2/4/4/5/c/445cd5f8b7810499c6ff7a0e9a757d60/ca6f18dc-79db-4d2a-894c-ceacce075adb.2",
+        "version": "2.0.202511250505"
+    },
+    "mbgc.db.riskware.2": {
+        "md5": "499a494b0c9e69a20643f678199fc069",
+        "name": "mbgc.db.riskware.2",
+        "sha256": "5ce0bf8c855fa45d5c3e0c746b6047f98cf3b6a3cfad89b379c5f20f8d5c1b09",
+        "size": 2121950,
+        "url": "cdn.mwbsys.com/packages/mbgc.db.riskware.2/4/9/9/a/499a494b0c9e69a20643f678199fc069/977fae2d-bc50-4e3c-beb4-657810b5fb00.2",
+        "version": "2.0.202511251035"
+    },
+    "mbgc.db.spam.2": {
+        "md5": "690b29c236139b17f903ac45963b61a5",
+        "name": "mbgc.db.spam.2",
+        "sha256": "6878fd23d7af178c8486a45f22208547149143fb906a1e42e454915bd9383d10",
+        "size": 8292,
+        "url": "cdn.mwbsys.com/packages/mbgc.db.spam.2/6/9/0/b/690b29c236139b17f903ac45963b61a5/085dbb56-cf95-4365-8558-d057d04acb80.2",
+        "version": "2.0.202511250105"
+    },
+    "mbgc.db.spyware.2": {
+        "md5": "269f81a5dbd0b6e9274dda3bad60bdb2",
+        "name": "mbgc.db.spyware.2",
+        "sha256": "0a22214f5a39ff67de17ae1089135fa63c936a885d6db10a96faa4019ea94fec",
+        "size": 4045,
+        "url": "cdn.mwbsys.com/packages/mbgc.db.spyware.2/2/6/9/f/269f81a5dbd0b6e9274dda3bad60bdb2/9e66884c-5533-422c-8413-b9808a3ace48.2",
+        "version": "2.0.202511250105"
+    },
+    "mbgc.db.top1m.2": {
+        "md5": "2aead96788b0d09b12f1492fee506715",
+        "name": "mbgc.db.top1m.2",
+        "sha256": "62f4b73e12f0ef5d107df9976be3824903914212f858e2edb3663965e58fb4c2",
+        "size": 6498775,
+        "url": "cdn.mwbsys.com/packages/mbgc.db.top1m.2/2/a/e/a/2aead96788b0d09b12f1492fee506715/c311636a-87f8-43e5-b04d-6b8e440be54b.2",
+        "version": "3.0.202410161219"
+    },
+    "mbgc.db.trojan.2": {
+        "md5": "885556172c1e17d6b426e0b4c0796c4d",
+        "name": "mbgc.db.trojan.2",
+        "sha256": "9eddf1a07c8bfce35a63e11316d523f4315eec097fc4d613b42348105c1e0e79",
+        "size": 694842,
+        "url": "cdn.mwbsys.com/packages/mbgc.db.trojan.2/8/8/5/5/885556172c1e17d6b426e0b4c0796c4d/1b802c4e-5687-4142-b081-347bd25d0676.2",
+        "version": "2.0.202511251035"
+    },
+    "mbgc.db.whitelist.ads.2": {
+        "md5": "a6c78fe842b7a61b617ebc10e939a15c",
+        "name": "mbgc.db.whitelist.ads.2",
+        "sha256": "5dc9bccf9c3c3208f1816232b9c1627993bc82d54920a99a7ebe764ed26b42e8",
+        "size": 589,
+        "url": "cdn.mwbsys.com/packages/mbgc.db.whitelist.ads.2/a/6/c/7/a6c78fe842b7a61b617ebc10e939a15c/98fc29fa-9dc8-4c6d-b02a-3d499857db3e.2",
+        "version": "2.0.202511251035"
+    },
+    "mbgc.db.whitelist.malware.2": {
+        "md5": "9d822a56c19e0f748981784114c2f885",
+        "name": "mbgc.db.whitelist.malware.2",
+        "sha256": "6740f1f5708f69faac04797d39ac2a16942d24fdf80020fb90639ad7d8d80dee",
+        "size": 5023,
+        "url": "cdn.mwbsys.com/packages/mbgc.db.whitelist.malware.2/9/d/8/2/9d822a56c19e0f748981784114c2f885/314b1cde-e4a8-4c84-a9c7-67a3a55e6c72.2",
+        "version": "2.0.202511211535"
+    },
+    "mbgc.db.whitelist.scams.manual.2": {
+        "md5": "9fa730f18df3321243c19c993d7964e3",
+        "name": "mbgc.db.whitelist.scams.manual.2",
+        "sha256": "73a59c21ccdb9fc831b92b3bccdfaced8817007d27da3bcbb4bc52d5cacf4c60",
+        "size": 26554,
+        "url": "cdn.mwbsys.com/packages/mbgc.db.whitelist.scams.manual.2/9/f/a/7/9fa730f18df3321243c19c993d7964e3/537924c3-f75f-4fb4-bcd6-db0e55b523de.2",
+        "version": "2.0.202511241405"
+    },
+    "mbgc.db.whitelist.scams.patterns.2": {
+        "md5": "674c8ee92293fa72ce923617885f0f70",
+        "name": "mbgc.db.whitelist.scams.patterns.2",
+        "sha256": "7a6493695798fc54def81f08e5d0063e5ea042804d1241ba11c24050969b03e1",
+        "size": 490,
+        "url": "cdn.mwbsys.com/packages/mbgc.db.whitelist.scams.patterns.2/6/7/4/c/674c8ee92293fa72ce923617885f0f70/6084eac3-4d62-42e9-861a-8bf17fca626b.2",
+        "version": "2.0.202510210305"
+    },
+    "mbgc.db.whitelist.tracker.2": {
+        "md5": "8f9120304d303935f66bd6826ee3a731",
+        "name": "mbgc.db.whitelist.tracker.2",
+        "sha256": "c9abd76fd32f7d0296e700c6548a139fefb62e1f0ba4dfbedec6badaee11769e",
+        "size": 2242,
+        "url": "cdn.mwbsys.com/packages/mbgc.db.whitelist.tracker.2/8/f/9/1/8f9120304d303935f66bd6826ee3a731/0914f278-aef0-4f95-8d57-2287b298e326.2",
+        "version": "2.0.202511160905"
+    },
+    "mbgc.mv3.ads_1.json": {
+        "md5": "ea7dacabd978d90b22db2c1a5e7bb49f",
+        "name": "mbgc.mv3.ads_1.json",
+        "sha256": "9996ba4851b02209ce5c01ec26a84b81c031276549db5e24a7fd5d70cc56358f",
+        "size": 8056456,
+        "url": "cdn.mwbsys.com/packages/mbgc.mv3.ads_1.json/e/a/7/d/ea7dacabd978d90b22db2c1a5e7bb49f/55675bfa-cab9-44fe-b11b-26ceafb8242d.json",
+        "version": "3.0.202511251035"
+    },
+    "mbgc.mv3.ads_2.json": {
+        "md5": "db93260e5880d5ae2845ad3419f8fd13",
+        "name": "mbgc.mv3.ads_2.json",
+        "sha256": "18fc2054fecb794d9d381c92b850b57be1605042db5e363d1112ab47288bd38f",
+        "size": 3694603,
+        "url": "cdn.mwbsys.com/packages/mbgc.mv3.ads_2.json/d/b/9/3/db93260e5880d5ae2845ad3419f8fd13/95f2e0df-01ed-4e0d-99a4-a46f179e2c4e.json",
+        "version": "3.0.202511250405"
+    },
+    "mbgc.mv3.dynamicwhitelist.json": {
+        "md5": "b47682dec3f3bef4b3d12b3ac1f6330c",
+        "name": "mbgc.mv3.dynamicwhitelist.json",
+        "sha256": "04904d7cd0f9c60f6e9597a20218ee66fd7d7fe520248ae4a6f530f421cf2dc5",
+        "size": 2844,
+        "url": "cdn.mwbsys.com/packages/mbgc.mv3.dynamicwhitelist.json/b/4/7/6/b47682dec3f3bef4b3d12b3ac1f6330c/74deb748-215f-443f-bcef-9830c8ca7105.json",
+        "version": "3.0.202511211535"
+    },
+    "mbgc.mv3.malware_1.json": {
+        "md5": "8ddbd75a09fb381e8971902cb067be95",
+        "name": "mbgc.mv3.malware_1.json",
+        "sha256": "4df9a60d75706257d7466b1690acea3e5154ba196255486475ffd3cbe8d7e4d3",
+        "size": 87168,
+        "url": "cdn.mwbsys.com/packages/mbgc.mv3.malware_1.json/8/d/d/b/8ddbd75a09fb381e8971902cb067be95/2b5461e8-fe5e-4acc-91d1-98106467aa42.json",
+        "version": "3.0.202511250405"
+    },
+    "mbgc.mv3.whitelist_1.json": {
+        "md5": "c47a9091ed4caa10f44a44e0aa1cefae",
+        "name": "mbgc.mv3.whitelist_1.json",
+        "sha256": "4d33cd4777b9ca25a44e6ad8b882352fa092ce2d05000b3c0adeada8fb96e726",
+        "size": 22989,
+        "url": "cdn.mwbsys.com/packages/mbgc.mv3.whitelist_1.json/c/4/7/a/c47a9091ed4caa10f44a44e0aa1cefae/f24f1413-5c0b-468f-a143-0927882bad55.json",
+        "version": "3.0.202509020736"
+    }
+}
