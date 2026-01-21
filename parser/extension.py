@@ -8,12 +8,20 @@ class Extension:
         if not folderpath.exists():
             raise FileNotFoundError(folderpath)
 
+        # Extension file paths & identifiers
         self.name = folderpath.name
         self.folderpath = folderpath
-        
         self.manifest = None
         self.service_worker = None
         self.index = None
+
+        # Extension Permissions and Calls
+        self.permissions = []
+        self.version = None
+        self.js_features = []
+        self.html_features = []
+        self.css_features = []
+        self.security_policy = False
 
     def getName(self):
         """Utility function to return Extension filename"""
@@ -67,3 +75,6 @@ class Extension:
     def getServiceWorker(self):
         """Utility function to return Extension's Json folder path"""
         return self.service_worker
+    
+    def getPermissions(self):
+        return self.permissions

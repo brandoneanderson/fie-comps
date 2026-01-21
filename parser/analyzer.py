@@ -17,10 +17,9 @@ if __name__ == "__main__":
     # Dictionary to store extensions
     extensions = {}
 
-    # Unpack every extension found
+    # Unpack every extension found, and create extension class for each ext
     for file in filesFound:
         folderPath = extractExtension(file)
-        print("Folder path is: ", folderPath)
         ext = extension.Extension(folderPath)
         ext.setScriptsPaths()
         extensions[ext.getName()] = ext
@@ -28,4 +27,6 @@ if __name__ == "__main__":
     # Analyze each extension found!
     print('\n\n')
     for name, ext in extensions.items():
-        analyzeManifest(ext.getManifestPath())
+        analyzeManifest(ext.getManifestPath(), ext)
+        print(ext.getPermissions())
+        print(ext.security_policy)
