@@ -3,8 +3,10 @@ import json
 # Go through the manifest file and extract important information
 
 
-def readfile(filename):
-    with open(filename, 'r') as file:
-        data = json.load(file)
+def analyzeManifest(manifest):
+    # Open the manifest.json file in read mode
+    with open(manifest, 'r') as manifest_file:
+        # Parse the JSON-formatted string into a Python dictionary
+        manifest_data = json.load(manifest_file)
 
-    print(json.dumps(data, indent=4))
+        print(manifest_data['permissions'])

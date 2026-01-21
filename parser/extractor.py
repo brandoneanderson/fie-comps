@@ -1,108 +1,48 @@
 import zipfile
 from pathlib import Path
 
-class Extension:
+
+
+def extractExtension(filepath):
     """
-        Class to keep track of unpacked extension info such as names, folderpaths, and quick access to specific files
+    Method to extract a compressed file according to its file type
+    Input: Path type where file is located
+    Output: Returns name of file extracted, but a folder is created in 'Extensions' with unpacked material and name of extension as folder name
     """
-    def __init__(self):
-        self.filename = None
-        self.folderpath = None
-        self.manifestPath = None
-        self.jsonPath = None
-        self.indexPath = None
 
-    def extractExtension(self, filepath):
-        """
-        Method to extract a compressed file according to its file type
-        Input: Path type where file is located
-        Output: Returns a folder in 'Extensions' with unpacked material and name of extension as folder name
-        """
-
-        if not filepath.exists():
-                print("File does not exist or is not supported. Sorry.\n")
-                return
-
-        # Grab name of file, and remove .zip/.crx/etc.
-        filename = str(Path(filepath.name).stem)
-        self.filename = filename
-
-        # Create destination for extraction deposit
-        # filepath.parent = '.../Extensions'
-        destination = filepath.parent/filename
-        self.folderpath = destination
-        destination.mkdir(exist_ok=True)
-
-        # Rename filename to .zip due to no proper .crx library to unpack file type
-        if filepath.suffix == '.crx':
-            print("Omg a crx file, change it to a zip lmao\n")
-        
-        # Unpack zip file
-        if filepath.suffix == '.zip':
-            with zipfile.ZipFile(filepath, 'r') as zip_ref:
-                zip_ref.extractall(destination) 
-
-            print("Woah, a zip cool. Content in 'Extensions' folder!\n")   
-        
-        # Unsupported file
-        else:
+    if not filepath.exists():
             print("File does not exist or is not supported. Sorry.\n")
+            return
 
-        # Record important file paths
-        self.setAppropriateFilePaths()
-        return
-    
-    def getName(self):
-        """Utility function to return Extension filename"""
-        return self.filename
-    
-    def getFolderPath(self):
-         """Utility function to return Extension folder path"""
-         return self.folderpath
-    
-    def setAppropriateFilePaths(self):
-        """Utility function to set important filepaths for easy acess"""
-        # Look into typical extension file names and then think about how to deal with annoying ones
-        importantFiles = {
-            'manifest': ['manifest.json'],
-            'service_worker': ['service_worker.js'],
-            'index': ['index.html']
-        }
+    # Grab name of file, and remove .zip/.crx/etc.
+    filename = str(Path(filepath.name).stem)
 
-        # Loop through each item in important file dict.
-        for attr_name, filenames in importantFiles.items():
-            foundPath = None
+    # Create destination for extraction deposit
+    # filepath.parent = '.../Extensions'
+    destination = filepath.parent/filename
+    destination.mkdir(exist_ok=True)
 
-            # Go through each file in list
-            for fname in filenames:
-                candidate = self.folderpath / fname
-                # Check if path even exists
-                if candidate.exists():
-                    foundPath = candidate
+    # Avoid re-extraction if already prev. done
+    if destination.exists():
+        print("File was already extracted! Name:", filename)
+        return destination
 
-            # If we found a path, then set self.attr to path
-            if foundPath:
-                setattr(self, attr_name, foundPath)
-                print(f"Found {attr_name}")
-            
-            # Else not
-            else:
-                setattr(self, attr_name, None)
-                print(f"Did not find {attr_name}")
-                
-        return
-
-    def getManifestPath(self):
-        """Utility function to return Extension's Manifest folder path"""
-        return self.manifestPath
+    # Rename filename to .zip due to no proper .crx library to unpack file type
+    if filepath.suffix == '.crx':
+        print("Omg a crx file, change it to a zip lmao\n")
     
-    def getIndexPath(self):
-        """Utility function to return Extension's Index folder path"""
-        return self.indexPath
+    # Unpack zip file
+    if filepath.suffix == '.zip':
+        with zipfile.ZipFile(filepath, 'r') as zip_ref:
+            zip_ref.extractall(destination) 
+
+        print("Woah, a zip cool. Content in 'Extensions' folder!\n")   
     
-    def getJsonPath(self):
-        """Utility function to return Extension's Json folder path"""
-        return self.jsonPath
+    # Unsupported file
+    else:
+        print("File does not exist or is not supported. Sorry.\n")
+
+    return destination
     
 def searchFolder(extensionFolderName):
     '''Given a folder name for where extensions are held, searches for extionsions within folder of type '.zip' and '.crx' '''
