@@ -32,6 +32,9 @@ class Extension:
         self.security_policy = False
         self.host_permissions = []
 
+        # List of urls & stuff
+        self.urls = []
+
     def getName(self):
         """Utility function to return Extension filename"""
         return self.name

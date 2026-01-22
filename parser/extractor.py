@@ -1,4 +1,4 @@
-import zipfile
+import zipfile, re
 from pathlib import Path
 
 
@@ -63,3 +63,25 @@ def searchFolder(extensionFolderName):
         print("We found the following file: ", path)
     
     return filesFound
+
+def extractURLs(file, extClass):
+    # Attempt to read the file
+    try:
+        with open(file, 'r', encoding='utf8') as fileloaded:
+            # grab entire script and store it as string
+            content = fileloaded.read()
+
+            # TESTING TO SEE FUNCTIONALITY NOT FINAL; CREDIT TO EXTANALYSIS ON GITHUB
+            curls = re.findall('(http|ftp|https)://([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?', content)
+            for url in curls:
+                urlresult = {"file":file, "url":url[0]+'://'+url[1]+url[2]}
+                if urlresult not in extClass.urls:
+                    extClass.urls.append(urlresult)
+            # TESTING TO SEE FUNCTIONALITY NOT FINAL; CREDIT TO EXTANALYSIS ON GITHUB
+            
+    
+    # Throw appropriate errors if anything goes wrong while attempting to read file
+    except FileNotFoundError:
+        print(f"Error: The file {file} was not found.")
+    except Exception as e:
+        print(f"An error ocurred: {e}")

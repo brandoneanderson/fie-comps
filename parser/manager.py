@@ -2,6 +2,7 @@ import extension
 from extractor import *
 from manifest_parser import * 
 from analyzer import *
+from js_parser import *
 
 '''
     Core file for all parsers
@@ -32,6 +33,14 @@ if __name__ == "__main__":
     # Parse through each extension and collect info
     for name, ext in extensions.items():
         analyzeManifest(ext.getManifestPath(), ext)
+        # WE HAVE TO RUN THROUGH THESE FILES AGAIN SO LETS SEE HOW WE CAN BEST OPTIMIZE PERFORMANCE
+        for allfiles in (ext.js_files, ext.html_files, ext.json_files, ext.css_files):
+            for file in allfiles:
+                extractURLs(file, ext)
+                if file.suffix == '.js':
+                    analyzeJS(file, ext)
+                if file.suffix == ".json":
+                    continue
 
     # Prep score dictionary:
     extensions_predictions = {key: None for key in extensions.keys()}
@@ -40,5 +49,3 @@ if __name__ == "__main__":
     for name, ext in extensions.items():
         prediction = analyze(ext)
         extensions_predictions[ext.getName()] = prediction
-
-    print(extensions_predictions)
