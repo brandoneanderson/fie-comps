@@ -11,9 +11,17 @@ class Extension:
         # Extension file paths & identifiers
         self.name = folderpath.name
         self.folderpath = folderpath
+
+        # Manifest important
         self.manifest = None
-        self.service_worker = None
-        self.index = None
+
+        # List of all files found in extension
+        self.html_files = []
+        self.js_files = []
+        self.json_files = []
+        self.css_files = []
+        self.static_files = []
+        self.other_files = []
 
         # Extension Permissions and Calls
         self.permissions = []
@@ -22,6 +30,7 @@ class Extension:
         self.html_features = []
         self.css_features = []
         self.security_policy = False
+        self.host_permissions = []
 
     def getName(self):
         """Utility function to return Extension filename"""
@@ -32,36 +41,34 @@ class Extension:
          return self.folderpath
     
     def setScriptsPaths(self):
-        """Utility function to set important filepaths to scripts (manifest, js, css, html) for easy acess"""
+        """Utility function to search and record all filepaths to scripts (manifest, js, css, html) in appropraite attribute list"""
 
-        # Look into typical extension file names and then think about how to deal with annoying ones
-        importantFiles = {
-            'manifest': ['manifest.json'],
-            'service_worker': ['service_worker.js'],
-            'index': ['index.html']
-        }
+        # Iterate through all the files in the extension folder
+        for dirpath, dirnames, filenames in self.folderpath.walk():
+            for filename in filenames:
+                full_path = dirpath / filename
+                # Grabs each and every file according to file type and store into appropriate array
+                if full_path.suffix == '.json':
+                    # Record manifest path
+                    if filename == 'manifest.json':
+                        self.manifest = full_path
+                    else:
+                        self.json_files.append(full_path)
 
-        # Loop through each item in important file dict.
-        for attr_name, filenames in importantFiles.items():
-            foundPath = None
+                elif full_path.suffix in ('.html', '.htm'):
+                    self.html_files.append(full_path)
 
-            # Go through each file in list
-            for fname in filenames:
-                candidate = self.folderpath / fname
-                # Check if path even exists
-                if candidate.exists():
-                    foundPath = candidate
-
-            # If we found a path, then set self.attr to path
-            if foundPath:
-                setattr(self, attr_name, foundPath)
-                print(f"Found {attr_name}")
-            
-            # Else not
-            else:
-                setattr(self, attr_name, None)
-                print(f"Did not find {attr_name}")
+                elif full_path.suffix == '.js':
+                    self.js_files.append(full_path)
                 
+                elif full_path.suffix == '.css':
+                    self.css_files.append(full_path)
+                
+                elif full_path.suffix in ('.png', '.jpg', '.jpeg', '.bmp', '.tiff', '.svg', '.gif'):
+                    self.static_files.append(full_path)
+
+                else:
+                    self.other_files.append(full_path)
         return
 
     def getManifestPath(self):

@@ -11,5 +11,6 @@ def analyzeManifest(manifest, extClass):
 
         extClass.permissions = manifest_data['permissions']
         extClass.version = manifest_data['version']
+        extClass.host_permissions = manifest_data['host_permissions']
         if 'content_security_policy' in manifest_data:
             extClass.security_policy = True

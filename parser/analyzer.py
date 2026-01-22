@@ -24,9 +24,6 @@ if __name__ == "__main__":
         ext.setScriptsPaths()
         extensions[ext.getName()] = ext
 
-    # Analyze each extension found!
-    print('\n\n')
+    #Analyze each extension found!
     for name, ext in extensions.items():
         analyzeManifest(ext.getManifestPath(), ext)
-        print(ext.getPermissions())
-        print(ext.security_policy)
