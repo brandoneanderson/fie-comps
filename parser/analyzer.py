@@ -1,29 +1,29 @@
 import extension
-from extractor import *
-from manifest_parser import * 
 
 '''
-    Core file for all parsers
+    File to run all analysis on everything parsers collected and stored into extensions
+    Will SCORE and determine whether extension class is malicious, suspicious, or benign
 '''
+SCORE = 0
+MALICIOUS_THRESHOLD = 10
+SUSPICIOUS_THRESHOLD = 5
+PREDICTION = None
+POSSIBLE_PREDICTION_LABELS = ['SAFE', 'MALICIOUS', 'LIKELY MALICIOUS']
 
-if __name__ == "__main__":
-    # Search for all extension files
-    #folderName = input("Please enter name of folder where you have extensions: ")
 
-    # For easy testing
-    folderName = 'Extensions'
-    filesFound = searchFolder(folderName)
+def analyze(extension):
+    SCORE = 0
+    # Grab necessary info from extensions to run analysis & prediction
+    permissions = extension.getPermissions()
 
-    # Dictionary to store extensions
-    extensions = {}
+    if 'tabs' in permissions:
+        SCORE += 5
 
-    # Unpack every extension found, and create extension class for each ext
-    for file in filesFound:
-        folderPath = extractExtension(file)
-        ext = extension.Extension(folderPath)
-        ext.setScriptsPaths()
-        extensions[ext.getName()] = ext
+    if SCORE < SUSPICIOUS_THRESHOLD:
+        PREDICTION = POSSIBLE_PREDICTION_LABELS[0]
+    elif SCORE >= MALICIOUS_THRESHOLD:
+        PREDICTION = POSSIBLE_PREDICTION_LABELS[1]
+    else:
+        PREDICTION = POSSIBLE_PREDICTION_LABELS[2]
 
-    #Analyze each extension found!
-    for name, ext in extensions.items():
-        analyzeManifest(ext.getManifestPath(), ext)
+    return PREDICTION

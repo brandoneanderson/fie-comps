@@ -9,8 +9,8 @@ def analyzeManifest(manifest, extClass):
         # Parse the JSON-formatted string into a Python dictionary
         manifest_data = json.load(manifest_file)
 
-        extClass.permissions = manifest_data['permissions']
-        extClass.version = manifest_data['version']
-        extClass.host_permissions = manifest_data['host_permissions']
+        extClass.permissions = manifest_data.get('permissions')
+        extClass.version = manifest_data.get('version')
+        extClass.host_permissions = manifest_data.get('host_permissions')
         if 'content_security_policy' in manifest_data:
             extClass.security_policy = True

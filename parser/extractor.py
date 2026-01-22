@@ -11,8 +11,7 @@ def extractExtension(filepath):
     """
 
     if not filepath.exists():
-            print("File does not exist or is not supported. Sorry.\n")
-            return
+            raise FileNotFoundError(filepath)
 
     # Grab name of file, and remove .zip/.crx/etc.
     filename = str(Path(filepath.name).stem)
@@ -20,12 +19,14 @@ def extractExtension(filepath):
     # Create destination for extraction deposit
     # filepath.parent = '.../Extensions'
     destination = filepath.parent/filename
-    destination.mkdir(exist_ok=True)
 
     # Avoid re-extraction if already prev. done
     if destination.exists():
         print("File was already extracted! Name:", filename)
         return destination
+
+    # Make directory/folder if not existsing already
+    destination.mkdir(exist_ok=True)
 
     # Rename filename to .zip due to no proper .crx library to unpack file type
     if filepath.suffix == '.crx':

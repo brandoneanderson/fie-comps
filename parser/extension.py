@@ -75,13 +75,5 @@ class Extension:
         """Utility function to return Extension's Manifest folder path"""
         return self.manifest
     
-    def getIndexPath(self):
-        """Utility function to return Extension's Index folder path"""
-        return self.index
-    
-    def getServiceWorker(self):
-        """Utility function to return Extension's Json folder path"""
-        return self.service_worker
-    
     def getPermissions(self):
         return self.permissions
