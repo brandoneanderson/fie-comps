@@ -65,6 +65,7 @@ def searchFolder(extensionFolderName):
     return filesFound
 
 def extractURLs(file, extClass):
+    '''Given Path to file, reads the file and extracts all urls found within. Don't think it works with obfuscated urls'''
     # Attempt to read the file
     try:
         with open(file, 'r', encoding='utf8') as fileloaded:
