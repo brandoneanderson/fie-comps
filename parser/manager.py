@@ -47,5 +47,7 @@ if __name__ == "__main__":
 
     # Analze and predict each extension!
     for name, ext in extensions.items():
-        prediction = analyze(ext)
-        extensions_predictions[ext.getName()] = prediction
+        prediction = Score_Report(ext)
+        prediction.predict()
+        extensions_predictions[ext.getName()] = prediction.PREDICTION
+        print(extensions_predictions)

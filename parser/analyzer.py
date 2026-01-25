@@ -1,29 +1,50 @@
-import extension
+from extractor import *
 
 '''
     File to run all analysis on everything parsers collected and stored into extensions
     Will SCORE and determine whether extension class is malicious, suspicious, or benign
 '''
-SCORE = 0
-MALICIOUS_THRESHOLD = 10
-SUSPICIOUS_THRESHOLD = 5
-PREDICTION = None
-POSSIBLE_PREDICTION_LABELS = ['SAFE', 'MALICIOUS', 'LIKELY MALICIOUS']
 
+class Score_Report:
+    def __init__(self, extensionClass):
+        
+        # Record refernce to extension Class instance
+        self.extension = extensionClass
 
-def analyze(extension):
-    SCORE = 0
-    # Grab necessary info from extensions to run analysis & prediction
-    permissions = extension.getPermissions()
+        # SCORING THRESHOLDS & VALUES
+        self.MALICIOUS_THRESHOLD = 10
+        self.SUSPICIOUS_THRESHOLD = 5
+        self.PREDICTION = None
+        self.POSSIBLE_PREDICTION_LABELS = ['SAFE', 'MALICIOUS', 'LIKELY MALICIOUS']
+        self.PERMISSISION_MULTIPLIER = 0.4
+        self.score = 0
+        self.permission_count = 0
 
-    if 'tabs' in permissions:
-        SCORE += 5
+        # COMMON MALICIOUS FEATURES
+        # ^ DATA ACQUIRED FROM 'A Combined Static and Dynamic Analysis Approach to Detect Malicious Browser Extensions'
+        self.TOP_MALICIOUS_BEHAVIORS = ['tabs', '<all_urls>', 'http://*/*', '"https://*/*"', '://*/*', 'webRequest', 'webRequestBlocking', 'storage', 'notifications', 'cookies', 'management', 'contextMenus']
 
-    if SCORE < SUSPICIOUS_THRESHOLD:
-        PREDICTION = POSSIBLE_PREDICTION_LABELS[0]
-    elif SCORE >= MALICIOUS_THRESHOLD:
-        PREDICTION = POSSIBLE_PREDICTION_LABELS[1]
-    else:
-        PREDICTION = POSSIBLE_PREDICTION_LABELS[2]
+    def predict(self):
+        # Grab necessary info from extensions to run analysis & prediction
+        self.analyzePermissions()
 
-    return PREDICTION
+        self.scoreExtension()
+        if self.score < self.SUSPICIOUS_THRESHOLD:
+            self.PREDICTION = self.POSSIBLE_PREDICTION_LABELS[0]
+        elif self.score >= self.MALICIOUS_THRESHOLD:
+            self.PREDICTION = self.POSSIBLE_PREDICTION_LABELS[1]
+        else:
+            self.PREDICTION = self.POSSIBLE_PREDICTION_LABELS[2]
+        
+        return
+
+    def scoreExtension(self):
+        self.score = self.permission_count * self.PERMISSISION_MULTIPLIER
+    
+    def analyzePermissions(self):
+        permissions = self.extension.getPermissions()
+        permissions.extend(self.extension.host_permissions)
+
+        for permission in permissions:
+            if permission in self.TOP_MALICIOUS_BEHAVIORS:
+                self.permission_count += 1
