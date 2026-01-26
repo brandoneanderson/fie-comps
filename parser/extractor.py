@@ -53,7 +53,7 @@ def searchFolder(extensionFolderName):
     # Grab path to extensions folder
     extensionFolder = script_dir/extensionFolderName
 
-    # Make sure path exists
+    # Make sure path exists for extensions folder
     if not extensionFolder.exists():print("Extensions folder not located here: ", extensionFolder);return
 
     # Search for zip files!
