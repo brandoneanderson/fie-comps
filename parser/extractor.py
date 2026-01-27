@@ -53,7 +53,7 @@ def searchFolder(extensionFolderName):
     # Grab path to extensions folder
     extensionFolder = script_dir/extensionFolderName
 
-    # Make sure path exists
+    # Make sure path exists for extensions folder
     if not extensionFolder.exists():print("Extensions folder not located here: ", extensionFolder);return
 
     # Search for zip files!
@@ -65,6 +65,7 @@ def searchFolder(extensionFolderName):
     return filesFound
 
 def extractURLs(file, extClass):
+    '''Given Path to file, reads the file and extracts all urls found within. Don't think it works with obfuscated urls'''
     # Attempt to read the file
     try:
         with open(file, 'r', encoding='utf8') as fileloaded:
