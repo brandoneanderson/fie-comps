@@ -1,4 +1,5 @@
 from pathlib import Path
+from manifest_parser import * 
 
 class Extension:
     """
@@ -24,13 +25,13 @@ class Extension:
         self.other_files = []
 
         # Extension Permissions and Calls
-        self.permissions = []
+        self.permissions = None
         self.version = None
-        self.js_features = []
-        self.html_features = []
-        self.css_features = []
+        self.js_features = None
+        self.html_features = None
+        self.css_features = None
         self.security_policy = False
-        self.host_permissions = []
+        self.host_permissions = None
 
         # List of urls & stuff
         self.urls = []
@@ -55,6 +56,8 @@ class Extension:
                     # Record manifest path
                     if filename == 'manifest.json':
                         self.manifest = full_path
+                        # Set appropriate extension name
+                        getExtensionName(self.getManifestPath(), self)
                     else:
                         self.json_files.append(full_path)
 

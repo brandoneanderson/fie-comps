@@ -3,6 +3,7 @@ from extractor import *
 from manifest_parser import * 
 from analyzer import *
 from js_parser import *
+from css_parser import *
 
 '''
     Core file for all parsers
@@ -41,6 +42,8 @@ if __name__ == "__main__":
                     analyzeJS(file, ext)
                 if file.suffix == ".json":
                     continue
+                if file.suffix == ".css":
+                    analyze_CSS(file, ext)
 
     # Prep score dictionary:
     extensions_predictions = {key: None for key in extensions.keys()}
