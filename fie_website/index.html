@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FIE Security Scanner</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Title Bar Section -->
+    <header class="title-bar">
+        <div class="logo-section">
+            <div class="shield-icon"></div>
+            <div class="logo-text">
+                <h1>FIE</h1>
+                <p>Security Scanner</p>
+            </div>
+        </div>
+        <div class="scanner-badge">
+            <div class="grid-icon"></div>
+            <span>Scanner</span>
+        </div>
+    </header>
+
+    <!-- Instruction Section -->
+    <section class="instruction-section">
+        <h2>
+            <span class="blue-text">Protect Your Chrome Privacy</span>
+            <span class="white-text"> Before It's Too Late</span>
+        </h2>
+        <p>Scan and discover the hidden permissions, trackers and malware of any chrome extension with our tool.</p>
+    </section>
+
+    <!-- Search Section -->
+    <section class="search-section">
+        <div class="search-container">
+            <div class="search-bar-wrapper">
+                <div class="chrome-logo"></div>
+                <div class="separator"></div>
+                <div class="search-icon"></div>
+                <input type="text" class="search-input" placeholder="Enter your Chrome Web Store URL here" id="extensionUrl">
+                <button class="scan-button" id="scanButton">
+                    Scan
+                    <div class="arrow-icon"></div>
+                </button>
+            </div>
+            <p class="fast-secure-text">Fast And Secure</p>
+        </div>
+    </section>
+
+    <!-- Results Section -->
+    <section class="results-section">
+        <div class="results-link" id="resultsLink" style="display: none;">
+            <span>Click to view results</span>
+            <div class="document-icon"></div>
+        </div>
+    </section>
+
+    <script>
+        const scanButton = document.getElementById('scanButton');
+        const extensionUrlInput = document.getElementById('extensionUrl');
+        const resultsLink = document.getElementById('resultsLink');
+
+        scanButton.addEventListener('click', function() {
+            const url = extensionUrlInput.value.trim();
+            
+            if (url) {
+                // Here you would typically process the URL
+                // For now, we'll just show the results link
+                resultsLink.style.display = 'inline-flex';
+                
+                // Scroll to results
+                resultsLink.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else {
+                alert('Please enter a Chrome Web Store URL');
+            }
+        });
+
+        // Allow Enter key to trigger scan
+        extensionUrlInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                scanButton.click();
+            }
+        });
+    </script>
+</body>
+</html>
