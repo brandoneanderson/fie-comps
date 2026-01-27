@@ -1,5 +1,5 @@
-import esprima
-import re
+# import esprima
+# import re
 
 """Will parse through .js files using Esprima module and extract common malicious features"""
 

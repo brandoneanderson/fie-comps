@@ -53,4 +53,5 @@ if __name__ == "__main__":
         prediction = Score_Report(ext)
         prediction.predict()
         extensions_predictions[ext.getName()] = prediction.PREDICTION
-        print(extensions_predictions)
+        
+    print(extensions_predictions)
