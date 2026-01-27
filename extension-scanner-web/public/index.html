@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chrome Extension Search</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Search Chrome Extensions</h1>
+    <p class="subtitle">Search the Chrome Web Store for an extension to analyze.</p>
+
+    <div class="card">
+      <script async src="https://cse.google.com/cse.js?cx=21b388a3fedde4e96"></script>
+      <div class="gcse-search"></div>
+      <p class="muted" style="margin-top:10px;">
+        Tip: open an extension from results, then paste its URL below.
+      </p>
+    </div>
+
+    <!-- <div class="card">
+      <h2 style="margin-top:0;">Download extension to VM</h2>
+      <label for="storeUrl">Chrome Web Store URL</label>
+      <input id="storeUrl" placeholder="https://chromewebstore.google.com/detail/.../<extension_id>" />
+      <div class="row">
+        <button id="downloadBtn">Download to VM</button>
+      </div>
+
+      <div class="status mono" id="status"></div>
+      <pre class="mono" style="margin-top:12px;" id="statusPre"></pre>
+    </div> -->
+    <div class="card">
+  <h2 style="margin-top:0;">Download extension to VM</h2>
+  <label for="storeUrl">Paste a Chrome Web Store link (or Google redirect link, or extension ID)</label>
+  <input id="storeUrl" placeholder="Paste link here… (or cjpalhdlnbpafiamejdnhcphjbkeiagm)" />
+
+  <div class="row" style="align-items:center;">
+    <button id="downloadBtn">Download to VM</button>
+    <button class="secondary" id="clearBtn" type="button">Clear</button>
+  </div>
+
+  <div class="status mono" id="status"></div>
+
+  <div class="card" style="margin-top:12px;">
+    <div class="muted" style="margin-bottom:6px;">Detected</div>
+    <div class="mono" id="parsedSummary">—</div>
+    <div class="muted" style="margin-top:8px;">Normalized URL</div>
+    <div class="mono" id="normalizedUrl" style="word-break:break-all;">—</div>
+  </div>
+
+  <pre class="mono" style="margin-top:12px;" id="statusPre"></pre>
+</div>
+
+  </div>
+
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

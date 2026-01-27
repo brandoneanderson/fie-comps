@@ -1,0 +1,20 @@
+# Node
+node_modules/
+npm-debug.log*
+
+# OS junk
+.DS_Store
+
+# Env / secrets
+.env
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# VM / downloads
+extension_downloads/
+*.crx
+*.zip
+
