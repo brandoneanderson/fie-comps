@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FIE Security Scanner</title>
-    <link rel="stylesheet" href="styles.css">
+    <!-- Use same static mounting style as isha_index.html -->
+    <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
     <!-- Title Bar Section -->
@@ -56,32 +57,7 @@
         </div>
     </section>
 
-    <script>
-        const scanButton = document.getElementById('scanButton');
-        const extensionUrlInput = document.getElementById('extensionUrl');
-        const resultsLink = document.getElementById('resultsLink');
-
-        scanButton.addEventListener('click', function() {
-            const url = extensionUrlInput.value.trim();
-            
-            if (url) {
-                // Here you would typically process the URL
-                // For now, we'll just show the results link
-                resultsLink.style.display = 'inline-flex';
-                
-                // Scroll to results
-                resultsLink.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            } else {
-                alert('Please enter a Chrome Web Store URL');
-            }
-        });
-
-        // Allow Enter key to trigger scan
-        extensionUrlInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                scanButton.click();
-            }
-        });
-    </script>
+    <!-- Mirror scripts.js usage: served from Express static /public -->
+    <script src="/app.js"></script>
 </body>
 </html>
