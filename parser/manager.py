@@ -25,7 +25,6 @@ if __name__ == "__main__":
 
     # Unpack every extension found, and create extension class for each ext
     for file in filesFound:
-        print(file)
         folderPath = extractExtension(file)
         ext = extension.Extension(folderPath)
         ext.setScriptsPaths()

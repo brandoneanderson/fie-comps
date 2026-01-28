@@ -10,7 +10,6 @@ def analyzeManifest(manifest, extClass):
             # Parse the JSON-formatted string into a Python dictionary
             manifest_data = json.load(manifest_file)
             extClass.name = manifest_data.get('name')
-            print(extClass.name)
             extClass.permissions = manifest_data.get('permissions')
             extClass.version = manifest_data.get('version')
             extClass.host_permissions = manifest_data.get('host_permissions')

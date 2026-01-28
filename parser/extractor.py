@@ -36,9 +36,7 @@ def extractExtension(filepath):
     # Unpack zip file
     if filepath.suffix == '.zip':
         with zipfile.ZipFile(filepath, 'r') as zip_ref:
-            zip_ref.extractall(destination) 
-
-        print("Woah, a zip cool. Content in 'Extensions' folder!\n")   
+            zip_ref.extractall(destination)  
     
     # Unsupported file
     else:
@@ -62,9 +60,8 @@ def searchFolder(extensionFolderName):
         list(Path(extensionFolder).glob("*.zip")) +
         list(Path(extensionFolder).glob("*.crx"))
     )
-    print("FILES FOUND =", filesFound)
     for path in filesFound:
-        print("We found the following file: ", path)
+        print("We found the following file: ", path.name)
     
     return filesFound
 
