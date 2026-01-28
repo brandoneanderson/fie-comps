@@ -11,7 +11,6 @@ from css_parser import *
 
 if __name__ == "__main__":
     # Search for all extension files
-
     # CLI to actually start running program, think about how to automate later on
     # I guess just download all extensions into 'Extensions' folder and leave that as folderName?
     #folderName = input("Please enter name of folder where you have extensions: ")
@@ -26,6 +25,7 @@ if __name__ == "__main__":
 
     # Unpack every extension found, and create extension class for each ext
     for file in filesFound:
+        print(file)
         folderPath = extractExtension(file)
         ext = extension.Extension(folderPath)
         ext.setScriptsPaths()

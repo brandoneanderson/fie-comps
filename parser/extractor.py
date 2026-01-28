@@ -30,7 +30,8 @@ def extractExtension(filepath):
 
     # Rename filename to .zip due to no proper .crx library to unpack file type
     if filepath.suffix == '.crx':
-        print("Omg a crx file, change it to a zip lmao\n")
+        with zipfile.ZipFile(filepath, 'r') as zip_ref:
+            zip_ref.extractall(destination) 
     
     # Unpack zip file
     if filepath.suffix == '.zip':
@@ -57,8 +58,11 @@ def searchFolder(extensionFolderName):
     if not extensionFolder.exists():print("Extensions folder not located here: ", extensionFolder);return
 
     # Search for zip files!
-    filesFound = list(Path.glob(extensionFolder, '*.zip'))
-
+    filesFound = (
+        list(Path(extensionFolder).glob("*.zip")) +
+        list(Path(extensionFolder).glob("*.crx"))
+    )
+    print("FILES FOUND =", filesFound)
     for path in filesFound:
         print("We found the following file: ", path)
     
