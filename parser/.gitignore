@@ -1,0 +1,12 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Extracted browser extensions
+Extensions/
+
+# OS junk
+.DS_Store
+
+# Accidental copies
+*Copy*.py
