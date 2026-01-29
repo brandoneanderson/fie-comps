@@ -1,9 +1,10 @@
 import extension
 from extractor import *
-from manifest_parser import * 
+from Scanners.manifest_parser import * 
 from analyzer import *
-from js_parser import *
-from css_parser import *
+from Scanners.js_parser import *
+from Scanners.css_parser import *
+from Scanners.html_parser import *
 
 '''
     Core file for all parsers
@@ -43,6 +44,8 @@ if __name__ == "__main__":
                     continue
                 if file.suffix == ".css":
                     analyze_CSS(file, ext)
+                if file.suffix == ".html":
+                    analyze_HTML(file, ext)
 
     # Prep score dictionary:
     extensions_predictions = {key: None for key in extensions.keys()}
