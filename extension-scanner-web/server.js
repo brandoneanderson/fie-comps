@@ -1,73 +1,65 @@
-
 // import express from "express";
 // import path from "path";
 // import { fileURLToPath } from "url";
-// import http from "http";
+// import { execFile } from "child_process";
 
 // const app = express();
 // app.use(express.json());
 
+// // --- config ---
+// const PORT = 3000;
+// const VM_USER = "fiecomps";
+// const VM_IP = "192.168.217.128";
+// const VM_DOWNLOADER = "/home/fiecomps/vm_downloader.py";
+
+// // --- static site ---
 // const __filename = fileURLToPath(import.meta.url);
 // const __dirname = path.dirname(__filename);
-
-// // Serve /public
 // app.use(express.static(path.join(__dirname, "public")));
 
-// const VM_HOST = "192.168.217.128";
-// const VM_PORT = 8000;
+// // --- helpers ---
+// function shellEscapeSingleQuotes(s) {
+//   return `'${String(s).replace(/'/g, `'\\''`)}'`;
+// }
 
-// function postJsonToVm(pathname, payload) {
+// function runVmDownloaderOverSsh(store_url) {
 //   return new Promise((resolve, reject) => {
-//     const data = JSON.stringify(payload);
+//     const sshPath = "/usr/bin/ssh";
+//     const safeUrl = shellEscapeSingleQuotes(store_url);
 
-//     const req = http.request(
-//       {
-//         host: VM_HOST,
-//         port: VM_PORT,
-//         path: pathname,
-//         method: "POST",
-//         headers: {
-//           "Content-Type": "application/json",
-//           "Content-Length": Buffer.byteLength(data),
-//         },
-//         timeout: 120000,
-//       },
-//       (res) => {
-//         let body = "";
-//         res.setEncoding("utf8");
-//         res.on("data", (chunk) => (body += chunk));
-//         res.on("end", () => resolve({ status: res.statusCode || 500, body }));
+//     // Run a single remote command so special chars (like &) won't break
+//     const remoteCmd = `python3 ${VM_DOWNLOADER} ${safeUrl}`;
+
+//     execFile(
+//       sshPath,
+//       ["-4", "-o", "BatchMode=yes", "-o", "ConnectTimeout=8", `${VM_USER}@${VM_IP}`, remoteCmd],
+//       { timeout: 120000 },
+//       (err, stdout, stderr) => {
+//         if (err) return reject(new Error((stderr || stdout || String(err)).trim()));
+//         resolve(stdout.trim());
 //       }
 //     );
-
-//     req.on("timeout", () => {
-//       req.destroy(new Error("VM request timed out"));
-//     });
-
-//     req.on("error", reject);
-//     req.write(data);
-//     req.end();
 //   });
 // }
 
-// // Browser -> Mac -> VM
+// // --- routes ---
 // app.post("/api/download", async (req, res) => {
 //   try {
 //     const { store_url } = req.body || {};
-//     console.log("Browser requested:", store_url);
-
 //     if (!store_url) return res.status(400).json({ detail: "Missing store_url" });
 
-//     const out = await postJsonToVm("/download", { store_url });
-//     res.status(out.status).send(out.body);
+//     const outText = await runVmDownloaderOverSsh(store_url);
+//     res.type("application/json").send(outText);
 //   } catch (e) {
-//     console.error("Proxy error:", e);
 //     res.status(500).json({ detail: String(e) });
 //   }
 // });
 
-// const PORT = 3000;
-// app.listen(PORT, () => console.log(`UI: http://localhost:${PORT}`));
+// app.listen(PORT, () => {
+//   console.log(`UI: http://localhost:${PORT}`);
+// });
+
+// NEW INTEGRATED DESIGN
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -78,16 +70,19 @@ app.use(express.json());
 
 // --- config ---
 const PORT = 3000;
-const VM_USER = "fiecomps";
-const VM_IP = "192.168.217.128";
-const VM_DOWNLOADER = "/home/fiecomps/vm_downloader.py";
+
+const VM_USER = process.env.VM_USER || "fiecomps";
+const VM_IP = process.env.VM_IP || "192.168.217.128";
+const VM_DOWNLOADER = process.env.VM_DOWNLOADER || "/home/fiecomps/vm_downloader.py";
+
+// If you want to force a specific SSH key file, set VM_SSH_KEY=/path/to/key
+const VM_SSH_KEY = process.env.VM_SSH_KEY || "";
 
 // --- static site ---
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.use(express.static(path.join(__dirname, "public")));
 
-// --- helpers ---
 function shellEscapeSingleQuotes(s) {
   return `'${String(s).replace(/'/g, `'\\''`)}'`;
 }
@@ -97,31 +92,91 @@ function runVmDownloaderOverSsh(store_url) {
     const sshPath = "/usr/bin/ssh";
     const safeUrl = shellEscapeSingleQuotes(store_url);
 
-    // Run a single remote command so special chars (like &) won't break
+    // Run a single remote command so special chars won't break
     const remoteCmd = `python3 ${VM_DOWNLOADER} ${safeUrl}`;
+
+    const args = [
+      "-4",
+      "-o",
+      "BatchMode=yes",
+      "-o",
+      "ConnectTimeout=10",
+      "-o",
+      "ServerAliveInterval=10",
+      "-o",
+      "ServerAliveCountMax=2",
+
+      // Dev-friendly: avoids host key prompts breaking BatchMode
+      "-o",
+      "StrictHostKeyChecking=no",
+      "-o",
+      "UserKnownHostsFile=/dev/null",
+    ];
+
+    if (VM_SSH_KEY) {
+      args.push("-i", VM_SSH_KEY);
+    }
+
+    args.push(`${VM_USER}@${VM_IP}`, remoteCmd);
+
+    console.log("[ssh] cmd:", sshPath, args.join(" "));
 
     execFile(
       sshPath,
-      ["-4", "-o", "BatchMode=yes", "-o", "ConnectTimeout=8", `${VM_USER}@${VM_IP}`, remoteCmd],
+      args,
       { timeout: 120000 },
       (err, stdout, stderr) => {
-        if (err) return reject(new Error((stderr || stdout || String(err)).trim()));
-        resolve(stdout.trim());
+        const out = (stdout || "").trim();
+        const errOut = (stderr || "").trim();
+
+        if (err) {
+          // Reject with a useful message
+          const msg = [
+            "SSH/VM downloader failed.",
+            errOut && `stderr: ${errOut}`,
+            out && `stdout: ${out}`,
+            `err: ${String(err)}`,
+          ]
+            .filter(Boolean)
+            .join("\n");
+
+          return reject(new Error(msg));
+        }
+
+        resolve({ stdout: out, stderr: errOut });
       }
     );
   });
 }
 
-// --- routes ---
 app.post("/api/download", async (req, res) => {
   try {
     const { store_url } = req.body || {};
     if (!store_url) return res.status(400).json({ detail: "Missing store_url" });
 
-    const outText = await runVmDownloaderOverSsh(store_url);
-    res.type("application/json").send(outText);
+    const { stdout, stderr } = await runVmDownloaderOverSsh(store_url);
+
+    // stdout should ideally be JSON; but don’t assume it is.
+    // Return a JSON wrapper so frontend always gets structured data.
+    let parsed = null;
+    try {
+      parsed = stdout ? JSON.parse(stdout) : null;
+    } catch {
+      parsed = null;
+    }
+
+    res.json({
+      ok: true,
+      store_url,
+      parsed,        // if stdout was valid JSON
+      raw_stdout: stdout,
+      raw_stderr: stderr,
+    });
   } catch (e) {
-    res.status(500).json({ detail: String(e) });
+    res.status(500).json({
+      ok: false,
+      detail: String(e?.message || e),
+    });
   }
 });
 
