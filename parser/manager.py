@@ -25,15 +25,38 @@ if __name__ == "__main__":
     extensions_predictions = {}
 
     # Unpack every extension found, and create extension class for each ext
+    # for file in filesFound:
+    #     folderPath = extractExtension(file)
+    #     ext = extension.Extension(folderPath)
+    #     ext.setScriptsPaths()
+    #     extensions[ext.getName()] = ext
     for file in filesFound:
+        print(file)
         folderPath = extractExtension(file)
+
+         # skip if extraction failed
+        if not folderPath:
+            print(f"[WARN] Skipping extension (extract failed): {file}")
+            continue
+
         ext = extension.Extension(folderPath)
         ext.setScriptsPaths()
         extensions[ext.getName()] = ext
 
     # Parse through each extension and collect info
     for name, ext in extensions.items():
-        analyzeManifest(ext.getManifestPath(), ext)
+        manifest_path = ext.getManifestPath()
+
+        if not manifest_path:
+            print(f"[WARN] No manifest found for: {name} (folder={getattr(ext, 'path', None)}) — skipping")
+            continue
+
+        try:
+            analyzeManifest(manifest_path, ext)
+        except Exception as e:
+            print(f"[WARN] Failed to analyze manifest for {name}: {e}")
+            continue
+        
         # WE HAVE TO RUN THROUGH THESE FILES AGAIN SO LETS SEE HOW WE CAN BEST OPTIMIZE PERFORMANCE
         for allfiles in (ext.js_files, ext.html_files, ext.json_files, ext.css_files):
             for file in allfiles:
