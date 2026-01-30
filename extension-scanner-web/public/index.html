@@ -7,7 +7,121 @@
   <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
-  <div class="container">
+  <!-- Title Bar Section -->
+  <header class="title-bar">
+    <div class="logo-section">
+      <!-- <div class="shield-icon"></div> -->
+      <div class="shield-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" class="shield-svg">
+          <path d="M12 2l7 4v6c0 5-3.1 9.4-7 10-3.9-.6-7-5-7-10V6l7-4z"></path>
+          <path d="M12 7v10" class="shield-line"></path>
+          <path d="M8.5 10.5L12 14l3.5-3.5" class="shield-line"></path>
+        </svg>
+      </div> 
+      <div class="logo-text">
+        <h1>FIE</h1>
+        <p>Security Scanner</p>
+      </div>
+    </div>
+    <div class="scanner-badge">
+      <div class="grid-icon"></div>
+      <span>Scanner</span>
+    </div>
+  </header>
+
+  <!-- Instruction Section -->
+  <section class="instruction-section">
+    <h2>
+      <span class="blue-text">Protect Your Chrome Privacy</span>
+      <span class="white-text"> Before It's Too Late</span>
+    </h2>
+    <p>
+      Scan and discover the hidden permissions, trackers and malware of any chrome extension with our tool.
+    </p>
+  </section>
+
+  <!-- Search Section -->
+   <section class="search-section" style="padding-bottom: 30px;">
+    <div class="search-container">
+      <p class="fast-secure-text" style="margin-bottom: 14px;">
+        Search the Chrome Web Store (Programmable Search Engine)
+      </p>
+
+      <!-- CSE script -->
+      <script async src="https://cse.google.com/cse.js?cx=21b388a3fedde4e96"></script>
+      <div class="gcse-search"></div>
+
+      <p class="fast-secure-text" style="margin-top: 14px;">
+        Tip: Open an extension result, copy the URL, then paste it below.
+      </p>
+    </div>
+  </section>
+  <!-- <section class="search-section">
+    <div class="search-container">
+      <div class="search-bar-wrapper">
+        <div class="chrome-logo"></div>
+        <div class="separator"></div>
+        <div class="search-icon"></div>
+
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Enter your Chrome Web Store URL here"
+          id="extensionUrl"
+        />
+
+        <button class="scan-button" id="scanButton" type="button">
+          Scan
+          <div class="arrow-icon"></div>
+        </button>
+      </div>
+
+      <p class="fast-secure-text" id="statusText">Fast And Secure</p>
+    </div>
+  </section> -->
+
+  <!-- Results Section -->
+  <!-- <section class="results-section">
+    <div class="results-link" id="resultsLink" style="display:none;">
+      <span>Click to view results</span>
+      <div class="document-icon"></div>
+    </div>
+  </section> -->
+  <!-- Scan Section -->
+  <section class="search-section">
+    <div class="search-container">
+      <div class="search-bar-wrapper">
+        <div class="chrome-logo"></div>
+        <div class="separator"></div>
+        <div class="search-icon"></div>
+
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Paste Chrome Web Store URL, Google redirect URL, or extension ID"
+          id="extensionUrl"
+        />
+
+        <button class="scan-button" id="scanButton" type="button">
+          Scan
+          <div class="arrow-icon"></div>
+        </button>
+      </div>
+
+      <p class="fast-secure-text" id="statusText">Fast And Secure</p>
+
+      <!-- Optional: show backend response -->
+      <pre id="debugOut" style="margin-top:16px; white-space:pre-wrap; word-break:break-word; color:#a0a0a0;"></pre>
+    </div>
+  </section>
+
+  <section class="results-section">
+    <div class="results-link" id="resultsLink" style="display:none;">
+      <span>Click to view results</span>
+      <div class="document-icon"></div>
+    </div>
+  </section>
+  <!-- <div class="container">
     <h1>Search Chrome Extensions</h1>
     <p class="subtitle">Search the Chrome Web Store for an extension to analyze.</p>
 
@@ -17,7 +131,7 @@
       <p class="muted" style="margin-top:10px;">
         Tip: open an extension from results, then paste its URL below.
       </p>
-    </div>
+    </div> -->
 
     <!-- <div class="card">
       <h2 style="margin-top:0;">Download extension to VM</h2>
@@ -30,7 +144,7 @@
       <div class="status mono" id="status"></div>
       <pre class="mono" style="margin-top:12px;" id="statusPre"></pre>
     </div> -->
-    <div class="card">
+    <!-- <div class="card">
   <h2 style="margin-top:0;">Download extension to VM</h2>
   <label for="storeUrl">Paste a Chrome Web Store link (or Google redirect link, or extension ID)</label>
   <input id="storeUrl" placeholder="Paste link here… (or cjpalhdlnbpafiamejdnhcphjbkeiagm)" />
@@ -52,8 +166,9 @@
   <pre class="mono" style="margin-top:12px;" id="statusPre"></pre>
 </div>
 
-  </div>
+  </div> -->
 
-  <script type="module" src="/app.js"></script>
+  <!-- <script type="module" src="/app.js"></script> -->
+   <script src="/app.js"></script>
 </body>
 </html>
