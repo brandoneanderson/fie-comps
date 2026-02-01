@@ -1,11 +1,1 @@
-# macOS
-.DS_Store
-
-# Python caches
-__pycache__/
-*.pyc
-
-# Generated extension downloads (if you have this folder)
-parser/Extensions/
-
-# Backup / copy files
+/node_modules
