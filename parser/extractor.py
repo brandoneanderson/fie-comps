@@ -3,7 +3,6 @@ import re
 import struct
 from pathlib import Path
 
-
 def _crx_to_zip_bytes(crx_path: Path) -> bytes:
     """
     Convert a .crx file to raw zip bytes by stripping the CRX header.
@@ -33,19 +32,17 @@ def _crx_to_zip_bytes(crx_path: Path) -> bytes:
         zip_start = 12 + header_size
         return data[zip_start:]
 
-    # Unknown version; return raw
     return data
 
-
 def extractExtension(filepath: Path) -> Path | None:
-    """
-    Extract a .zip or .crx into a folder under the same parent directory.
-    Returns the extraction folder Path, or None if unsupported / failed.
-    """
+    '''
+        Extract a .zip or .crx into a folder under the same parent directory.
+        Returns the extraction folder Path, or None if unsupported / failed.
+    '''
     filepath = Path(filepath)
 
     if not filepath.exists():
-        raise FileNotFoundError(filepath)
+            raise FileNotFoundError(filepath)
 
     filename = filepath.stem  # strips only the last suffix
     destination = filepath.parent / filename
@@ -53,7 +50,7 @@ def extractExtension(filepath: Path) -> Path | None:
     if destination.exists():
         print("File was already extracted! Name:", filename)
         return destination
-
+    
     destination.mkdir(parents=True, exist_ok=True)
 
     try:
@@ -94,36 +91,33 @@ def extractExtension(filepath: Path) -> Path | None:
         print(f"[WARN] Failed to extract {filepath.name}: {e}")
         return None
 
-
-def searchFolder(extensionFolderName: str):
-    """Searches for extensions in a folder of type '.zip' and '.crx'."""
+def searchFolder(extensionFolderName):
+    """Searches for extensions in a folder of type '.zip' and '.crx'."""    # Grab local path where this .py script is found
     script_dir = Path(__file__).parent
     extensionFolder = script_dir / extensionFolderName
 
     if not extensionFolder.exists():
         print("Extensions folder not located here:", extensionFolder)
         return []
-
+    
     filesFound = list(extensionFolder.glob("*.zip")) + list(extensionFolder.glob("*.crx"))
 
     # avoid double-processing *.crx.zip artifacts if they exist
     # (folder sometimes has both .crx and .crx.zip)
     filesFound = [p for p in filesFound if not p.name.endswith(".crx.zip")]
-
-    print("FILES FOUND =", filesFound)
+    
     for path in filesFound:
-        print("We found the following file:", path)
-
+        print("We found the following file: ", path.name)
+    
     return filesFound
-
 
 def extractURLs(file: Path, extClass):
     """Extract URLs from a text file; tolerant of encoding issues."""
     try:
-        with open(file, "r", encoding="utf-8", errors="ignore") as fileloaded:
+        with open(file, 'r', encoding='utf8', errors='ignore') as fileloaded:
+            # grab entire script and store it as string
             content = fileloaded.read()
-
-        curls = re.findall(
+            curls = re.findall(
             r"(http|ftp|https)://([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?",
             content,
         )
@@ -136,4 +130,3 @@ def extractURLs(file: Path, extClass):
         print(f"Error: The file {file} was not found.")
     except Exception as e:
         print(f"An error occurred reading {file}: {e}")
-
