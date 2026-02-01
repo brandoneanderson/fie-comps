@@ -1,5 +1,5 @@
 from pathlib import Path
-from manifest_parser import * 
+from Scanners.manifest_parser import * 
 
 class Extension:
     """
@@ -79,7 +79,10 @@ class Extension:
 
     def getManifestPath(self):
         """Utility function to return Extension's Manifest folder path"""
-        return self.manifest
+        root = Path(self.folderpath)  # whatever you stored from extractor
+        matches = list(root.rglob("manifest.json"))
+        return str(matches[0]) if matches else None
+        #return self.manifest
     
     def getPermissions(self):
         return self.permissions
