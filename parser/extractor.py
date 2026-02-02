@@ -106,6 +106,7 @@ def searchFolder(extensionFolderName):
     # (folder sometimes has both .crx and .crx.zip)
     filesFound = [p for p in filesFound if not p.name.endswith(".crx.zip")]
     
+    print("FILES FOUND =", filesFound)
     for path in filesFound:
         print("We found the following file: ", path.name)
     
@@ -117,7 +118,7 @@ def extractURLs(file: Path, extClass):
         with open(file, 'r', encoding='utf8', errors='ignore') as fileloaded:
             # grab entire script and store it as string
             content = fileloaded.read()
-            curls = re.findall(
+        curls = re.findall(
             r"(http|ftp|https)://([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?",
             content,
         )

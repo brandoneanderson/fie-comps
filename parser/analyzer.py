@@ -47,8 +47,6 @@ class Score_Report:
         self.score = (self.permission_count * self.PERMISSISION_MULTIPLIER) + (self.CSS_feature_count * self.CSS_FEATURE_MULTIPLIER)
     
     def analyzePermissions(self):
-        permissions = self.extension.getPermissions()
-        permissions.extend(self.extension.host_permissions)
         #permissions = self.extension.getPermissions()
         #permissions.extend(self.extension.host_permissions)
         # getPermissions() might return None
@@ -58,8 +56,11 @@ class Score_Report:
         host_perms = list(getattr(self.extension, "host_permissions", None) or [])
         permissions.extend(host_perms)
 
+        for permission in permissions:
+            if permission in self.TOP_MALICIOUS_BEHAVIORS:
+                self.permission_count += 1
+
     def analyzeFeatures(self):
-        CSS_features_data = self.extension.css_features
         #CSS_features_data = self.extension.css_features
         # css_features might be None
         CSS_features_data = getattr(self.extension, "css_features", None) or {}
