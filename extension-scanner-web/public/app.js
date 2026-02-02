@@ -66,7 +66,6 @@
 // const statusText = document.getElementById("statusText");
 // const debugOut = document.getElementById("debugOut");
 
-
 // function setStatus(msg) {
 //   if (statusText) statusText.textContent = msg;
 // }
@@ -155,7 +154,7 @@
 //   });
 // }
 
-//Merged with scan report
+// new integrated UI design with automated process
 const scanButton = document.getElementById("scanButton");
 const extensionUrlInput = document.getElementById("extensionUrl");
 const resultsLink = document.getElementById("resultsLink");
@@ -168,6 +167,9 @@ const debugOut = document.getElementById("debugOut");
 const resultsPanel = document.getElementById("resultsPanel");
 const resultsSummary = document.getElementById("resultsSummary");
 const resultsJson = document.getElementById("resultsJson");
+
+const toggleDetailsBtn = document.getElementById("toggleDetailsBtn");
+
 
 function setStatus(msg) {
   if (statusText) statusText.textContent = msg;
@@ -202,19 +204,62 @@ function coerceToWebStoreUrl(value) {
   return v;
 }
 
+// function showResults(vm) {
+//   if (resultsPanel) resultsPanel.style.display = "block";
+
+//   const analysis = vm?.analysis;
+
+//   if (analysis?.ok && analysis.report) {
+//     if (resultsSummary) resultsSummary.textContent = "Analysis completed successfully.";
+//     if (resultsJson) resultsJson.textContent = JSON.stringify(analysis.report, null, 2);
+//   } else {
+//     if (resultsSummary) resultsSummary.textContent = "Downloaded, but analysis failed.";
+//     if (resultsJson) resultsJson.textContent = JSON.stringify(analysis || { error: "No analysis output" }, null, 2);
+//   }
+// }
 function showResults(vm) {
   if (resultsPanel) resultsPanel.style.display = "block";
 
   const analysis = vm?.analysis;
 
+  // Default: hide details until user asks
+  if (resultsJson) resultsJson.style.display = "none";
+  if (toggleDetailsBtn) toggleDetailsBtn.textContent = "Show details";
+
+  // Helper to set details text
+  const setDetails = (obj) => {
+    if (resultsJson) resultsJson.textContent = JSON.stringify(obj, null, 2);
+  };
+
+  // If analysis succeeded
   if (analysis?.ok && analysis.report) {
     if (resultsSummary) resultsSummary.textContent = "Analysis completed successfully.";
-    if (resultsJson) resultsJson.textContent = JSON.stringify(analysis.report, null, 2);
+    setDetails(analysis.report);
+    return;
+  }
+
+  // Analysis failed (friendly messages)
+  const errMsg = (analysis && (analysis.error || analysis.detail)) ? String(analysis.error || analysis.detail) : "";
+
+  if (errMsg.includes("did not output valid JSON")) {
+    if (resultsSummary) {
+      resultsSummary.textContent =
+        "Analysis produced extra output (non-JSON). Please retry, or check logs on the VM.";
+    }
+  } else if (analysis?.error) {
+    if (resultsSummary) resultsSummary.textContent = `Analysis failed: ${analysis.error}`;
+  } else if (analysis?.detail) {
+    if (resultsSummary) resultsSummary.textContent = `Analysis failed: ${analysis.detail}`;
   } else {
     if (resultsSummary) resultsSummary.textContent = "Downloaded, but analysis failed.";
-    if (resultsJson) resultsJson.textContent = JSON.stringify(analysis || { error: "No analysis output" }, null, 2);
   }
+
+  // Still keep raw details available behind toggle
+  setDetails(analysis || { error: "No analysis output" });
+  if (toggleDetailsBtn) toggleDetailsBtn.style.display = analysis ? "inline-flex" : "none";
+
 }
+
 
 async function runScan() {
   const raw = (extensionUrlInput?.value || "").trim();
@@ -242,6 +287,8 @@ async function runScan() {
     let data = null;
     try {
       data = await r.json();
+      console.log("API response:", data);
+
     } catch {
       const t = await r.text();
       data = { ok: false, detail: "Non-JSON response from server", raw: t };
@@ -277,6 +324,14 @@ if (resultsLink && resultsPanel) {
     resultsPanel.style.display = (resultsPanel.style.display === "none") ? "block" : "none";
   });
 }
+  if (toggleDetailsBtn && resultsJson) {
+    toggleDetailsBtn.addEventListener("click", () => {
+      const isHidden = resultsJson.style.display === "none" || !resultsJson.style.display;
+      resultsJson.style.display = isHidden ? "block" : "none";
+      toggleDetailsBtn.textContent = isHidden ? "Hide details" : "Show details";
+    });
+  }
+
 
 if (scanButton && extensionUrlInput) {
   scanButton.addEventListener("click", runScan);

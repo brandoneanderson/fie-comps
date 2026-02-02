@@ -119,7 +119,10 @@ function runVmDownloaderOverSsh(store_url) {
 
     args.push(`${VM_USER}@${VM_IP}`, remoteCmd);
 
-    console.log("[ssh] cmd:", sshPath, args.join(" "));
+    // console.log("[ssh] cmd:", sshPath, args.join(" "));
+    if (process.env.DEBUG_SSH === "1") {
+      console.log("[ssh] cmd:", sshPath, args.join(" "));
+    }
 
     execFile(
       sshPath,
@@ -148,6 +151,37 @@ function runVmDownloaderOverSsh(store_url) {
     );
   });
 }
+
+// app.post("/api/download", async (req, res) => {
+//   try {
+//     const { store_url } = req.body || {};
+//     if (!store_url) return res.status(400).json({ detail: "Missing store_url" });
+
+//     const { stdout, stderr } = await runVmDownloaderOverSsh(store_url);
+
+//     // stdout should ideally be JSON; but don’t assume it is.
+//     // Return a JSON wrapper so frontend always gets structured data.
+//     let parsed = null;
+//     try {
+//       parsed = stdout ? JSON.parse(stdout) : null;
+//     } catch {
+//       parsed = null;
+//     }
+
+//     res.json({
+//       ok: true,
+//       store_url,
+//       parsed,        // if stdout was valid JSON
+//       raw_stdout: stdout,
+//       raw_stderr: stderr,
+//     });
+//   } catch (e) {
+//     res.status(500).json({
+//       ok: false,
+//       detail: String(e?.message || e),
+//     });
+//   }
+// });
 
 app.post("/api/download", async (req, res) => {
   // try {
