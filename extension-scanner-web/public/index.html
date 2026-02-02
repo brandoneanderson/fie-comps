@@ -120,6 +120,23 @@
       <span>Click to view results</span>
       <div class="document-icon"></div>
     </div>
+
+    <div id="resultsPanel" style="display:none; max-width: 900px; margin: 24px auto 0; text-align:left;">
+      <div class="search-container">
+        <h3 style="margin-bottom: 12px;">Scan Results</h3>
+        <div id="resultsSummary" style="color:#a0a0a0; margin-bottom: 12px;"></div>
+
+        <!-- Toggle button -->
+        <button id="toggleDetailsBtn" class="scan-button" type="button" style="padding:10px 16px; border-radius:10px; font-size:14px; font-weight:700; width:auto;">
+          Show details
+        </button>
+
+        <!-- Hidden details area -->
+        <pre id="resultsJson"
+          style="display:none; margin-top:12px; white-space:pre-wrap; word-break:break-word; color:#ffffff;"></pre>
+        <!-- <pre id="resultsJson" style="white-space:pre-wrap; word-break:break-word; color:#ffffff;"></pre> -->
+      </div>
+    </div>
   </section>
   <!-- <div class="container">
     <h1>Search Chrome Extensions</h1>
