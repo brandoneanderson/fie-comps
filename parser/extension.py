@@ -27,7 +27,7 @@ class Extension:
         # Extension Permissions and Calls
         self.permissions = None
         self.version = None
-        self.js_features = None
+        self.js_features = {"dynamic_code_gen_functions": 0}
         self.html_features = None
         self.css_features = None
         self.security_policy = False
@@ -65,7 +65,11 @@ class Extension:
                     self.html_files.append(full_path)
 
                 elif full_path.suffix == '.js':
-                    self.js_files.append(full_path)
+                    # WILL SKIP BEAUTIFIED FILES
+                    if full_path.name.endswith("_beautified.js"):
+                        continue
+                    else:
+                        self.js_files.append(full_path)
                 
                 elif full_path.suffix == '.css':
                     self.css_files.append(full_path)
