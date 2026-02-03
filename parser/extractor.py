@@ -34,7 +34,9 @@ def _crx_to_zip_bytes(crx_path: Path) -> bytes:
 
     return data
 
-def extractExtension(filepath: Path) -> Path | None:
+# def extractExtension(filepath: Path) -> Path | None:
+def extractExtension(filepath: Path):
+
     '''
         Extract a .zip or .crx into a folder under the same parent directory.
         Returns the extraction folder Path, or None if unsupported / failed.

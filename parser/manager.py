@@ -102,6 +102,8 @@ if __name__ == "__main__":
                         analyzeJS(file, ext)
                     elif file.suffix == ".css":
                         analyze_CSS(file, ext)
+                    elif file.suffix in (".html", ".htm"):
+                        analyze_HTML(file, ext)
                     # .json skip is fine
                 except Exception as e:
                     # Don't crash whole run on one file; log and continue
@@ -122,10 +124,10 @@ if __name__ == "__main__":
             "prediction": prediction.PREDICTION,
         }
 
-        # OPTIONAL: if your Extension class stores useful structured fields, include them.
+        # if  Extension class stores useful structured fields, include them.
         # Only include JSON-serializable values.
         #
-        # Example ideas (change to match your actual attributes):
+        # Example ideas
         # output["permissions"] = getattr(ext, "permissions", None)
         # output["host_permissions"] = getattr(ext, "host_permissions", None)
         # output["urls_found"] = list(getattr(ext, "urls", []))  # if it’s a set

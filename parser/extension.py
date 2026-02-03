@@ -1,5 +1,7 @@
 from pathlib import Path
 from Scanners.manifest_parser import * 
+import os
+
 
 class Extension:
     """
@@ -44,38 +46,68 @@ class Extension:
          """Utility function to return Extension folder path"""
          return self.folderpath
     
+    # def setScriptsPaths(self):
+    #     """Utility function to search and record all filepaths to scripts (manifest, js, css, html) in appropraite attribute list"""
+
+    #     # Iterate through all the files in the extension folder
+    #     for dirpath, dirnames, filenames in self.folderpath.walk():
+    #         for filename in filenames:
+    #             full_path = dirpath / filename
+    #             # Grabs each and every file according to file type and store into appropriate array
+    #             if full_path.suffix == '.json':
+    #                 # Record manifest path
+    #                 if filename == 'manifest.json':
+    #                     self.manifest = full_path
+    #                     # Set appropriate extension name
+    #                     getExtensionName(self.getManifestPath(), self)
+    #                 else:
+    #                     self.json_files.append(full_path)
+
+    #             elif full_path.suffix in ('.html', '.htm'):
+    #                 self.html_files.append(full_path)
+
+    #             elif full_path.suffix == '.js':
+    #                 self.js_files.append(full_path)
+                
+    #             elif full_path.suffix == '.css':
+    #                 self.css_files.append(full_path)
+                
+    #             elif full_path.suffix in ('.png', '.jpg', '.jpeg', '.bmp', '.tiff', '.svg', '.gif'):
+    #                 self.static_files.append(full_path)
+
+    #             else:
+    #                 self.other_files.append(full_path)
+    #     return
+
     def setScriptsPaths(self):
-        """Utility function to search and record all filepaths to scripts (manifest, js, css, html) in appropraite attribute list"""
+        """
+        Collect paths to JS/CSS/HTML/JSON files in the extracted extension folder.
+        """
+        import os
+        from pathlib import Path
 
-        # Iterate through all the files in the extension folder
-        for dirpath, dirnames, filenames in self.folderpath.walk():
+        if self.folderpath is None:
+            raise ValueError("folderpath is None. Did extraction succeed?")
+
+        self.js_files = []
+        self.css_files = []
+        self.html_files = []
+        self.json_files = []
+
+        for dirpath, dirnames, filenames in os.walk(self.folderpath):
+            dirpath = Path(dirpath)
             for filename in filenames:
-                full_path = dirpath / filename
-                # Grabs each and every file according to file type and store into appropriate array
-                if full_path.suffix == '.json':
-                    # Record manifest path
-                    if filename == 'manifest.json':
-                        self.manifest = full_path
-                        # Set appropriate extension name
-                        getExtensionName(self.getManifestPath(), self)
-                    else:
-                        self.json_files.append(full_path)
+                f = dirpath / filename
+                suffix = f.suffix.lower()
 
-                elif full_path.suffix in ('.html', '.htm'):
-                    self.html_files.append(full_path)
-
-                elif full_path.suffix == '.js':
-                    self.js_files.append(full_path)
-                
-                elif full_path.suffix == '.css':
-                    self.css_files.append(full_path)
-                
-                elif full_path.suffix in ('.png', '.jpg', '.jpeg', '.bmp', '.tiff', '.svg', '.gif'):
-                    self.static_files.append(full_path)
-
-                else:
-                    self.other_files.append(full_path)
-        return
+                if suffix == ".js":
+                    self.js_files.append(f)
+                elif suffix == ".css":
+                    self.css_files.append(f)
+                elif suffix in (".html", ".htm"):
+                    self.html_files.append(f)
+                elif suffix == ".json":
+                    self.json_files.append(f)
 
     def getManifestPath(self):
         """Utility function to return Extension's Manifest folder path"""
