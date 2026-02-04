@@ -13,7 +13,7 @@ def analyze_CSS(cssFile, extClass):
         "num_background_image": r"background-image\s*:",
 
         # Possible to inject malicious codes into stylesheets via behavior property
-        "num_behavior": r"behavior\s*:",
+        "num_behavior": r"\bbehavior\s*:",
 
         # Attackers could execute any codes or cause a DoS through import rules in a stylesheet
         "num_import_rules": r"@import\b",
@@ -34,6 +34,6 @@ def analyze_CSS(cssFile, extClass):
 
     # Update dictionary to sum up total freq of features found across all css files
     else:
-        for feature, count in extClass.css_features.items():
-            extClass.css_features[feature] += results[feature]
+        for feature, count in results.items():
+            extClass.css_features[feature] += count
     return
