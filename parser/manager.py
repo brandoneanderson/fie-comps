@@ -10,6 +10,8 @@ from analyzer import *
 from Scanners.js_parser import *
 from Scanners.css_parser import *
 from Scanners.html_parser import *
+from Scanners.html_report import html_report_section
+
 
 import re
 
@@ -102,6 +104,8 @@ if __name__ == "__main__":
                         analyzeJS(file, ext)
                     elif file.suffix == ".css":
                         analyze_CSS(file, ext)
+                    elif file.suffix in (".html", ".htm"):
+                        analyze_HTML(file, ext)
                     # .json skip is fine
                 except Exception as e:
                     # Don't crash whole run on one file; log and continue
@@ -122,13 +126,30 @@ if __name__ == "__main__":
             "prediction": prediction.PREDICTION,
         }
 
-        # OPTIONAL: if your Extension class stores useful structured fields, include them.
+        # if  Extension class stores useful structured fields, include them.
         # Only include JSON-serializable values.
         #
-        # Example ideas (change to match your actual attributes):
+        # Example ideas
         # output["permissions"] = getattr(ext, "permissions", None)
         # output["host_permissions"] = getattr(ext, "host_permissions", None)
         # output["urls_found"] = list(getattr(ext, "urls", []))  # if it’s a set
+        
+        # Include HTML report + structured data in JSON for UI
+        try:
+            output["html_report"] = html_report_section(ext)
+        except Exception as e:
+            output["html_report"] = None
+            log(f"[WARN] Could not build html_report: {e}")
+
+        output["html_features"] = getattr(ext, "html_features", None)
+        output["html_examples"] = getattr(ext, "html_examples", None)
+        
+        # Also print to stderr for terminal debugging (won't break JSON stdout)
+        try:
+            log("\n" + output["html_report"] + "\n")
+        except Exception:
+            pass
+
 
         print(json.dumps(output))
         sys.exit(0)
