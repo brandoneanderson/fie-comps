@@ -1,11 +1,13 @@
 import esprima
-# import re
+import re
 from pathlib import Path
 import jsbeautifier
 
+suspicious = set('%\\xu+=;{}()[]|^')
 
 def analyzeJS(script, extClass):
     try:
+        extractStringFeatures(script, extClass)
         beautified_file = beautify_file(script, extClass)
         ast = parseScript(beautified_file)
         if ast != None:
@@ -97,13 +99,38 @@ def traverseAST(ast, extClass):
 def traverseNode(node, extClass):
     if node is None:
         return
-   
+    
+    # Dynamic Code Generation Functions
     if node.type == "CallExpression":
         if node.callee.type == "Identifier":
             # eval runs a string of javascript code Big no no
             if node.callee.name == "eval" or "setTimeout" or "setInterval" or "new Function":
                 extClass.js_features["dynamic_code_gen_functions"] += 1
 
+    if node.type == "NewExpression":
+        if node.callee.name == "Function":
+            extClass.js_features["dynamic_code_gen_functions"] += 1
+
+    # HTML DOM Change Methods and Properties
+    if node.type == "MemberExpression":
+        if node.property.name in {"innerHTML", "outerHTML", "write", "appendChild"}:
+            extClass.js_features["DOM change methods"] += 1
+
+    # Number of Event Handlers
+    if node.type == "CallExpression":
+        callee = node.callee
+
+        # obj.addEventListener(...)
+        if callee.type == "MemberExpression":
+            prop = callee.property
+
+            if prop and prop.type == "Identifier" and prop.name == "addEventListener":
+                extClass.js_features["event handlers"] += 1
+    
+    # Number of XMLHttpRequests
+    if node.type == "NewExpression":
+        if node.callee.name == "XMLHttpRequest":
+            extClass.js_features["XMLHttpRequests"] += 1
 
     # Visit children
     for attr, value in node.__dict__.items():
@@ -119,3 +146,30 @@ def traverseNode(node, extClass):
             for item in value:
                 if hasattr(item, 'type'):
                     traverseNode(item, extClass)
+
+def extractStringFeatures(script, extClass):
+    # Update total number of files encountered
+    extClass.js_totals["file_count"] += 1
+
+    with open(script, 'r') as fp:
+        content = fp.read()
+
+        # update total number of chars in each file
+        extClass.js_totals["total_chars"] += len(content)
+
+        # Average line length Feature (Sum)
+        lines = content.splitlines()
+        extClass.js_totals["total_lines"] += len(lines)
+
+        for line in lines:
+            extClass.js_totals["total_line_chars"] += len(line)
+
+        # Whitespace percentage / specific characters
+        for c in content:
+            if c in suspicious:
+                extClass.js_totals["specific_chars"] += 1
+            if c.isspace():
+                extClass.js_totals["whitespace"] += 1
+        # Word Size
+
+        # Code generation functions
