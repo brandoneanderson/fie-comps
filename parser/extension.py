@@ -27,7 +27,13 @@ class Extension:
         # Extension Permissions and Calls
         self.permissions = None
         self.version = None
-        self.js_features = None
+        self.js_features = {
+            "dynamic_code_gen_functions": 0, "whitespace %":0, 
+            "avg line length":0, "specific characters":0, "word size":0,
+            "string entropy":0, "DOM change methods":0, "event handlers":0,
+            "HTTP scripts":0, "modifcation callbacks":0, "XMLHttpRequests":0,
+            "keyword density":0}
+        self.js_totals = {"total_chars": 0, "whitespace": 0, "specific_chars":0, "file_count":0, "total_lines": 0, "total_line_chars":0}
         self.html_features = None
         self.css_features = None
         self.security_policy = False
@@ -65,7 +71,11 @@ class Extension:
                     self.html_files.append(full_path)
 
                 elif full_path.suffix == '.js':
-                    self.js_files.append(full_path)
+                    # WILL SKIP BEAUTIFIED FILES
+                    if full_path.name.endswith("_beautified.js"):
+                        continue
+                    else:
+                        self.js_files.append(full_path)
                 
                 elif full_path.suffix == '.css':
                     self.css_files.append(full_path)
@@ -86,3 +96,18 @@ class Extension:
     
     def getPermissions(self):
         return self.permissions
+
+    def setFinalJSTotals(self):
+        total_chars = self.js_totals["total_chars"]
+
+        if self.js_totals["total_lines"] > 0:
+            self.js_features["avg line length"] = (
+                self.js_totals["total_line_chars"] /
+                self.js_totals["total_lines"]
+            )
+            
+        if total_chars > 0:
+            self.js_features["whitespace %"] = (self.js_totals["whitespace"] / total_chars)
+            self.js_features["specific characters"] = (self.js_totals["specific_chars"] / total_chars)
+        
+        return

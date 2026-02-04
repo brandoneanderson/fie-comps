@@ -5,5 +5,6 @@ class myHTMLParser(HTMLParser):
         print("Encountered a start tag:", tag)
 
 def analyze_HTML(htmlFile, extClass):
-    htmlParser = myHTMLParser()
-    htmlParser.feed(htmlFile)
+    # htmlParser = myHTMLParser()
+    # htmlParser.feed(htmlFile)
+    return
