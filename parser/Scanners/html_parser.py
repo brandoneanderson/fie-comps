@@ -334,11 +334,7 @@ def analyze_HTML(htmlFile: Any, extClass: Any) -> None:
     for k, v in parser.features.items():
         features[k] = features.get(k, 0) + int(v)
 
-    # Merge examples (dedupe + cap)
-    for key, vals in parser.examples.items():
-        bucket = examples.setdefault(key, [])
-        for val in vals:
-            if len(bucket) >= 10:
-                break
-            if val not in bucket:
-                bucket.append(val)
+def analyze_HTML(htmlFile, extClass):
+    # htmlParser = myHTMLParser()
+    # htmlParser.feed(htmlFile)
+    return

@@ -2,8 +2,8 @@
 __pycache__/
 *.pyc
 
-# Extracted browser extensions
-Extensions/
+# # Extracted browser extensions
+# Extensions/
 
 # OS junk
 .DS_Store
