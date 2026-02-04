@@ -75,8 +75,10 @@ if __name__ == "__main__":
 
     # Analze and predict each extension!
     for name, ext in extensions.items():
+        ext.setFinalJSTotals()
         prediction = Score_Report(ext)
         prediction.predict()
         extensions_predictions[ext.getName()] = prediction.PREDICTION
+        print(ext.js_features)
         
     print(extensions_predictions)
