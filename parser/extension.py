@@ -54,9 +54,10 @@ class Extension:
          """Utility function to return Extension folder path"""
          return self.folderpath
     
-    # def setScriptsPaths(self):
+    def setScriptsPaths(self):
     #     """Utility function to search and record all filepaths to scripts (manifest, js, css, html) in appropraite attribute list"""
 
+    # FOR NEW PYTHON
     #     # Iterate through all the files in the extension folder
     #     for dirpath, dirnames, filenames in self.folderpath.walk():
     #         for filename in filenames:
@@ -77,6 +78,8 @@ class Extension:
     #             elif full_path.suffix == '.js':
     #                 self.js_files.append(full_path)
         # Iterate through all the files in the extension folder
+
+        # FOR OLD PYTHON
         for dirpath, dirnames, filenames in self.folderpath.walk():
             for filename in filenames:
                 full_path = dirpath / filename
