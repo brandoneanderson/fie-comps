@@ -54,7 +54,7 @@ class Extension:
          """Utility function to return Extension folder path"""
          return self.folderpath
     
-    def setScriptsPaths(self):
+    # def setScriptsPaths(self):
     #     """Utility function to search and record all filepaths to scripts (manifest, js, css, html) in appropraite attribute list"""
 
     # FOR NEW PYTHON
@@ -80,28 +80,28 @@ class Extension:
         # Iterate through all the files in the extension folder
 
         # FOR OLD PYTHON
-        for dirpath, dirnames, filenames in self.folderpath.walk():
-            for filename in filenames:
-                full_path = dirpath / filename
-                # Grabs each and every file according to file type and store into appropriate array
-                if full_path.suffix == '.json':
-                    # Record manifest path
-                    if filename == 'manifest.json':
-                        self.manifest = full_path
-                        # Set appropriate extension name
-                        getExtensionName(self.getManifestPath(), self)
-                    else:
-                        self.json_files.append(full_path)
+        # for dirpath, dirnames, filenames in self.folderpath.walk():
+            # for filename in filenames:
+            #     full_path = dirpath / filename
+            #     # Grabs each and every file according to file type and store into appropriate array
+            #     if full_path.suffix == '.json':
+            #         # Record manifest path
+            #         if filename == 'manifest.json':
+            #             self.manifest = full_path
+            #             # Set appropriate extension name
+            #             getExtensionName(self.getManifestPath(), self)
+            #         else:
+            #             self.json_files.append(full_path)
 
-                elif full_path.suffix in ('.html', '.htm'):
-                    self.html_files.append(full_path)
+            #     elif full_path.suffix in ('.html', '.htm'):
+            #         self.html_files.append(full_path)
 
-                elif full_path.suffix == '.js':
-                    # WILL SKIP BEAUTIFIED FILES
-                    if full_path.name.endswith("_beautified.js"):
-                        continue
-                    else:
-                        self.js_files.append(full_path)
+            #     elif full_path.suffix == '.js':
+            #         # WILL SKIP BEAUTIFIED FILES
+            #         if full_path.name.endswith("_beautified.js"):
+            #             continue
+            #         else:
+            #             self.js_files.append(full_path)
                 
     #             elif full_path.suffix == '.css':
     #                 self.css_files.append(full_path)
@@ -135,7 +135,11 @@ class Extension:
                 suffix = f.suffix.lower()
 
                 if suffix == ".js":
-                    self.js_files.append(f)
+                    # WILL SKIP BEAUTIFIED FILES
+                    if f.name.endswith("_beautified.js"):
+                        continue
+                    else:
+                        self.js_files.append(f)
                 elif suffix == ".css":
                     self.css_files.append(f)
                 elif suffix in (".html", ".htm"):

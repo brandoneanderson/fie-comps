@@ -80,5 +80,7 @@ if __name__ == "__main__":
         prediction.predict()
         extensions_predictions[ext.getName()] = prediction.PREDICTION
         print(ext.js_features)
+        print(ext.html_features)
+        print(ext.html_examples)
         
     print(extensions_predictions)
