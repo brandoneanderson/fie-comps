@@ -31,6 +31,8 @@ class Extension:
         self.version = None
         self.js_features = None
         self.html_features = None
+        self.html_examples = None
+
         self.css_features = None
         self.security_policy = False
         self.host_permissions = None

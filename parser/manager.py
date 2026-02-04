@@ -10,6 +10,8 @@ from analyzer import *
 from Scanners.js_parser import *
 from Scanners.css_parser import *
 from Scanners.html_parser import *
+from Scanners.html_report import html_report_section
+
 
 import re
 
@@ -131,6 +133,23 @@ if __name__ == "__main__":
         # output["permissions"] = getattr(ext, "permissions", None)
         # output["host_permissions"] = getattr(ext, "host_permissions", None)
         # output["urls_found"] = list(getattr(ext, "urls", []))  # if it’s a set
+        
+        # Include HTML report + structured data in JSON for UI
+        try:
+            output["html_report"] = html_report_section(ext)
+        except Exception as e:
+            output["html_report"] = None
+            log(f"[WARN] Could not build html_report: {e}")
+
+        output["html_features"] = getattr(ext, "html_features", None)
+        output["html_examples"] = getattr(ext, "html_examples", None)
+        
+        # Also print to stderr for terminal debugging (won't break JSON stdout)
+        try:
+            log("\n" + output["html_report"] + "\n")
+        except Exception:
+            pass
+
 
         print(json.dumps(output))
         sys.exit(0)
