@@ -104,7 +104,7 @@ def traverseNode(node, extClass):
     if node.type == "CallExpression":
         if node.callee.type == "Identifier":
             # eval runs a string of javascript code Big no no
-            if node.callee.name == "eval" or "setTimeout" or "setInterval" or "new Function":
+            if node.callee.name in {"eval", "setTimeout", "setInterval"}:
                 extClass.js_features["dynamic_code_gen_functions"] += 1
 
     if node.type == "NewExpression":
@@ -113,7 +113,7 @@ def traverseNode(node, extClass):
 
     # HTML DOM Change Methods and Properties
     if node.type == "MemberExpression":
-        if node.property.name in {"innerHTML", "outerHTML", "write", "appendChild"}:
+        if node.property.name in {"innerHTML", "outerHTML", "write", "appendChild", "insertAdjacentHTML"}:
             extClass.js_features["DOM change methods"] += 1
 
     # Number of Event Handlers
@@ -124,13 +124,37 @@ def traverseNode(node, extClass):
         if callee.type == "MemberExpression":
             prop = callee.property
 
-            if prop and prop.type == "Identifier" and prop.name == "addEventListener":
+            if prop and prop.type == "Identifier" and prop.name in {"addEventListener", "attachEvent"}:
                 extClass.js_features["event handlers"] += 1
     
     # Number of XMLHttpRequests
     if node.type == "NewExpression":
         if node.callee.name == "XMLHttpRequest":
             extClass.js_features["XMLHttpRequests"] += 1
+    
+    # Number of HTTP header mofication callbacks
+    if node.type == "CallExpression":
+        callee = node.callee
+        if callee.type == "MemberExpression":
+            # something.addListener(...)
+            if callee.property.name == "addListener":
+                obj = callee.object
+                if (obj.type == "MemberExpression" and obj.property.name in {"onBeforeSendHeaders","onHeadersReceived","onSendHeaders"}):
+                        extClass.js_features["modification callbacks"] += 1
+
+    # Number of HTTP Scripts
+    if node.type == "AssignmentExpression":
+        left = node.left
+        right = node.right
+
+        if (
+            left.type == "MemberExpression"
+            and left.property.name == "src"
+            and right.type == "Literal"
+            and isinstance(right.value, str)
+            and right.value.startswith(("http://"))
+        ):
+            extClass.js_features["HTTP scripts"] += 1
 
     # Visit children
     for attr, value in node.__dict__.items():
@@ -170,6 +194,10 @@ def extractStringFeatures(script, extClass):
                 extClass.js_totals["specific_chars"] += 1
             if c.isspace():
                 extClass.js_totals["whitespace"] += 1
-        # Word Size
+
+        # AVG Word Size
+        words = re.findall(r'[A-Za-z0-9_]+', content)
+        extClass.js_features["word size"] += sum(len(w) for w in words)
+        extClass.js_totals["total_words"] += len(words)
 
         # Code generation functions

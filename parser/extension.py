@@ -35,7 +35,7 @@ class Extension:
             "string entropy":0, "DOM change methods":0, "event handlers":0,
             "HTTP scripts":0, "modifcation callbacks":0, "XMLHttpRequests":0,
             "keyword density":0}
-        self.js_totals = {"total_chars": 0, "whitespace": 0, "specific_chars":0, "file_count":0, "total_lines": 0, "total_line_chars":0}
+        self.js_totals = {"total_chars": 0, "whitespace": 0, "specific_chars":0, "file_count":0, "total_lines": 0, "total_line_chars":0, "total_words":0}
         self.html_features = None
         self.html_examples = None
 
@@ -159,6 +159,7 @@ class Extension:
 
     def setFinalJSTotals(self):
         total_chars = self.js_totals["total_chars"]
+        total_words = self.js_totals["total_words"]
 
         if self.js_totals["total_lines"] > 0:
             self.js_features["avg line length"] = (
@@ -169,5 +170,8 @@ class Extension:
         if total_chars > 0:
             self.js_features["whitespace %"] = (self.js_totals["whitespace"] / total_chars)
             self.js_features["specific characters"] = (self.js_totals["specific_chars"] / total_chars)
+
+        if total_words > 0:
+            self.js_features["word size"] = self.js_features["word size"] / total_words
         
         return

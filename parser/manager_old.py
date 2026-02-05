@@ -79,8 +79,6 @@ if __name__ == "__main__":
         prediction = Score_Report(ext)
         prediction.predict()
         extensions_predictions[ext.getName()] = prediction.PREDICTION
-        print(ext.js_features)
-        print(ext.html_features)
-        print(ext.html_examples)
+        print("\n",ext.js_features)
         
     print(extensions_predictions)
