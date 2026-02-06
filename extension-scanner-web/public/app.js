@@ -99,7 +99,11 @@ function showResults(vm) {
     }, null, 2);
 
   // CSS TAB
-  $("tab-css").textContent = JSON.stringify(analysis.css_features || {}, null, 2);
+  //$("tab-css").textContent = JSON.stringify(analysis.css_features || {}, null, 2);
+  $("tab-css").textContent = JSON.stringify({
+    features: analysis.css_features || {},
+    examples: analysis.css_examples || {}
+  }, null, 2);
 
   // JS TAB
   $("tab-js").textContent = JSON.stringify(analysis.js_features || {}, null, 2);
