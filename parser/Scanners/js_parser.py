@@ -2,24 +2,40 @@ import esprima
 import re
 from pathlib import Path
 import jsbeautifier
+from math import log2
 
+# Malicious JS infaltes the rate these characters appear
 suspicious = set('%\\xu+=;{}()[]|^')
+
+# Malicious JS inflate rate of these keywords
+keywords = {"this", "if", "var"}
 
 def analyzeJS(script, extClass):
     try:
-        extractStringFeatures(script, extClass)
+        # beautify first (returns beautified path or creates one)
         beautified_file = beautify_file(script, extClass)
-        ast = parseScript(beautified_file)
-        if ast != None:
+
+        # analyze the beautified file (fall back to original if beautify failed)
+        if beautified_file is not None:
+            target = beautified_file
+        else:
+            target = script
+
+        # Extract all JS features from raw file no AST
+        extractStringFeatures(target, extClass)
+
+        # Grab AST of scripts using esprima
+        ast = parseScript(target)
+
+        # Traverse AST to extract AST-specific analysis features
+        if ast is not None:
             traverseAST(ast, extClass)
         return
-
 
     except FileNotFoundError:
         print(f"Error: The file {script} was not found.")
     except Exception as e:
         print(f"An error occurred: {e}")
-
 
 def beautify_file(script, extClass):
         # Set jsbeautifier modifiers to default settings
@@ -62,26 +78,27 @@ def beautify_file(script, extClass):
         with open(output_path, "w", encoding="utf8") as out:
             out.write(beautified)
 
-
-        print(f"[+] Beautified JS saved to {output_path}")
+        # Just to see if it worked
+        # print(f"[+] Beautified JS saved to {output_path}")
 
 
         return output_path
-
 
 def parseScript(script):
     # Esprima options to mark location of lines
     options = {"jsx": True,"tolerant":True, 'tokens':True, 'range':True, 'loc':True}
     # Attempt to read file
     try:
-        with open(script, 'r', encoding='utf8') as file:
+        with open(script, 'r', encoding='utf-8', errors='ignore') as file:
             # grab entire script and store it as string
             js_content = file.read()
+        try:
             parsed_content_ast = esprima.parseModule(js_content, options)
+        except Exception:
             parsed_content_ast = esprima.parseScript(js_content, options)
 
 
-            return parsed_content_ast
+        return parsed_content_ast
    
    
     # Throw appropriate errors if anything goes wrong while attempting to read file
@@ -90,21 +107,23 @@ def parseScript(script):
     except Exception as e:
         print(f"An error ocurred: {e}")
 
-
 def traverseAST(ast, extClass):
+    # Still don't get why I can't just iterate through it without this function
     for branch in ast.body:
         traverseNode(branch, extClass)
 
-
 def traverseNode(node, extClass):
+    # Edge Case
     if node is None:
         return
     
+    # - - - - - AST TRAVERSAL FEATURE CAPTURING - - - - - - 
+
     # Dynamic Code Generation Functions
     if node.type == "CallExpression":
         if node.callee.type == "Identifier":
             # eval runs a string of javascript code Big no no
-            if node.callee.name == "eval" or "setTimeout" or "setInterval" or "new Function":
+            if node.callee.name in {"eval", "setTimeout", "setInterval"}:
                 extClass.js_features["dynamic_code_gen_functions"] += 1
 
     if node.type == "NewExpression":
@@ -113,33 +132,53 @@ def traverseNode(node, extClass):
 
     # HTML DOM Change Methods and Properties
     if node.type == "MemberExpression":
-        if node.property.name in {"innerHTML", "outerHTML", "write", "appendChild"}:
+        if node.property.name in {"innerHTML", "outerHTML", "write", "appendChild", "insertAdjacentHTML"}:
             extClass.js_features["DOM change methods"] += 1
 
     # Number of Event Handlers
     if node.type == "CallExpression":
         callee = node.callee
-
-        # obj.addEventListener(...)
         if callee.type == "MemberExpression":
             prop = callee.property
-
-            if prop and prop.type == "Identifier" and prop.name == "addEventListener":
+            if prop and prop.type == "Identifier" and prop.name in {"addEventListener", "attachEvent"}:
                 extClass.js_features["event handlers"] += 1
     
     # Number of XMLHttpRequests
     if node.type == "NewExpression":
         if node.callee.name == "XMLHttpRequest":
             extClass.js_features["XMLHttpRequests"] += 1
+    
+    # Number of HTTP header mofication callbacks
+    if node.type == "CallExpression":
+        callee = node.callee
+        if callee.type == "MemberExpression":
+            prop = callee.property
+            if prop.type == "Identifier" and prop.name == "addListener":
+                obj = callee.object
+                if obj.type == "MemberExpression":
+                    event_prop = obj.property
+                    if (event_prop.type == "Identifier" and event_prop.name in {"onBeforeSendHeaders","onHeadersReceived","onSendHeaders"}):
+                        extClass.js_features["modification callbacks"] += 1
 
-    # Visit children
+    # Number of HTTP Scripts
+    if node.type == "AssignmentExpression":
+        left = node.left
+        right = node.right
+        if (
+            left.type == "MemberExpression"
+            and left.property.name == "src"
+            and right.type == "Literal"
+            and isinstance(right.value, str)
+            and right.value.startswith(("http://"))
+        ):
+            extClass.js_features["HTTP scripts"] += 1
+
+    # Visit node's children
     for attr, value in node.__dict__.items():
-
 
         # Single child node
         if hasattr(value, 'type'):
             traverseNode(value, extClass)
-
 
         # List of child nodes
         elif isinstance(value, list):
@@ -151,7 +190,7 @@ def extractStringFeatures(script, extClass):
     # Update total number of files encountered
     extClass.js_totals["file_count"] += 1
 
-    with open(script, 'r') as fp:
+    with open(script, 'r', encoding='utf-8', errors='ignore') as fp:
         content = fp.read()
 
         # update total number of chars in each file
@@ -170,6 +209,29 @@ def extractStringFeatures(script, extClass):
                 extClass.js_totals["specific_chars"] += 1
             if c.isspace():
                 extClass.js_totals["whitespace"] += 1
-        # Word Size
 
-        # Code generation functions
+        # AVG Word Size
+        words = re.findall(r'[A-Za-z0-9_]+', content)
+        extClass.js_features["word size"] += sum(len(w) for w in words)
+        extClass.js_totals["total_words"] += len(words)
+
+        # Keyword density
+        lower = content.lower()
+        for kw in keywords:
+            extClass.js_keyword_den[f"kw_{kw}"] += lower.count(kw)
+
+        # String entropy - - - weird math
+        strings = re.findall(r'["\']([^"\']{6,})["\']', content)
+
+        for string in strings:
+            freq = {}
+            for char in string:
+                freq[char] = freq.get(char, 0) + 1
+
+            entropy = 0
+            for count in freq.values():
+                p = count / len(string)
+                entropy -= p * log2(p)
+
+            extClass.js_features["string entropy"] += entropy
+            extClass.js_totals["entropy_strings"] += 1

@@ -108,7 +108,7 @@ def searchFolder(extensionFolderName):
     # (folder sometimes has both .crx and .crx.zip)
     filesFound = [p for p in filesFound if not p.name.endswith(".crx.zip")]
     
-    print("FILES FOUND =", filesFound)
+    # print("FILES FOUND =", filesFound)
     for path in filesFound:
         print("We found the following file: ", path.name)
     

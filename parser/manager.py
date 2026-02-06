@@ -112,8 +112,10 @@ if __name__ == "__main__":
                     log(f"[WARN] File analysis failed: {file} :: {e}")
 
         # Score & prediction
+        ext.setFinalJSTotals()
         prediction = Score_Report(ext)
         prediction.predict()
+        print(ext.js_features)
         
         resolved_name = resolve_i18n_name(ext, extract_dir)
         
