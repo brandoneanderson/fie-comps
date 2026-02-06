@@ -154,6 +154,28 @@ if __name__ == "__main__":
         # except Exception:
         #     pass
 
+        # ---- include parser outputs for UI tabs ----
+        output["manifest"] = {
+            "permissions": ext.permissions,
+            "host_permissions": ext.host_permissions,
+            "version": ext.version,
+            "content_security_policy": ext.security_policy,
+        }
+
+        output["html"] = {
+            "features": ext.html_features,
+            "examples": ext.html_examples,
+            "report": output.get("html_report"),
+        }
+
+        output["css"] = {
+            "features": ext.css_features,
+        }
+
+        output["js"] = {
+            "features": ext.js_features,
+            "totals": getattr(ext, "js_totals", None),
+        }
 
         print(json.dumps(output))
         sys.exit(0)
