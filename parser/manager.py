@@ -137,18 +137,22 @@ if __name__ == "__main__":
         # Include HTML report + structured data in JSON for UI
         try:
             output["html_report"] = html_report_section(ext)
+            if ext.html_features or ext.html_examples:
+                log("\n" + output["html_report"] + "\n")   # stderr only
+
         except Exception as e:
             output["html_report"] = None
             log(f"[WARN] Could not build html_report: {e}")
 
+        # the following doesn't really do myc
         output["html_features"] = getattr(ext, "html_features", None)
         output["html_examples"] = getattr(ext, "html_examples", None)
         
         # Also print to stderr for terminal debugging (won't break JSON stdout)
-        try:
-            log("\n" + output["html_report"] + "\n")
-        except Exception:
-            pass
+        # try:
+        #     log("\n" + output["html_report"] + "\n")
+        # except Exception:
+        #     pass
 
 
         print(json.dumps(output))
