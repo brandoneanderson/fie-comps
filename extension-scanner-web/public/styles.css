@@ -473,7 +473,7 @@ body {
   color: #3b82f6 !important;
 }
 
-/* --- CSE autocomplete dropdown (the unreadable popup) --- */
+/* --- CSE autocomplete dropdown  --- */
 .gsc-completion-container {
   background: #121212 !important;
   border: 1px solid #2a2a2a !important;
@@ -499,7 +499,7 @@ body {
   background: rgba(59,130,246,0.18) !important; /* blue highlight */
 }
 
-/* Also ensure the CSE input text is white */
+/*  the CSE input text is white */
 .gsc-input-box input.gsc-input,
 .gsc-input-box input.gsc-input:focus {
   color: #912424 !important;
@@ -537,4 +537,51 @@ body {
 
 .shield-line{
   stroke: #a0a0a0;
+}
+/* --- Tabs --- */
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+.tab {
+  background: transparent;
+  border: none;
+  color: #a0a0a0;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+}
+
+.tab:hover {
+  color: #ffffff;
+}
+
+.tab.active {
+  color: #3b82f6;
+  border-bottom-color: #3b82f6;
+}
+
+.tab-panels {
+  background: #0a0a0a;
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid #2a2a2a;
+}
+
+.tab-panel {
+  display: none;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 13px;
+  color: #ffffff;
+}
+
+.tab-panel.active {
+  display: block;
 }

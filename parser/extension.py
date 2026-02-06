@@ -44,6 +44,11 @@ class Extension:
         self.html_examples = None
 
         self.css_features = None
+        self.css_examples = None     
+        self.js_examples = None      
+        self.manifest_examples = None 
+
+        self.css_features = None
         self.security_policy = False
         self.host_permissions = None
 

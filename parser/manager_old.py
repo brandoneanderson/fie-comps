@@ -2,7 +2,7 @@ import extension
 from extractor import *
 from Scanners.manifest_parser import * 
 from analyzer import *
-from Scanners.js_parser import *
+# from Scanners.js_parser import *
 from Scanners.css_parser import *
 from Scanners.html_parser import *
 
@@ -60,8 +60,8 @@ if __name__ == "__main__":
         for allfiles in (ext.js_files, ext.html_files, ext.json_files, ext.css_files):
             for file in allfiles:
                 extractURLs(file, ext)
-                if file.suffix == '.js':
-                    analyzeJS(file, ext)
+                # if file.suffix == '.js':
+                    # analyzeJS(file, ext)
                 if file.suffix == ".json":
                     continue
                 if file.suffix == ".css":

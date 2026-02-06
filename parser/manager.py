@@ -10,7 +10,7 @@ from analyzer import *
 from Scanners.js_parser import *
 from Scanners.css_parser import *
 from Scanners.html_parser import *
-from Scanners.html_report import html_report_section
+#from Scanners.html_report import html_report_section
 
 
 import re
@@ -135,22 +135,37 @@ if __name__ == "__main__":
         # output["permissions"] = getattr(ext, "permissions", None)
         # output["host_permissions"] = getattr(ext, "host_permissions", None)
         # output["urls_found"] = list(getattr(ext, "urls", []))  # if it’s a set
-        
+        ##### I don't think I actually need the following"
         # Include HTML report + structured data in JSON for UI
-        try:
-            output["html_report"] = html_report_section(ext)
-        except Exception as e:
-            output["html_report"] = None
-            log(f"[WARN] Could not build html_report: {e}")
+       # try:
+           # output["html_report"] = html_report_section(ext)
+            #if ext.html_features or ext.html_examples:
+               # log("\n" + output["html_report"] + "\n")
+        #except Exception as e:
+            #output["html_report"] = None
+            #log(f"[WARN] Could not build html_report: {e}")
 
         output["html_features"] = getattr(ext, "html_features", None)
         output["html_examples"] = getattr(ext, "html_examples", None)
+
+        # --- NEW: include manifest/js/css fields for UI tabs ---
+        output["permissions"] = getattr(ext, "permissions", None)
+        output["host_permissions"] = getattr(ext, "host_permissions", None)
+        output["security_policy"] = getattr(ext, "security_policy", None)
+        output["manifest_examples"] = getattr(ext, "manifest_examples", None)
+
+        output["css_features"] = getattr(ext, "css_features", None)
+        output["css_examples"] = getattr(ext, "css_examples", None)
+
+        output["js_features"] = getattr(ext, "js_features", None)
+        output["js_examples"] = getattr(ext, "js_examples", None)
+
         
         # Also print to stderr for terminal debugging (won't break JSON stdout)
-        try:
-            log("\n" + output["html_report"] + "\n")
-        except Exception:
-            pass
+       # try:
+            #log("\n" + output["html_report"] + "\n")
+        #except Exception:
+            #pass
 
 
         print(json.dumps(output))
@@ -163,3 +178,4 @@ if __name__ == "__main__":
             "extract_dir": str(extract_dir),
         }))
         sys.exit(1)
+        
