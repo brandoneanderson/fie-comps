@@ -8,7 +8,7 @@ from math import log2
 suspicious = set('%\\xu+=;{}()[]|^')
 
 # Malicious JS inflate rate of these keywords
-keywords = {"eval", "chrome", "webRequest", "headers", "cookie"}
+keywords = {"this", "if", "var"}
 
 def analyzeJS(script, extClass):
     try:

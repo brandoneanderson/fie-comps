@@ -12,7 +12,7 @@ class Extension:
             raise FileNotFoundError(folderpath)
         
         # For keyword density in js analyzer
-        keywords = {"eval", "chrome", "webRequest", "headers", "cookie"}
+        keywords = {"this", "if", "var"}
 
         # Extension file paths & identifiers
         self.name = folderpath.name
