@@ -106,7 +106,13 @@ function showResults(vm) {
   }, null, 2);
 
   // JS TAB
-  $("tab-js").textContent = JSON.stringify(analysis.js_features || {}, null, 2);
+  // $("tab-js").textContent = JSON.stringify(analysis.js_features || {}, null, 2);
+// JS TAB
+  $("tab-js").textContent = JSON.stringify({
+    features: analysis.js_features || {},
+    examples: analysis.js_examples || {},
+    totals: analysis.js_totals || null
+  }, null, 2);
 
   // Default tab
   setTab("summary");
@@ -169,19 +175,19 @@ async function runScan() {
   }
 }
 
-// Toggle results panel when clicking the link (register ONCE)
+// Toggle results panel when clicking the link 
 if (resultsLink && resultsPanel) {
   resultsLink.addEventListener("click", () => {
     resultsPanel.style.display = (resultsPanel.style.display === "none") ? "block" : "none";
   });
 }
-  if (toggleDetailsBtn && resultsJson) {
-    toggleDetailsBtn.addEventListener("click", () => {
-      const isHidden = resultsJson.style.display === "none" || !resultsJson.style.display;
-      resultsJson.style.display = isHidden ? "block" : "none";
-      toggleDetailsBtn.textContent = isHidden ? "Hide details" : "Show details";
-    });
-  }
+  // if (toggleDetailsBtn && resultsJson) {
+  //   toggleDetailsBtn.addEventListener("click", () => {
+  //     const isHidden = resultsJson.style.display === "none" || !resultsJson.style.display;
+  //     resultsJson.style.display = isHidden ? "block" : "none";
+  //     toggleDetailsBtn.textContent = isHidden ? "Hide details" : "Show details";
+  //   });
+  // }
 
 
 if (scanButton && extensionUrlInput) {
