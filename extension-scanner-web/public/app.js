@@ -1,159 +1,3 @@
-
-// const storeUrlEl = document.getElementById("storeUrl");
-// const statusEl = document.getElementById("status");
-// const statusPre = document.getElementById("statusPre");
-// const btnEl = document.getElementById("downloadBtn");
-
-// function setStatus(msg) {
-//   statusEl.textContent = msg;
-// }
-// function setJson(obj) {
-//   statusPre.textContent = obj ? JSON.stringify(obj, null, 2) : "";
-// }
-
-// // Optional: if user pastes a Google redirect URL from CSE, unwrap it
-// function normalizeStoreUrl(input) {
-//   try {
-//     const u = new URL(input);
-//     if (u.hostname === "www.google.com" && u.pathname === "/url") {
-//       const q = u.searchParams.get("q");
-//       if (q) return q;
-//     }
-//   } catch {}
-//   return input;
-// }
-
-// btnEl.addEventListener("click", async () => {
-//   const url = normalizeStoreUrl(storeUrlEl.value.trim());
-
-//   setStatus("Submitting…");
-//   setJson(null);
-
-//   if (!url) return setStatus("Please paste a Chrome Web Store URL.");
-
-//   try {
-//     const r = await fetch("/api/download", {
-//       method: "POST",
-//       headers: { "Content-Type": "application/json" },
-//       body: JSON.stringify({ store_url: url }),
-//     });
-
-//     const text = await r.text();
-//     let data;
-//     try {
-//       data = JSON.parse(text);
-//     } catch {
-//       data = { raw: text };
-//     }
-
-//     if (!r.ok) {
-//       setStatus(`Error (${r.status})`);
-//       setJson(data);
-//       return;
-//     }
-
-//     setStatus("Downloaded ✓");
-//     setJson(data);
-//   } catch (e) {
-//     setStatus(`Network error: ${String(e)}`);
-//   }
-// });
-
-//MERGED VERSION - WORKS
-// const scanButton = document.getElementById("scanButton");
-// const extensionUrlInput = document.getElementById("extensionUrl");
-// const resultsLink = document.getElementById("resultsLink");
-// const statusText = document.getElementById("statusText");
-// const debugOut = document.getElementById("debugOut");
-
-// function setStatus(msg) {
-//   if (statusText) statusText.textContent = msg;
-// }
-// function setDebug(obj) {
-//   if (!debugOut) return;
-//   debugOut.textContent = obj ? JSON.stringify(obj, null, 2) : "";
-// }
-
-// // Optional: unwrap Google redirect URLs from CSE
-// function normalizeStoreUrl(input) {
-//   try {
-//     const u = new URL(input);
-//     if (u.hostname === "www.google.com" && u.pathname === "/url") {
-//       const q = u.searchParams.get("q");
-//       if (q) return q;
-//     }
-//   } catch {
-//     // ignore invalid
-//   }
-//   return input;
-// }
-
-// // If user pastes extension ID, build a canonical URL
-// function coerceToWebStoreUrl(value) {
-//   const v = value.trim();
-//   // extension ID pattern: 32 lowercase letters
-//   if (/^[a-z]{32}$/.test(v)) {
-//     return `https://chromewebstore.google.com/detail/${v}/${v}`;
-//   }
-//   return v;
-// }
-
-// async function runScan() {
-//   const raw = (extensionUrlInput?.value || "").trim();
-//   let url = normalizeStoreUrl(raw);
-//   url = coerceToWebStoreUrl(url);
-
-//   if (!url) {
-//     alert("Please enter a Chrome Web Store URL (or extension ID).");
-//     return;
-//   }
-
-//   try {
-//     setStatus("Submitting…");
-//     setDebug(null);
-//     if (scanButton) scanButton.disabled = true;
-
-//     const r = await fetch("/api/download", {
-//       method: "POST",
-//       headers: { "Content-Type": "application/json" },
-//       body: JSON.stringify({ store_url: url }),
-//     });
-
-//     const data = await r.json().catch(async () => {
-//       const t = await r.text();
-//       return { ok: false, detail: "Non-JSON response from server", raw: t };
-//     });
-
-//     // setDebug({ http_status: r.status, request_url: url, response: data });
-
-//     if (!r.ok || !data.ok) {
-//       setStatus("Error — see details below");
-//       console.error("Download failed:", r.status, data);
-//       return;
-//     }
-
-//     setStatus("Downloaded ✓");
-
-//     if (resultsLink) {
-//       resultsLink.style.display = "inline-flex";
-//       resultsLink.scrollIntoView({ behavior: "smooth", block: "center" });
-//     }
-//   } catch (e) {
-//     console.error("Network error:", e);
-//     setStatus("Network error");
-//     setDebug({ error: String(e) });
-//   } finally {
-//     if (scanButton) scanButton.disabled = false;
-//   }
-// }
-
-// if (scanButton && extensionUrlInput) {
-//   scanButton.addEventListener("click", runScan);
-//   extensionUrlInput.addEventListener("keydown", (e) => {
-//     if (e.key === "Enter") runScan();
-//   });
-// }
-
 // new integrated UI design with automated process
 const scanButton = document.getElementById("scanButton");
 const extensionUrlInput = document.getElementById("extensionUrl");
@@ -169,6 +13,25 @@ const resultsSummary = document.getElementById("resultsSummary");
 const resultsJson = document.getElementById("resultsJson");
 
 const toggleDetailsBtn = document.getElementById("toggleDetailsBtn");
+
+const htmlReport = document.getElementById("htmlReport");
+
+function $(id) {
+  return document.getElementById(id);
+}
+
+function setTab(name) {
+  document.querySelectorAll(".tab").forEach(t =>
+    t.classList.toggle("active", t.dataset.tab === name)
+  );
+  document.querySelectorAll(".tab-panel").forEach(p =>
+    p.classList.toggle("active", p.id === `tab-${name}`)
+  );
+}
+
+document.querySelectorAll(".tab").forEach(btn => {
+  btn.addEventListener("click", () => setTab(btn.dataset.tab));
+});
 
 
 function setStatus(msg) {
@@ -204,62 +67,56 @@ function coerceToWebStoreUrl(value) {
   return v;
 }
 
-// function showResults(vm) {
-//   if (resultsPanel) resultsPanel.style.display = "block";
 
-//   const analysis = vm?.analysis;
-
-//   if (analysis?.ok && analysis.report) {
-//     if (resultsSummary) resultsSummary.textContent = "Analysis completed successfully.";
-//     if (resultsJson) resultsJson.textContent = JSON.stringify(analysis.report, null, 2);
-//   } else {
-//     if (resultsSummary) resultsSummary.textContent = "Downloaded, but analysis failed.";
-//     if (resultsJson) resultsJson.textContent = JSON.stringify(analysis || { error: "No analysis output" }, null, 2);
-//   }
-// }
 function showResults(vm) {
-  if (resultsPanel) resultsPanel.style.display = "block";
+  if (!resultsPanel) return;
+  resultsPanel.style.display = "block";
 
-  const analysis = vm?.analysis;
-
-  // Default: hide details until user asks
-  if (resultsJson) resultsJson.style.display = "none";
-  if (toggleDetailsBtn) toggleDetailsBtn.textContent = "Show details";
-
-  // Helper to set details text
-  const setDetails = (obj) => {
-    if (resultsJson) resultsJson.textContent = JSON.stringify(obj, null, 2);
-  };
-
-  // If analysis succeeded
-  if (analysis?.ok && analysis.report) {
-    if (resultsSummary) resultsSummary.textContent = "Analysis completed successfully.";
-    setDetails(analysis.report);
+  const analysis = vm?.analysis?.report;
+  if (!analysis) {
+    $("tab-summary").textContent = "No analysis report returned.";
     return;
   }
 
-  // Analysis failed (friendly messages)
-  const errMsg = (analysis && (analysis.error || analysis.detail)) ? String(analysis.error || analysis.detail) : "";
+  // SUMMARY TAB
+  $("tab-summary").textContent =
+    `Extension: ${analysis.extension_name}\n\n` +
+    `Prediction: ${JSON.stringify(analysis.prediction, null, 2)}`;
 
-  if (errMsg.includes("did not output valid JSON")) {
-    if (resultsSummary) {
-      resultsSummary.textContent =
-        "Analysis produced extra output (non-JSON). Please retry, or check logs on the VM.";
-    }
-  } else if (analysis?.error) {
-    if (resultsSummary) resultsSummary.textContent = `Analysis failed: ${analysis.error}`;
-  } else if (analysis?.detail) {
-    if (resultsSummary) resultsSummary.textContent = `Analysis failed: ${analysis.detail}`;
-  } else {
-    if (resultsSummary) resultsSummary.textContent = "Downloaded, but analysis failed.";
-  }
+  // MANIFEST TAB
+  $("tab-manifest").textContent = JSON.stringify({
+    permissions: analysis.permissions,
+    host_permissions: analysis.host_permissions,
+    security_policy: analysis.security_policy,
+  }, null, 2);
 
-  // Still keep raw details available behind toggle
-  setDetails(analysis || { error: "No analysis output" });
-  if (toggleDetailsBtn) toggleDetailsBtn.style.display = analysis ? "inline-flex" : "none";
+  // HTML TAB
+  $("tab-html").textContent =
+    analysis.html_report ||
+    JSON.stringify({
+      features: analysis.html_features,
+      examples: analysis.html_examples,
+    }, null, 2);
 
+  // CSS TAB
+  //$("tab-css").textContent = JSON.stringify(analysis.css_features || {}, null, 2);
+  $("tab-css").textContent = JSON.stringify({
+    features: analysis.css_features || {},
+    examples: analysis.css_examples || {}
+  }, null, 2);
+
+  // JS TAB
+  // $("tab-js").textContent = JSON.stringify(analysis.js_features || {}, null, 2);
+// JS TAB
+  $("tab-js").textContent = JSON.stringify({
+    features: analysis.js_features || {},
+    examples: analysis.js_examples || {},
+    totals: analysis.js_totals || null
+  }, null, 2);
+
+  // Default tab
+  setTab("summary");
 }
-
 
 async function runScan() {
   const raw = (extensionUrlInput?.value || "").trim();
@@ -318,19 +175,19 @@ async function runScan() {
   }
 }
 
-// Toggle results panel when clicking the link (register ONCE)
+// Toggle results panel when clicking the link 
 if (resultsLink && resultsPanel) {
   resultsLink.addEventListener("click", () => {
     resultsPanel.style.display = (resultsPanel.style.display === "none") ? "block" : "none";
   });
 }
-  if (toggleDetailsBtn && resultsJson) {
-    toggleDetailsBtn.addEventListener("click", () => {
-      const isHidden = resultsJson.style.display === "none" || !resultsJson.style.display;
-      resultsJson.style.display = isHidden ? "block" : "none";
-      toggleDetailsBtn.textContent = isHidden ? "Hide details" : "Show details";
-    });
-  }
+  // if (toggleDetailsBtn && resultsJson) {
+  //   toggleDetailsBtn.addEventListener("click", () => {
+  //     const isHidden = resultsJson.style.display === "none" || !resultsJson.style.display;
+  //     resultsJson.style.display = isHidden ? "block" : "none";
+  //     toggleDetailsBtn.textContent = isHidden ? "Hide details" : "Show details";
+  //   });
+  // }
 
 
 if (scanButton && extensionUrlInput) {

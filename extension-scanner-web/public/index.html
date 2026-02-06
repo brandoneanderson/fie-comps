@@ -56,37 +56,7 @@
       </p>
     </div>
   </section>
-  <!-- <section class="search-section">
-    <div class="search-container">
-      <div class="search-bar-wrapper">
-        <div class="chrome-logo"></div>
-        <div class="separator"></div>
-        <div class="search-icon"></div>
 
-        <input
-          type="text"
-          class="search-input"
-          placeholder="Enter your Chrome Web Store URL here"
-          id="extensionUrl"
-        />
-
-        <button class="scan-button" id="scanButton" type="button">
-          Scan
-          <div class="arrow-icon"></div>
-        </button>
-      </div>
-
-      <p class="fast-secure-text" id="statusText">Fast And Secure</p>
-    </div>
-  </section> -->
-
-  <!-- Results Section -->
-  <!-- <section class="results-section">
-    <div class="results-link" id="resultsLink" style="display:none;">
-      <span>Click to view results</span>
-      <div class="document-icon"></div>
-    </div>
-  </section> -->
   <!-- Scan Section -->
   <section class="search-section">
     <div class="search-container">
@@ -127,65 +97,39 @@
         <div id="resultsSummary" style="color:#a0a0a0; margin-bottom: 12px;"></div>
 
         <!-- Toggle button -->
-        <button id="toggleDetailsBtn" class="scan-button" type="button" style="padding:10px 16px; border-radius:10px; font-size:14px; font-weight:700; width:auto;">
+        <!-- <button id="toggleDetailsBtn" class="scan-button" type="button" style="padding:10px 16px; border-radius:10px; font-size:14px; font-weight:700; width:auto;">
           Show details
         </button>
+        <pre id="htmlReport"
+              style="margin-top:12px; white-space:pre-wrap; word-break:break-word; color:#ffffff; background:#0a0a0a; border:1px solid #2a2a2a; padding:14px; border-radius:12px;"></pre> -->
 
         <!-- Hidden details area -->
-        <pre id="resultsJson"
-          style="display:none; margin-top:12px; white-space:pre-wrap; word-break:break-word; color:#ffffff;"></pre>
+        <!-- <pre id="resultsJson"
+          style="display:none; margin-top:12px; white-space:pre-wrap; word-break:break-word; color:#ffffff;"></pre> -->
+
+          <!-- Tabs -->
+          <div class="tabs">
+            <button class="tab active" data-tab="summary">Summary</button>
+            <button class="tab" data-tab="manifest">Manifest</button>
+            <button class="tab" data-tab="html">HTML</button>
+            <button class="tab" data-tab="css">CSS</button>
+            <button class="tab" data-tab="js">JavaScript</button>
+          </div>
+
+          <!-- Tab Panels -->
+          <div class="tab-panels">
+            <div class="tab-panel active" id="tab-summary"></div>
+            <div class="tab-panel" id="tab-manifest"></div>
+            <div class="tab-panel" id="tab-html"></div>
+            <div class="tab-panel" id="tab-css"></div>
+            <div class="tab-panel" id="tab-js"></div>
+          </div>
+
         <!-- <pre id="resultsJson" style="white-space:pre-wrap; word-break:break-word; color:#ffffff;"></pre> -->
       </div>
     </div>
   </section>
-  <!-- <div class="container">
-    <h1>Search Chrome Extensions</h1>
-    <p class="subtitle">Search the Chrome Web Store for an extension to analyze.</p>
-
-    <div class="card">
-      <script async src="https://cse.google.com/cse.js?cx=21b388a3fedde4e96"></script>
-      <div class="gcse-search"></div>
-      <p class="muted" style="margin-top:10px;">
-        Tip: open an extension from results, then paste its URL below.
-      </p>
-    </div> -->
-
-    <!-- <div class="card">
-      <h2 style="margin-top:0;">Download extension to VM</h2>
-      <label for="storeUrl">Chrome Web Store URL</label>
-      <input id="storeUrl" placeholder="https://chromewebstore.google.com/detail/.../<extension_id>" />
-      <div class="row">
-        <button id="downloadBtn">Download to VM</button>
-      </div>
-
-      <div class="status mono" id="status"></div>
-      <pre class="mono" style="margin-top:12px;" id="statusPre"></pre>
-    </div> -->
-    <!-- <div class="card">
-  <h2 style="margin-top:0;">Download extension to VM</h2>
-  <label for="storeUrl">Paste a Chrome Web Store link (or Google redirect link, or extension ID)</label>
-  <input id="storeUrl" placeholder="Paste link here… (or cjpalhdlnbpafiamejdnhcphjbkeiagm)" />
-
-  <div class="row" style="align-items:center;">
-    <button id="downloadBtn">Download to VM</button>
-    <button class="secondary" id="clearBtn" type="button">Clear</button>
-  </div>
-
-  <div class="status mono" id="status"></div>
-
-  <div class="card" style="margin-top:12px;">
-    <div class="muted" style="margin-bottom:6px;">Detected</div>
-    <div class="mono" id="parsedSummary">—</div>
-    <div class="muted" style="margin-top:8px;">Normalized URL</div>
-    <div class="mono" id="normalizedUrl" style="word-break:break-all;">—</div>
-  </div>
-
-  <pre class="mono" style="margin-top:12px;" id="statusPre"></pre>
-</div>
-
-  </div> -->
-
-  <!-- <script type="module" src="/app.js"></script> -->
+  
    <script src="/app.js"></script>
 </body>
 </html>

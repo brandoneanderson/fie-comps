@@ -27,8 +27,19 @@ def analyzeManifest(manifest, extClass):
             extClass.host_permissions = manifest_data.get('host_permissions')
             if 'content_security_policy' in manifest_data:
                 extClass.security_policy = True
+                csp_value = manifest_data.get('content_security_policy')
             else:
                 extClass.security_policy = False
+                csp_value = None
+
+            #store manifest examples for UI
+            extClass.manifest_examples = {
+                "permissions": list(extClass.permissions or []),
+                "host_permissions": list(extClass.host_permissions or []),
+            }
+            if csp_value:
+                extClass.manifest_examples["content_security_policy"] = [str(csp_value)]
+
     except FileNotFoundError:
         print(f"Error: The file {manifest} was not found.")
     except Exception as e:
@@ -42,3 +53,4 @@ def getExtensionName(manifest, extClass):
         manifest_data = _load_manifest_json(manifest)
         extClass.name = manifest_data.get('name')
         return extClass.name
+    
