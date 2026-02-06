@@ -10,6 +10,9 @@ class Extension:
     def __init__(self, folderpath : Path):
         if not folderpath.exists():
             raise FileNotFoundError(folderpath)
+        
+        # For keyword density in js analyzer
+        keywords = {"eval", "chrome", "webRequest", "headers", "cookie"}
 
         # Extension file paths & identifiers
         self.name = folderpath.name
@@ -30,12 +33,13 @@ class Extension:
         self.permissions = None
         self.version = None
         self.js_features = {
-            "dynamic_code_gen_functions": 0, "whitespace %":0, 
-            "avg line length":0, "specific characters":0, "word size":0,
-            "string entropy":0, "DOM change methods":0, "event handlers":0,
-            "HTTP scripts":0, "modifcation callbacks":0, "XMLHttpRequests":0,
-            "keyword density":0}
-        self.js_totals = {"total_chars": 0, "whitespace": 0, "specific_chars":0, "file_count":0, "total_lines": 0, "total_line_chars":0, "total_words":0}
+            "dynamic_code_gen_functions": 0, "whitespace %": 0, 
+            "avg line length": 0, "specific characters": 0, "word size": 0,
+            "string entropy": 0, "DOM change methods": 0, "event handlers": 0,
+            "HTTP scripts": 0, "modification callbacks": 0, "XMLHttpRequests": 0,
+            "keyword density": 0}
+        self.js_totals = {"total_chars": 0, "whitespace": 0, "specific_chars":0, "file_count":0, "total_lines": 0, "total_line_chars":0, "total_words":0, "entropy_strings":0}
+        self.js_keyword_den = {f"kw_{kw}": 0 for kw in keywords}
         self.html_features = None
         self.html_examples = None
 
@@ -158,20 +162,33 @@ class Extension:
         return self.permissions
 
     def setFinalJSTotals(self):
+        # Grab total words and chracters
         total_chars = self.js_totals["total_chars"]
         total_words = self.js_totals["total_words"]
 
+        # Set average line length across all files
         if self.js_totals["total_lines"] > 0:
             self.js_features["avg line length"] = (
                 self.js_totals["total_line_chars"] /
                 self.js_totals["total_lines"]
             )
-            
+        
+        # Set avg white space & and frequency of specific characters spotted
         if total_chars > 0:
             self.js_features["whitespace %"] = (self.js_totals["whitespace"] / total_chars)
             self.js_features["specific characters"] = (self.js_totals["specific_chars"] / total_chars)
 
+        # Set average word size & keyword density (sum of all tracked keywords / total words)
+        # Set keyword density
         if total_words > 0:
             self.js_features["word size"] = self.js_features["word size"] / total_words
-        
+            total_kw_count = sum(self.js_keyword_den.values())
+            self.js_features["keyword density"] = total_kw_count / total_words
+
+        # Set average string entropy
+        if self.js_totals.get("entropy_strings", 0) > 0:
+            self.js_features["string entropy"] = (self.js_features["string entropy"] / self.js_totals["entropy_strings"])
+        else:
+            self.js_features["avg string entropy"] = 0
+
         return

@@ -31,7 +31,6 @@ if __name__ == "__main__":
     #     ext.setScriptsPaths()
     #     extensions[ext.getName()] = ext
     for file in filesFound:
-        print(file)
         folderPath = extractExtension(file)
 
          # skip if extraction failed
@@ -79,6 +78,6 @@ if __name__ == "__main__":
         prediction = Score_Report(ext)
         prediction.predict()
         extensions_predictions[ext.getName()] = prediction.PREDICTION
-        print("\n",ext.js_features)
+        print(ext.name, "\n",ext.js_features)
         
     print(extensions_predictions)
