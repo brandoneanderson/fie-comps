@@ -133,7 +133,7 @@ def traverseNode(node, extClass):
     # HTML DOM Change Methods and Properties
     if node.type == "MemberExpression":
         if node.property.name in {"innerHTML", "outerHTML", "write", "appendChild", "insertAdjacentHTML"}:
-            extClass.js_features["DOM change methods"] += 1
+            extClass.js_features["DOM_change_methods"] += 1
 
     # Number of Event Handlers
     if node.type == "CallExpression":
@@ -141,7 +141,7 @@ def traverseNode(node, extClass):
         if callee.type == "MemberExpression":
             prop = callee.property
             if prop and prop.type == "Identifier" and prop.name in {"addEventListener", "attachEvent"}:
-                extClass.js_features["event handlers"] += 1
+                extClass.js_features["event_handlers"] += 1
     
     # Number of XMLHttpRequests
     if node.type == "NewExpression":
@@ -158,7 +158,7 @@ def traverseNode(node, extClass):
                 if obj.type == "MemberExpression":
                     event_prop = obj.property
                     if (event_prop.type == "Identifier" and event_prop.name in {"onBeforeSendHeaders","onHeadersReceived","onSendHeaders"}):
-                        extClass.js_features["modification callbacks"] += 1
+                        extClass.js_features["modification_callbacks"] += 1
 
     # Number of HTTP Scripts
     if node.type == "AssignmentExpression":
@@ -171,7 +171,7 @@ def traverseNode(node, extClass):
             and isinstance(right.value, str)
             and right.value.startswith(("http://"))
         ):
-            extClass.js_features["HTTP scripts"] += 1
+            extClass.js_features["HTTP_scripts"] += 1
 
     # Visit node's children
     for attr, value in node.__dict__.items():
@@ -212,7 +212,7 @@ def extractStringFeatures(script, extClass):
 
         # AVG Word Size
         words = re.findall(r'[A-Za-z0-9_]+', content)
-        extClass.js_features["word size"] += sum(len(w) for w in words)
+        extClass.js_features["word_size"] += sum(len(w) for w in words)
         extClass.js_totals["total_words"] += len(words)
 
         # Keyword density
@@ -233,5 +233,5 @@ def extractStringFeatures(script, extClass):
                 p = count / len(string)
                 entropy -= p * log2(p)
 
-            extClass.js_features["string entropy"] += entropy
+            extClass.js_features["string_entropy"] += entropy
             extClass.js_totals["entropy_strings"] += 1

@@ -1,5 +1,5 @@
 from pathlib import Path
-from Scanners.manifest_parser import * 
+from parser.Scanners.manifest_parser import *
 import os
 
 
@@ -34,21 +34,20 @@ class Extension:
         self.version = None
         self.js_features = {
             "dynamic_code_gen_functions": 0, "whitespace %": 0, 
-            "avg line length": 0, "specific characters": 0, "word size": 0,
-            "string entropy": 0, "DOM change methods": 0, "event handlers": 0,
-            "HTTP scripts": 0, "modification callbacks": 0, "XMLHttpRequests": 0,
-            "keyword density": 0}
+            "avg_line_length": 0, "specific_characters": 0, "word_size": 0,
+            "string_entropy": 0, "DOM_change_methods": 0, "event_handlers": 0,
+            "HTTP_scripts": 0, "modification_callbacks": 0, "XMLHttpRequests": 0,
+            "keyword_density": 0}
         self.js_totals = {"total_chars": 0, "whitespace": 0, "specific_chars":0, "file_count":0, "total_lines": 0, "total_line_chars":0, "total_words":0, "entropy_strings":0}
         self.js_keyword_den = {f"kw_{kw}": 0 for kw in keywords}
-        self.html_features = None
+        self.html_features = {'num_script_tags': 0, 'num_script_src_attrs': 0, 'num_external_urls': 0}
         self.html_examples = None
 
-        self.css_features = None
+        self.css_features = {'num_background_image': 0, 'num_behavior': 0, 'num_import_rules': 0, 'num_external_urls': 0}
         self.css_examples = None     
         self.js_examples = None      
         self.manifest_examples = None 
 
-        self.css_features = None
         self.security_policy = False
         self.host_permissions = None
 
@@ -181,19 +180,19 @@ class Extension:
         # Set avg white space & and frequency of specific characters spotted
         if total_chars > 0:
             self.js_features["whitespace %"] = (self.js_totals["whitespace"] / total_chars)
-            self.js_features["specific characters"] = (self.js_totals["specific_chars"] / total_chars)
+            self.js_features["specific_characters"] = (self.js_totals["specific_chars"] / total_chars)
 
         # Set average word size & keyword density (sum of all tracked keywords / total words)
         # Set keyword density
         if total_words > 0:
-            self.js_features["word size"] = self.js_features["word size"] / total_words
+            self.js_features["word_size"] = self.js_features["word_size"] / total_words
             total_kw_count = sum(self.js_keyword_den.values())
-            self.js_features["keyword density"] = total_kw_count / total_words
+            self.js_features["keyword_density"] = total_kw_count / total_words
 
         # Set average string entropy
         if self.js_totals.get("entropy_strings", 0) > 0:
-            self.js_features["string entropy"] = (self.js_features["string entropy"] / self.js_totals["entropy_strings"])
+            self.js_features["string_entropy"] = (self.js_features["string_entropy"] / self.js_totals["entropy_strings"])
         else:
-            self.js_features["avg string entropy"] = 0
+            self.js_features["avg_string_entropy"] = 0
 
         return
