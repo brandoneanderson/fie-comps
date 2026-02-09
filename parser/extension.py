@@ -172,7 +172,7 @@ class Extension:
 
         # Set average line length across all files
         if self.js_totals["total_lines"] > 0:
-            self.js_features["avg line length"] = (
+            self.js_features["avg_line_length"] = (
                 self.js_totals["total_line_chars"] /
                 self.js_totals["total_lines"]
             )

@@ -1,16 +1,11 @@
-# import sys
-# import os
-
-# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
 import pandas as pd
-import numpy as np
 
 from parser.extension import Extension
 from pathlib import Path
 
 # TESTING Purposes
 # Example extension creation
+
 bad_extension_path = Path(r"C:\Users\frana\College_HW_Submissions\COMPS\fie-comps\parser\Extensions\BadExtension")
 test_ext = Extension(bad_extension_path)
 
@@ -46,4 +41,9 @@ def setExtML(set_exts):
         add_extension(rows, ext)
 
     df = pd.DataFrame(rows)
+    df.to_csv('output.csv', index=False)
     print(df)
+
+def test():
+    test_dict = {"test":test_ext}
+    setExtML(test_dict)

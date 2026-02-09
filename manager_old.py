@@ -1,18 +1,32 @@
+# SCANNER COMPONENTS
 from parser.extension import Extension
 from parser.extractor import *
-from parser.Scanners.manifest_parser import * 
 from parser.analyzer import *
+
+# SCANNER PARSERS
+from parser.Scanners.manifest_parser import * 
 from parser.Scanners.js_parser import *
 from parser.Scanners.css_parser import *
 from parser.Scanners.html_parser import *
+
+# ML MATERIALS / PATHS
 from ML.vectorize import *
+from ML.download_ext import *
+from parser.paths import *
+import pandas as pd
 
 
 ## DEBUGGING CONFIG
 # UPDATE AS NEEDED
 TESTING_ML = 0
+DELETE_FILES = 1
+
+# List to paths of all downloaded files & and extracted folders
+All_paths = []
+
 '''
-    Core file for all parsers
+    Old core file to run our scanner.
+    Really helpful for debugging and scanning multiple extensions at once
 '''
 
 if __name__ == "__main__":
@@ -22,10 +36,15 @@ if __name__ == "__main__":
         # test()
         yes = 0
     else:
-        # Search for all extension files
-        # CLI to actually start running program, think about how to automate later on
-        # I guess just download all extensions into 'Extensions' folder and leave that as folderName?
-        #folderName = input("Please enter name of folder where you have extensions: ")
+        # Grab csv of all benign ext IDs
+        benign_ext_csv_df = pd.read_csv(BENIGN_EXT_CSV)
+        for ext_id in benign_ext_csv_df["ID"]:
+            download_crx(ext_id)
+        
+
+        # TESTING DOWNLOAD CRX FUNCTIONS
+        # mybib_id = "phidhnmbkbkbkbknhldmpmnacgicphkf"
+        # download_crx(mybib_id)
 
         # For easy testing
         folderName = 'Extensions'
@@ -35,19 +54,17 @@ if __name__ == "__main__":
         extensions = {}
         extensions_predictions = {}
 
-        # Unpack every extension found, and create extension class for each ext
-        # for file in filesFound:
-        #     folderPath = extractExtension(file)
-        #     ext = extension.Extension(folderPath)
-        #     ext.setScriptsPaths()
-        #     extensions[ext.getName()] = ext
         for file in filesFound:
+            All_paths.append(file)
             folderPath = extractExtension(file)
 
             # skip if extraction failed
             if not folderPath:
                 print(f"[WARN] Skipping extension (extract failed): {file}")
                 continue
+
+            # Save reference to folder
+            All_paths.append(folderPath)
 
             ext = Extension(folderPath)
             ext.setScriptsPaths()
@@ -95,3 +112,7 @@ if __name__ == "__main__":
         setExtML(extensions)
         
         # print(extensions_predictions)
+
+        # Clean up
+        for file in All_paths:
+            delete_file(file)
