@@ -40,7 +40,10 @@ class Extension:
             "keyword_density": 0}
         self.js_totals = {"total_chars": 0, "whitespace": 0, "specific_chars":0, "file_count":0, "total_lines": 0, "total_line_chars":0, "total_words":0, "entropy_strings":0}
         self.js_keyword_den = {f"kw_{kw}": 0 for kw in keywords}
-        self.html_features = {'num_script_tags': 0, 'num_script_src_attrs': 0, 'num_external_urls': 0}
+        self.html_features = {'num_iframe_tags': 0, 'num_form_tags': 0, 'num_script_tags': 0, 
+                              "num_inline_event_handlers":0, "num_password_inputs":0, "num_meta_refresh":0,
+                              "num_http_urls":0, "num_external_urls":0, "num_javascript_urls":0, "num_data_urls":0,
+                              "num_external_iframe_src":0, "num_external_script_src":0, "num_script_src_attrs":0}
         self.html_examples = None
 
         self.css_features = {'num_background_image': 0, 'num_behavior': 0, 'num_import_rules': 0, 'num_external_urls': 0}
@@ -193,7 +196,7 @@ class Extension:
         if self.js_totals.get("entropy_strings", 0) > 0:
             self.js_features["string_entropy"] = (self.js_features["string_entropy"] / self.js_totals["entropy_strings"])
         else:
-            self.js_features["avg_string_entropy"] = 0
+            self.js_features["string_entropy"] = 0
 
         return
     
