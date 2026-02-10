@@ -130,10 +130,43 @@ def traverseNode(node, extClass):
         if node.callee.name == "Function":
             extClass.js_features["dynamic_code_gen_functions"] += 1
 
-    # HTML DOM Change Methods and Properties
+    # # HTML DOM Change Methods and Properties
+    # if node.type == "MemberExpression":
+    #     if node.property.name in {"innerHTML", "outerHTML", "write", "appendChild", "insertAdjacentHTML"}:
+    #         extClass.js_features["DOM_change_methods"] += 1
+
+    # DOM change sinks (document.write, document.writeIn, innerHTML)
+    if node.type == "AssignmentExpression":
+        if (
+            node.operator == "=" and
+            node.left.type == "MemberExpression" and
+            node.left.property and
+            node.left.property.name in {"innerHTML", "outerHTML"}
+        ):
+            extClass.js_features["DOM_change_sinks"] += 1
+
+    if node.type == "CallExpression":
+        if (
+            node.callee.type == "MemberExpression" and
+            node.callee.property and
+            node.callee.property.name in {"write", "writeln", "insertAdjacentHTML"}
+        ):
+            extClass.js_features["DOM_change_sinks"] += 1
+
+
+    # DOM operations counts
     if node.type == "MemberExpression":
-        if node.property.name in {"innerHTML", "outerHTML", "write", "appendChild", "insertAdjacentHTML"}:
-            extClass.js_features["DOM_change_methods"] += 1
+        if node.property and node.property.name in {
+            "createElement",
+            "createElementNS",
+            "getElementById",
+            "getElementsByClassName",
+            "getElementsByTagName",
+            "appendChild",
+            "navigator",
+            "location"
+        }:
+            extClass.js_features["DOM_operations"] += 1
 
     # Number of Event Handlers
     if node.type == "CallExpression":

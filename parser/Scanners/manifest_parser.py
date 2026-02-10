@@ -21,10 +21,12 @@ def analyzeManifest(manifest, extClass):
         with open(manifest, 'r') as manifest_file:
             # Parse the JSON-formatted string into a Python dictionary
             manifest_data = _load_manifest_json(manifest)
+
             extClass.name = manifest_data.get('name')
             extClass.permissions = manifest_data.get('permissions')
             extClass.version = manifest_data.get('version')
             extClass.host_permissions = manifest_data.get('host_permissions')
+
             if 'content_security_policy' in manifest_data:
                 extClass.security_policy = True
                 csp_value = manifest_data.get('content_security_policy')

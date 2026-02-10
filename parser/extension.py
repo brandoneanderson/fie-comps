@@ -35,7 +35,7 @@ class Extension:
         self.js_features = {
             "dynamic_code_gen_functions": 0, "whitespace %": 0, 
             "avg_line_length": 0, "specific_characters": 0, "word_size": 0,
-            "string_entropy": 0, "DOM_change_methods": 0, "event_handlers": 0,
+            "string_entropy": 0, "DOM_operations": 0, "DOM_change_sinks": 0, "event_handlers": 0,
             "HTTP_scripts": 0, "modification_callbacks": 0, "XMLHttpRequests": 0,
             "keyword_density": 0}
         self.js_totals = {"total_chars": 0, "whitespace": 0, "specific_chars":0, "file_count":0, "total_lines": 0, "total_line_chars":0, "total_words":0, "entropy_strings":0}
@@ -196,3 +196,61 @@ class Extension:
             self.js_features["avg_string_entropy"] = 0
 
         return
+    
+    def safe_div(self, n, d):
+        if d > 0:
+            return n/d
+        else:
+            return 0.0
+    
+    def normalizeJSBehavior(self):
+        lines = self.js_totals["total_lines"]
+
+        self.js_features["DOM_operations_density"] = self.safe_div(self.js_features["DOM_operations"], lines)
+
+        self.js_features["DOM_change_sinks_density"] = self.safe_div(self.js_features["DOM_change_sinks"], lines)
+
+        self.js_features["XMLHttpRequests_density"] = self.safe_div(self.js_features["XMLHttpRequests"], lines)
+
+        self.js_features["event_handlers_density"] = self.safe_div(self.js_features["event_handlers"], lines)
+
+        self.js_features["modification_callbacks_density"] = self.safe_div(self.js_features["modification_callbacks"], lines)
+
+        self.js_features["HTTP_scripts_density"] = self.safe_div(self.js_features["HTTP_scripts"], lines)
+
+
+    def setVulnerablePermissions(self):
+        permissions = self.permissions
+        host_perms = self.host_permissions
+        sec_policy = self.security_policy
+
+        vulnerable_perm = {"All http domains": 0, "All https domains": 0, "webRequest": 0,
+                           "webRequestBlocking": 0, "tabs": 0, "storage": 0, "notifications": 0,
+                           "cookies":0, "management": 0, "contextmenus": 0, "security_policy": 0}
+        
+        # Set permissions found to true
+        for perm in permissions:
+            if perm in vulnerable_perm:
+                vulnerable_perm[perm] = 1
+        
+        if host_perms != None:
+            # Set any host permissions found
+            for host in host_perms:
+                if host.startswith("http://") and "*" in host:
+                    vulnerable_perm["All http domains"] = 1
+                if host.startswith("https://") and "*" in host:
+                    vulnerable_perm["All https domains"] = 1
+        
+        # Set security policy flag
+        if sec_policy:
+            vulnerable_perm["security_policy"] = 1
+        
+        # Set final permissions dict
+        self.permissions = vulnerable_perm
+
+        return
+    
+    def setFinalValues(self):
+        self.setFinalJSTotals()
+        self.normalizeJSBehavior()
+        self.setVulnerablePermissions()

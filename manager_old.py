@@ -37,7 +37,7 @@ if __name__ == "__main__":
         yes = 0
     else:
         # Grab csv of all benign ext IDs
-        benign_ext_csv_df = pd.read_csv(MAL_EXT_CSV)
+        benign_ext_csv_df = pd.read_csv(BENIGN_EXT_CSV)
         # count = 0
 
         ## ONLY DO BATCHES OF 200
@@ -109,11 +109,10 @@ if __name__ == "__main__":
 
         # Analze and predict each extension!
         for name, ext in extensions.items():
-            ext.setFinalJSTotals()
+            ext.setFinalValues()
             prediction = Score_Report(ext)
             prediction.predict()
             extensions_predictions[ext.getName()] = prediction.PREDICTION
-            # print("\n", ext.name, "\n", " JS Features:", ext.js_features, "\n CSS Features", ext.css_features, "\n HTML Features", ext.html_features, "\n")
         
         # ML vectorize
         setExtML(extensions)

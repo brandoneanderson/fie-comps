@@ -19,9 +19,11 @@ def vectorizeExt(extension : Extension):
     js_features = extension.js_features # dict
     css_features = extension.css_features # dict
     html_features = extension.html_features # dict
+    permissions = extension.permissions # dict
 
     all_features = {}
 
+    all_features.update(permissions)
     all_features.update(js_features)
     all_features.update(css_features)
     all_features.update(html_features)
@@ -42,8 +44,9 @@ def setExtML(set_exts):
 
     df = pd.DataFrame(rows)
     df.to_csv('output.csv', index=False)
-    print(df)
+    print(df.shape)
 
 def test():
-    test_dict = {"test":test_ext}
-    setExtML(test_dict)
+    # test_dict = {"test":test_ext}
+    # setExtML(test_dict)
+    return
