@@ -27,8 +27,11 @@ def download_crx(extension_id):
         return out_path
 
     # grab extension using requests
+    
     r = requests.get(url, timeout=30)
-    r.raise_for_status()
+    if r is None:
+        print("Error")
+        return 
 
     with open(out_path, "wb") as f:
         f.write(r.content)
