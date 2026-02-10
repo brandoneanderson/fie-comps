@@ -229,9 +229,10 @@ class Extension:
                            "cookies":0, "management": 0, "contextmenus": 0, "security_policy": 0}
         
         # Set permissions found to true
-        for perm in permissions:
-            if perm in vulnerable_perm:
-                vulnerable_perm[perm] = 1
+        if permissions != None:
+            for perm in permissions:
+                if perm in vulnerable_perm:
+                    vulnerable_perm[perm] = 1
         
         if host_perms != None:
             # Set any host permissions found
