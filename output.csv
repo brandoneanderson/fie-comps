@@ -1,3 +1,1 @@
-dynamic_code_gen_functions,whitespace %,avg_line_length,specific_characters,word_size,string_entropy,DOM_change_methods,event_handlers,HTTP_scripts,modification_callbacks,XMLHttpRequests,keyword_density,num_background_image,num_behavior,num_import_rules,num_external_urls,num_script_tags,num_script_src_attrs,Extension Name
-94,0.40244576719642666,42.61211976256224,0.0940769816392962,4.136737871158674,2.867001594741014,33,56,0,0,0,0.059782786559509284,2,0,0,0,2,2,Simplescraper — a fast and free web scraper
-40,0.5220769541883091,36.79168097822353,0.0919287626162788,3.5898609863719786,2.7216360389671026,19,44,0,0,2,0.06010582217189269,0,0,0,0,1,1,MyBib: Free Citation Generator
+

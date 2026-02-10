@@ -37,9 +37,16 @@ if __name__ == "__main__":
         yes = 0
     else:
         # Grab csv of all benign ext IDs
-        benign_ext_csv_df = pd.read_csv(BENIGN_EXT_CSV)
-        for ext_id in benign_ext_csv_df["ID"]:
+        benign_ext_csv_df = pd.read_csv(MAL_EXT_CSV)
+        # count = 0
+
+        ## ONLY DO BATCHES OF 200
+        # 1200, SO 6 BATCHES
+        for ext_id in benign_ext_csv_df["ID"][:200]:
+            # print(ext_id)
+            # count += 1
             download_crx(ext_id)
+        # print(count)
         
 
         # TESTING DOWNLOAD CRX FUNCTIONS
