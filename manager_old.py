@@ -34,11 +34,11 @@ if __name__ == "__main__":
         yes = 0
     else:
         # Grab csv of all benign ext IDs
-        benign_ext_csv_df = pd.read_csv(MAL_EXT_CSV)
+        benign_ext_csv_df = pd.read_csv(BENIGN_EXT_CSV)
 
         ## ONLY DO BATCHES OF 200
         # 1200, SO 6 BATCHES
-        for ext_id in benign_ext_csv_df["ID"][200:500]:
+        for ext_id in benign_ext_csv_df["ID"][0:500]:
             download_crx(ext_id)
         
 
@@ -55,17 +55,12 @@ if __name__ == "__main__":
         extensions_predictions = {}
 
         for file in filesFound:
-            ext_paths = []
-
             try:
-                ext_paths.append(file)
                 folderPath = extractExtension(file)
 
                 if not folderPath:
                     print(f"[WARN] Extraction failed: {file}")
                     continue
-
-                ext_paths.append(folderPath)
 
                 ext = Extension(folderPath)
                 ext.setScriptsPaths()
@@ -73,11 +68,10 @@ if __name__ == "__main__":
 
             except Exception as e:
                 print(f"[ERROR] Failed loading extension {file}: {e}")
-
+                delete_file(file)
+            
             finally:
-                if DELETE_FILES and folderPath is None:
-                    for p in ext_paths:
-                        delete_file(p)
+                delete_file(file)
 
         # Parse through each extension and collect info
         for name, ext in extensions.items():
