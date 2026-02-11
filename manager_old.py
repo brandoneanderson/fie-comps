@@ -21,9 +21,6 @@ import pandas as pd
 TESTING_ML = 0
 DELETE_FILES = 1
 
-# List to paths of all downloaded files & and extracted folders
-All_paths = []
-
 '''
     Old core file to run our scanner.
     Really helpful for debugging and scanning multiple extensions at once
@@ -41,7 +38,7 @@ if __name__ == "__main__":
 
         ## ONLY DO BATCHES OF 200
         # 1200, SO 6 BATCHES
-        for ext_id in benign_ext_csv_df["ID"][50:200]:
+        for ext_id in benign_ext_csv_df["ID"][200:500]:
             download_crx(ext_id)
         
 
@@ -58,47 +55,68 @@ if __name__ == "__main__":
         extensions_predictions = {}
 
         for file in filesFound:
-            All_paths.append(file)
-            folderPath = extractExtension(file)
+            ext_paths = []
 
-            # skip if extraction failed
-            if not folderPath:
-                print(f"[WARN] Skipping extension (extract failed): {file}")
-                continue
+            try:
+                ext_paths.append(file)
+                folderPath = extractExtension(file)
 
-            # Save reference to folder
-            All_paths.append(folderPath)
+                if not folderPath:
+                    print(f"[WARN] Extraction failed: {file}")
+                    continue
 
-            ext = Extension(folderPath)
-            ext.setScriptsPaths()
-            extensions[ext.getName()] = ext
+                ext_paths.append(folderPath)
+
+                ext = Extension(folderPath)
+                ext.setScriptsPaths()
+                extensions[ext.getName()] = ext
+
+            except Exception as e:
+                print(f"[ERROR] Failed loading extension {file}: {e}")
+
+            finally:
+                if DELETE_FILES and folderPath is None:
+                    for p in ext_paths:
+                        delete_file(p)
 
         # Parse through each extension and collect info
         for name, ext in extensions.items():
-            manifest_path = ext.getManifestPath()
-
-            if not manifest_path:
-                print(f"[WARN] No manifest found for: {name} (folder={getattr(ext, 'path', None)}) — skipping")
-                continue
+            ext_paths = []
 
             try:
-                analyzeManifest(manifest_path, ext)
+                # track extension folder
+                ext_paths.append(ext.folderpath)
+                manifest_path = ext.getManifestPath()
+
+                if not manifest_path:
+                    print(f"[WARN] No manifest found for: {name} (folder={getattr(ext, 'path', None)}) — skipping")
+                    continue
+
+                try:
+                    analyzeManifest(manifest_path, ext)
+                except Exception as e:
+                    print(f"[WARN] Failed to analyze manifest for {name}: {e}")
+                    continue
+                
+                # WE HAVE TO RUN THROUGH THESE FILES AGAIN SO LETS SEE HOW WE CAN BEST OPTIMIZE PERFORMANCE
+                for allfiles in (ext.js_files, ext.html_files, ext.json_files, ext.css_files):
+                    for file in allfiles:
+                        extractURLs(file, ext)
+                        if file.suffix == '.js':
+                            analyzeJS(file, ext)
+                        if file.suffix == ".json":
+                            continue
+                        if file.suffix == ".css":
+                            analyze_CSS(file, ext)
+                        if file.suffix == ".html":
+                            analyze_HTML(file, ext)
             except Exception as e:
-                print(f"[WARN] Failed to analyze manifest for {name}: {e}")
-                continue
+                print(f"[Error] Extension failed: {name} -> {e}")
             
-            # WE HAVE TO RUN THROUGH THESE FILES AGAIN SO LETS SEE HOW WE CAN BEST OPTIMIZE PERFORMANCE
-            for allfiles in (ext.js_files, ext.html_files, ext.json_files, ext.css_files):
-                for file in allfiles:
-                    extractURLs(file, ext)
-                    if file.suffix == '.js':
-                        analyzeJS(file, ext)
-                    if file.suffix == ".json":
-                        continue
-                    if file.suffix == ".css":
-                        analyze_CSS(file, ext)
-                    if file.suffix == ".html":
-                        analyze_HTML(file, ext)
+            finally:
+                if DELETE_FILES:
+                    for p in ext_paths:
+                        delete_file(p)
 
         # Prep score dictionary:
         extensions_predictions = {key: None for key in extensions.keys()}
@@ -114,7 +132,3 @@ if __name__ == "__main__":
         setExtML(extensions)
         
         # print(extensions_predictions)
-
-        # Clean up
-        for file in All_paths:
-            delete_file(file)
