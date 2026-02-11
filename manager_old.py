@@ -68,7 +68,6 @@ if __name__ == "__main__":
 
             except Exception as e:
                 print(f"[ERROR] Failed loading extension {file}: {e}")
-                delete_file(file)
             
             finally:
                 delete_file(file)
