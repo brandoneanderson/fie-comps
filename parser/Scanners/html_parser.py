@@ -11,7 +11,9 @@ URL_ATTRS = {"src", "href", "action", "formaction", "data", "poster"}
 def _is_probable_file_path(x: Any) -> bool:
     """True if x looks like a path that exists on disk."""
     try:
-        return isinstance(x, (str, Path)) and Path(str(x)).exists()
+        p = Path(str(x))
+        return p.is_file()
+        # return isinstance(x, (str, Path)) and Path(str(x)).exists()
     except Exception:
         return False
 
@@ -160,10 +162,15 @@ def analyze_HTML(htmlFile: Any, extClass: Any) -> None:
     # Load content from disk if it's a real path; otherwise treat as raw HTML
     if _is_probable_file_path(htmlFile):
         p = Path(str(htmlFile))
+
+        # Windows MAX_PATH safety
+        if len(str(p)) > 240:
+            return
+        
         try:
             content = p.read_text(encoding="utf-8", errors="replace")
-        except Exception:
-            content = p.read_text(errors="replace")
+        except OSError:
+            return
     else:
         content = str(htmlFile)
 
