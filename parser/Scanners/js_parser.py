@@ -86,7 +86,8 @@ def beautify_file(script, extClass):
 
 def parseScript(script):
     # Esprima options to mark location of lines
-    options = {"jsx": True,"tolerant":True, 'tokens':True, 'range':True, 'loc':True}
+    # options = {"jsx": True,"tolerant":True, 'tokens':True, 'range':True, 'loc':True}
+    options = {"jsx": True,"tolerant":True}
     # Attempt to read file
     try:
         with open(script, 'r', encoding='utf-8', errors='ignore') as file:

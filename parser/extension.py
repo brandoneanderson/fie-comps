@@ -234,7 +234,9 @@ class Extension:
         # Set permissions found to true
         if permissions != None:
             for perm in permissions:
-                if perm in vulnerable_perm:
+                if not isinstance(perm, str):
+                    print(f"[WARN] Non-string permission in {self.name}: {perm}")
+                elif perm in vulnerable_perm:
                     vulnerable_perm[perm] = 1
         
         if host_perms != None:

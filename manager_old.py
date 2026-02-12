@@ -38,7 +38,7 @@ if __name__ == "__main__":
 
         ## ONLY DO BATCHES OF 200
         # 1200, SO 6 BATCHES
-        for ext_id in benign_ext_csv_df["ID"][:50]:
+        for ext_id in benign_ext_csv_df["ID"][200:300]:
             download_crx(ext_id)
         
 
@@ -94,7 +94,7 @@ if __name__ == "__main__":
                 # WE HAVE TO RUN THROUGH THESE FILES AGAIN SO LETS SEE HOW WE CAN BEST OPTIMIZE PERFORMANCE
                 for allfiles in (ext.js_files, ext.html_files, ext.json_files, ext.css_files):
                     for file in allfiles:
-                        extractURLs(file, ext)
+                        # extractURLs(file, ext)
                         if file.suffix == '.js':
                             analyzeJS(file, ext)
                         if file.suffix == ".json":

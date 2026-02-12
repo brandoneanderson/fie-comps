@@ -43,7 +43,7 @@ def setExtML(set_exts):
         add_extension(rows, ext)
 
     df = pd.DataFrame(rows)
-    df.to_csv('outputB_0_50', index=False)
+    df.to_csv('outputB_200_300', index=False)
     print(df.shape)
 
 def test():
