@@ -1,2 +1,0 @@
-from parser.paths import *
-

@@ -11,16 +11,27 @@ EXTENSIONS_DIR = PROJECT_ROOT / "parser" / "Extensions"
 BENIGN_EXT_CSV = DATASET_DIR / "Benign_ext.csv"
 MAL_EXT_CSV = DATASET_DIR / "Malicious_ext.csv"
 
-OUTPUT_CSV = DATASET_DIR / "output.cvs"
-OUTPUTB_CSV = DATASET_DIR / "outputB.cvs"
-OUTPUTM_CSV = DATASET_DIR / "outputM.cvs"
-OUTPUTM50_CSV = DATASET_DIR / "outputM50_200.cvs"
-OUTPUTM200_CSV = DATASET_DIR / "outputM200_500.cvs"
-OUTPUTM700_CSV = DATASET_DIR / "outputM500_700.cvs"
-OUTPUTM900_CSV = DATASET_DIR / "outputM700_900.cvs"
-OUTPUTM1000_CSV = DATASET_DIR / "outputM700_900.cvs"
+OUTPUT_CSV = DATASET_DIR / "output.csv"
 
-SUB_RESULTS_CSV = DATASET_DIR / "SubcriptionResult.cvs"
+OUTPUTB1_CSV = DATASET_DIR / "outputB_0_50.csv"
+OUTPUTB2_CSV = DATASET_DIR / "outputB_50_100.csv"
+OUTPUTB3_CSV = DATASET_DIR / "outputB_100_200.csv"
+OUTPUTB4_CSV = DATASET_DIR / "outputB_200_300.csv"
+OUTPUTB5_CSV = DATASET_DIR / "outputB_300_400.csv"
+OUTPUTB6_CSV = DATASET_DIR / "outputB_400_1000.csv"
+
+OUTPUTM1_CSV = DATASET_DIR / "outputM.csv"
+OUTPUTM2_CSV = DATASET_DIR / "outputM50_200.csv"
+OUTPUTM3_CSV = DATASET_DIR / "outputM200_500.csv"
+OUTPUTM4_CSV = DATASET_DIR / "outputM500_700.csv"
+OUTPUTM5_CSV = DATASET_DIR / "outputM700_900.csv"
+OUTPUTM6_CSV = DATASET_DIR / "outputM900_rest.csv"
+
+
+
+
+
+SUB_RESULTS_CSV = DATASET_DIR / "SubcriptionResult.csv"
 
 if __name__ == "__main__":
     print(PROJECT_ROOT)

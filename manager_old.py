@@ -38,7 +38,7 @@ if __name__ == "__main__":
 
         ## ONLY DO BATCHES OF 200
         # 1200, SO 6 BATCHES
-        for ext_id in benign_ext_csv_df["ID"][1000:1200]:
+        for ext_id in benign_ext_csv_df["ID"][4:5]:
             download_crx(ext_id)
         
 
