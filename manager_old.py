@@ -13,6 +13,7 @@ from parser.Scanners.html_parser import *
 from ML.vectorize import *
 from ML.download_ext import *
 from parser.paths import *
+from ML.download_mal_ext import *
 import pandas as pd
 
 
@@ -35,11 +36,13 @@ if __name__ == "__main__":
     else:
         # Grab csv of all benign ext IDs
         benign_ext_csv_df = pd.read_csv(BENIGN_EXT_CSV)
+        malicious_ext = pd.read_csv(MAL_CHROME_STATS_CSV)
 
-        ## ONLY DO BATCHES OF 200
-        # 1200, SO 6 BATCHES
-        for ext_id in benign_ext_csv_df["ID"][1000:]:
-            download_crx(ext_id)
+        # for ext_id in malicious_ext["ID"][0:1]:
+        #     download_crx(ext_id)
+
+        for id, version in zip(malicious_ext['id'][0:2], malicious_ext['version'][0:2]):
+            download_mal_ext(id, version)
         
 
         # TESTING DOWNLOAD CRX FUNCTIONS
