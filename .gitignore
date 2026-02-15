@@ -1,2 +1,4 @@
 /node_modules
 /Dockerfile
+/Python-3.11.8
+/venv

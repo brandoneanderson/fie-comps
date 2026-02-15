@@ -72,7 +72,8 @@ app.use(express.json());
 const PORT = 3000;
 
 const VM_USER = process.env.VM_USER || "fiecomps";
-const VM_IP = process.env.VM_IP || "192.168.217.128";
+//const VM_IP = process.env.VM_IP || "192.168.217.128"; 
+const VM_IP = process.env.VM_IP || "192.168.173.128"; 
 const VM_DOWNLOADER = process.env.VM_DOWNLOADER || "/home/fiecomps/vm_downloader.py";
 
 // If you want to force a specific SSH key file, set VM_SSH_KEY=/path/to/key
