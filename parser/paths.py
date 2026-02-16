@@ -35,6 +35,8 @@ OUTPUTMCHROME_CSV = OLD_DATASET_DIR / "outputM_allextsChrome.csv"
 FINAL_B_CSV = DATASET_DIR / "final_B.csv"
 FINAL_M_CSV = DATASET_DIR / "final_M.csv"
 
+TRAINING_CSV = DATASET_DIR / "training.csv"
+
 
 SUB_RESULTS_CSV = DATASET_DIR / "SubcriptionResult.csv"
 
