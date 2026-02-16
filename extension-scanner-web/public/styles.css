@@ -282,11 +282,25 @@ body {
     display: inline-block;
 }
 
-.store-search-result-title {
+.store-search-result-text {
     flex: 1;
+    min-width: 0;
+}
+
+.store-search-result-title {
+    display: block;
     font-size: 15px;
     font-weight: 500;
     color: #ffffff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.store-search-result-meta {
+    font-size: 12px;
+    color: #a0a0a0;
+    margin-top: 4px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

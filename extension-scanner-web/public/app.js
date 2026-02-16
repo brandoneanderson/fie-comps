@@ -211,9 +211,8 @@ if (scanButton && extensionUrlInput) {
     return JSON.stringify(v);
   }
 
-  const storeSearchInput = document.getElementById("storeSearchInput");
   const storeSearchResults = document.getElementById("storeSearchResults");
-  if (!storeSearchInput || !storeSearchResults || !extensionUrlInput) return;
+  if (!storeSearchResults || !extensionUrlInput) return;
 
   let debounceTimer = null;
   let lastQuery = "";
@@ -247,17 +246,25 @@ if (scanButton && extensionUrlInput) {
       placeholder.className = "store-search-result-icon-placeholder";
       if (!item.iconUrl) placeholder.classList.add("store-search-result-icon-visible");
       placeholder.setAttribute("aria-hidden", "true");
+      const textWrap = document.createElement("div");
+      textWrap.className = "store-search-result-text";
       const text = document.createElement("span");
       text.className = "store-search-result-title";
       text.textContent = item.title || item.link || "Extension";
+      const meta = document.createElement("div");
+      meta.className = "store-search-result-meta";
+      const idPart = item.extensionId ? `ID: ${item.extensionId}` : "";
+      const ratingPart = item.ratingValue != null ? `${Number(item.ratingValue).toFixed(1)} ★` : "";
+      const countPart = item.ratingCount != null ? `${Number(item.ratingCount).toLocaleString()} ratings` : "";
+      meta.textContent = [idPart, ratingPart, countPart].filter(Boolean).join(" · ");
+      textWrap.appendChild(text);
+      textWrap.appendChild(meta);
       option.appendChild(icon);
       option.appendChild(placeholder);
-      option.appendChild(text);
+      option.appendChild(textWrap);
       option.addEventListener("click", () => {
         extensionUrlInput.value = item.link;
         hideResults();
-        storeSearchInput.value = "";
-        storeSearchInput.blur();
       });
       option.addEventListener("keydown", (e) => {
         if (e.key === "Enter" || e.key === " ") {
@@ -269,8 +276,8 @@ if (scanButton && extensionUrlInput) {
     });
   }
 
-  storeSearchInput.addEventListener("input", () => {
-    const q = storeSearchInput.value.trim();
+  extensionUrlInput.addEventListener("input", () => {
+    const q = extensionUrlInput.value.trim();
     clearTimeout(debounceTimer);
     if (!q) {
       hideResults();
@@ -297,10 +304,10 @@ if (scanButton && extensionUrlInput) {
           storeSearchResults.innerHTML = `<div class="store-search-result-message">${escapeHtml(msg)}</div>`;
           return;
         }
-        if (lastQuery !== storeSearchInput.value.trim()) return;
+        if (lastQuery !== extensionUrlInput.value.trim()) return;
         showResults(data.items || []);
       } catch (e) {
-        if (lastQuery !== storeSearchInput.value.trim()) return;
+        if (lastQuery !== extensionUrlInput.value.trim()) return;
         storeSearchResults.hidden = false;
         const msg = e?.message ? escapeHtml(e.message) : "Search failed. Try again.";
         storeSearchResults.innerHTML = `<div class="store-search-result-message">${msg}</div>`;
@@ -308,16 +315,16 @@ if (scanButton && extensionUrlInput) {
     }, 280);
   });
 
-  storeSearchInput.addEventListener("focus", () => {
+  extensionUrlInput.addEventListener("focus", () => {
     if (storeSearchResults.children.length) storeSearchResults.hidden = false;
   });
 
-  storeSearchInput.addEventListener("blur", () => {
+  extensionUrlInput.addEventListener("blur", () => {
     setTimeout(hideResults, 180);
   });
 
   document.addEventListener("click", (e) => {
-    if (!storeSearchInput.contains(e.target) && !storeSearchResults.contains(e.target)) {
+    if (!extensionUrlInput.closest(".store-search-wrap")?.contains(e.target)) {
       hideResults();
     }
   });

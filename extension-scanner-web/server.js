@@ -129,6 +129,8 @@ app.get("/api/store-search", async (req, res) => {
         link: ext.url || `https://chromewebstore.google.com/detail/${ext.id || ""}`,
         iconUrl: ext.logo || null,
         extensionId: ext.id || null,
+        ratingValue: ext.ratingValue != null ? ext.ratingValue : null,
+        ratingCount: ext.ratingCount != null ? ext.ratingCount : null,
       }));
     res.json({ items });
   } catch (e) {

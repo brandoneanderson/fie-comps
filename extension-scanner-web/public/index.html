@@ -36,50 +36,29 @@
     </p>
   </section>
 
-  <!-- Search Section (dataset: extensions_clean.json) -->
-  <section class="search-section search-section--store">
-    <div class="search-container">
-      <p class="fast-secure-text search-section-label">Search the Chrome Web Store</p>
-
-      <div class="store-search-wrap">
-        <div class="store-search-input-wrap">
-          <img src="/chrome_img.png" alt="" class="store-search-chrome-icon" aria-hidden="true" />
-          <input
-            type="text"
-            id="storeSearchInput"
-            class="store-search-input"
-            placeholder="Type extension name or ID…"
-            autocomplete="off"
-          />
-        </div>
-        <div id="storeSearchResults" class="store-search-results" role="listbox" aria-label="Chrome Web Store results" hidden></div>
-      </div>
-
-      <p class="fast-secure-text search-section-tip">
-        Click a result to fill the scan bar below, then click Scan.
-      </p>
-    </div>
-  </section>
-
-  <!-- Scan Section -->
+  <!-- Single search + scan bar -->
   <section class="search-section">
     <div class="search-container">
-      <div class="search-bar-wrapper">
-        <img src="/chrome_img.png" alt="Chrome" class="chrome-logo" />
-        <div class="separator"></div>
-        <div class="search-icon"></div>
+      <div class="store-search-wrap">
+        <div class="search-bar-wrapper">
+          <img src="/chrome_img.png" alt="Chrome" class="chrome-logo" />
+          <div class="separator"></div>
+          <div class="search-icon"></div>
 
-        <input
-          type="text"
-          class="search-input"
-          placeholder="Paste Chrome Web Store URL, Google redirect URL, or extension ID"
-          id="extensionUrl"
-        />
+          <input
+            type="text"
+            class="search-input"
+            placeholder="Search extension name or ID, or paste Chrome Web Store URL"
+            id="extensionUrl"
+            autocomplete="off"
+          />
 
-        <button class="scan-button" id="scanButton" type="button">
-          Scan
-          <div class="arrow-icon"></div>
-        </button>
+          <button class="scan-button" id="scanButton" type="button">
+            Scan
+            <div class="arrow-icon"></div>
+          </button>
+        </div>
+        <div id="storeSearchResults" class="store-search-results" role="listbox" aria-label="Chrome Web Store results" hidden></div>
       </div>
 
       <p class="fast-secure-text" id="statusText">Fast And Secure</p>
