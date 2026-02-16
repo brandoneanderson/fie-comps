@@ -20,37 +20,25 @@ def convert_csv_to_df():
     dfB4 = pd.read_csv(OUTPUTB4_CSV)
     dfB5 = pd.read_csv(OUTPUTB5_CSV)
     dfB6 = pd.read_csv(OUTPUTB6_CSV)
+    dfB7 = pd.read_csv(OUTPUTB7_CSV)
 
-    dfM1 = pd.read_csv(OUTPUTM1_CSV)
-    dfM2 = pd.read_csv(OUTPUTM2_CSV)
-    dfM3 = pd.read_csv(OUTPUTM3_CSV)
-    dfM4 = pd.read_csv(OUTPUTM4_CSV)
-    # dfM5 = pd.read_csv(OUTPUTM5_CSV)
-    # dfM6 = pd.read_csv(OUTPUTM6_CSV)
+    df_M = pd.read_csv(OUTPUTMCHROME_CSV)
+
     df_B.append(dfB1)
     df_B.append(dfB2)
     df_B.append(dfB3)
     df_B.append(dfB4)
     df_B.append(dfB5)
     df_B.append(dfB6)
-
-    df_M.append(dfM1)
-    df_M.append(dfM2)
-    df_M.append(dfM3)
-    df_M.append(dfM4)
-    # df_M.append(dfM5)
-    # df_M.append(dfM6)
+    df_B.append(dfB7)
 
 
     return df_B, df_M
 
 if __name__ == "__main__":
-
-    print(OUTPUTB1_CSV)
     
     df_B, df_M = convert_csv_to_df()
     combined_df_B = combine_dataframes(df_B)
-    combined_df_M = combine_dataframes(df_M)
 
-    combined_df_B.to_csv('final_B', index=False)
-    combined_df_M.to_csv('final_M', index=False)
+    combined_df_B.to_csv('final_B.csv', index=False)
+    df_M.to_csv('final_M.csv', index=False)
