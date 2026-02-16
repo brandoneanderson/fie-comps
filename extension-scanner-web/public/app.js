@@ -196,3 +196,129 @@ if (scanButton && extensionUrlInput) {
     if (e.key === "Enter") runScan();
   });
 }
+
+// --- Chrome Web Store search (dataset: extensions_clean.json) ---
+(function () {
+  function escapeHtml(s) {
+    const div = document.createElement("div");
+    div.textContent = s;
+    return div.innerHTML;
+  }
+  function toMessage(v) {
+    if (v == null) return "Search failed";
+    if (typeof v === "string") return v;
+    if (typeof v === "object" && v.message) return String(v.message);
+    return JSON.stringify(v);
+  }
+
+  const storeSearchInput = document.getElementById("storeSearchInput");
+  const storeSearchResults = document.getElementById("storeSearchResults");
+  if (!storeSearchInput || !storeSearchResults || !extensionUrlInput) return;
+
+  let debounceTimer = null;
+  let lastQuery = "";
+
+  function hideResults() {
+    storeSearchResults.hidden = true;
+    storeSearchResults.innerHTML = "";
+  }
+
+  function showResults(items) {
+    storeSearchResults.innerHTML = "";
+    if (!items.length) {
+      storeSearchResults.hidden = true;
+      return;
+    }
+    storeSearchResults.hidden = false;
+    items.forEach((item) => {
+      const option = document.createElement("div");
+      option.className = "store-search-result-item";
+      option.setAttribute("role", "option");
+      option.tabIndex = 0;
+      const icon = document.createElement("img");
+      icon.className = "store-search-result-icon";
+      icon.alt = "";
+      icon.src = item.iconUrl || "";
+      icon.onerror = () => {
+        icon.style.display = "none";
+        icon.nextElementSibling?.classList.add("store-search-result-icon-visible");
+      };
+      const placeholder = document.createElement("span");
+      placeholder.className = "store-search-result-icon-placeholder";
+      if (!item.iconUrl) placeholder.classList.add("store-search-result-icon-visible");
+      placeholder.setAttribute("aria-hidden", "true");
+      const text = document.createElement("span");
+      text.className = "store-search-result-title";
+      text.textContent = item.title || item.link || "Extension";
+      option.appendChild(icon);
+      option.appendChild(placeholder);
+      option.appendChild(text);
+      option.addEventListener("click", () => {
+        extensionUrlInput.value = item.link;
+        hideResults();
+        storeSearchInput.value = "";
+        storeSearchInput.blur();
+      });
+      option.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          option.click();
+        }
+      });
+      storeSearchResults.appendChild(option);
+    });
+  }
+
+  storeSearchInput.addEventListener("input", () => {
+    const q = storeSearchInput.value.trim();
+    clearTimeout(debounceTimer);
+    if (!q) {
+      hideResults();
+      return;
+    }
+    debounceTimer = setTimeout(async () => {
+      lastQuery = q;
+      try {
+        const r = await fetch(`/api/store-search?q=${encodeURIComponent(q)}`);
+        let data;
+        try {
+          data = await r.json();
+        } catch {
+          data = { detail: "Invalid response from server" };
+        }
+        if (r.status === 503) {
+          storeSearchResults.hidden = false;
+          storeSearchResults.innerHTML = `<div class="store-search-result-message">${escapeHtml(toMessage(data.detail || data.error))}</div>`;
+          return;
+        }
+        if (!r.ok) {
+          const msg = toMessage(data.detail || data.error || "Search failed");
+          storeSearchResults.hidden = false;
+          storeSearchResults.innerHTML = `<div class="store-search-result-message">${escapeHtml(msg)}</div>`;
+          return;
+        }
+        if (lastQuery !== storeSearchInput.value.trim()) return;
+        showResults(data.items || []);
+      } catch (e) {
+        if (lastQuery !== storeSearchInput.value.trim()) return;
+        storeSearchResults.hidden = false;
+        const msg = e?.message ? escapeHtml(e.message) : "Search failed. Try again.";
+        storeSearchResults.innerHTML = `<div class="store-search-result-message">${msg}</div>`;
+      }
+    }, 280);
+  });
+
+  storeSearchInput.addEventListener("focus", () => {
+    if (storeSearchResults.children.length) storeSearchResults.hidden = false;
+  });
+
+  storeSearchInput.addEventListener("blur", () => {
+    setTimeout(hideResults, 180);
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!storeSearchInput.contains(e.target) && !storeSearchResults.contains(e.target)) {
+      hideResults();
+    }
+  });
+})();
