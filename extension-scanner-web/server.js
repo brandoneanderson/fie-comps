@@ -64,6 +64,7 @@ import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 import { execFile } from "child_process";
+import fs from "fs";
 
 const app = express();
 app.use(express.json());
@@ -82,6 +83,64 @@ const VM_SSH_KEY = process.env.VM_SSH_KEY || "";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.use(express.static(path.join(__dirname, "public")));
+
+// --- extensions dataset (lazy load and cache) ---
+const EXTENSIONS_JSON_PATH = path.join(__dirname, "public", "extensions_clean.json");
+const MAX_SEARCH_RESULTS = 20;
+let extensionsLoadPromise = null;
+
+function loadExtensions() {
+  if (!extensionsLoadPromise) {
+    extensionsLoadPromise = fs.promises
+      .readFile(EXTENSIONS_JSON_PATH, "utf8")
+      .then((raw) => {
+        const list = JSON.parse(raw);
+        console.log(`[store-search] Loaded ${list.length} extensions from dataset`);
+        return list;
+      })
+      .catch((err) => {
+        extensionsLoadPromise = null;
+        throw err;
+      });
+  }
+  return extensionsLoadPromise;
+}
+
+// Start loading dataset at startup (non-blocking)
+loadExtensions().catch((err) => console.error("[store-search] Startup load failed:", err.message));
+
+// Search extensions dataset by name; returns { items: [{ title, link, iconUrl, extensionId }] }
+app.get("/api/store-search", async (req, res) => {
+  const q = (req.query.q || "").trim();
+  if (!q) return res.json({ items: [] });
+
+  try {
+    const list = await loadExtensions();
+    const lower = q.toLowerCase();
+    const items = list
+      .filter(
+        (ext) =>
+          (ext.name && ext.name.toLowerCase().includes(lower)) ||
+          (ext.id && ext.id.toLowerCase().includes(lower))
+      )
+      .slice(0, MAX_SEARCH_RESULTS)
+      .map((ext) => ({
+        title: ext.name || "",
+        link: ext.url || `https://chromewebstore.google.com/detail/${ext.id || ""}`,
+        iconUrl: ext.logo || null,
+        extensionId: ext.id || null,
+        ratingValue: ext.ratingValue != null ? ext.ratingValue : null,
+        ratingCount: ext.ratingCount != null ? ext.ratingCount : null,
+      }));
+    res.json({ items });
+  } catch (e) {
+    console.error("[store-search] Error:", e);
+    res.status(500).json({
+      error: "Search failed",
+      detail: e.code === "ENOENT" ? "Dataset not found (extensions_clean.json)." : String(e?.message || e),
+    });
+  }
+});
 
 function shellEscapeSingleQuotes(s) {
   return `'${String(s).replace(/'/g, `'\\''`)}'`;

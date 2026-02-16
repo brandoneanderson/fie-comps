@@ -12,11 +12,7 @@
     <div class="logo-section">
       <!-- <div class="shield-icon"></div> -->
       <div class="shield-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" class="shield-svg">
-          <path d="M12 2l7 4v6c0 5-3.1 9.4-7 10-3.9-.6-7-5-7-10V6l7-4z"></path>
-          <path d="M12 7v10" class="shield-line"></path>
-          <path d="M8.5 10.5L12 14l3.5-3.5" class="shield-line"></path>
-        </svg>
+        <img src="/fie_logo.png" alt="FIE Logo" class="logo-img" />
       </div> 
       <div class="logo-text">
         <h1>FIE</h1>
@@ -40,42 +36,29 @@
     </p>
   </section>
 
-  <!-- Search Section -->
-   <section class="search-section" style="padding-bottom: 30px;">
-    <div class="search-container">
-      <p class="fast-secure-text" style="margin-bottom: 14px;">
-        Search the Chrome Web Store (Programmable Search Engine)
-      </p>
-
-      <!-- CSE script -->
-      <script async src="https://cse.google.com/cse.js?cx=21b388a3fedde4e96"></script>
-      <div class="gcse-search"></div>
-
-      <p class="fast-secure-text" style="margin-top: 14px;">
-        Tip: Open an extension result, copy the URL, then paste it below.
-      </p>
-    </div>
-  </section>
-
-  <!-- Scan Section -->
+  <!-- Single search + scan bar -->
   <section class="search-section">
     <div class="search-container">
-      <div class="search-bar-wrapper">
-        <div class="chrome-logo"></div>
-        <div class="separator"></div>
-        <div class="search-icon"></div>
+      <div class="store-search-wrap">
+        <div class="search-bar-wrapper">
+          <img src="/chrome_img.png" alt="Chrome" class="chrome-logo" />
+          <div class="separator"></div>
+          <div class="search-icon"></div>
 
-        <input
-          type="text"
-          class="search-input"
-          placeholder="Paste Chrome Web Store URL, Google redirect URL, or extension ID"
-          id="extensionUrl"
-        />
+          <input
+            type="text"
+            class="search-input"
+            placeholder="Search extension name or ID, or paste Chrome Web Store URL"
+            id="extensionUrl"
+            autocomplete="off"
+          />
 
-        <button class="scan-button" id="scanButton" type="button">
-          Scan
-          <div class="arrow-icon"></div>
-        </button>
+          <button class="scan-button" id="scanButton" type="button">
+            Scan
+            <div class="arrow-icon"></div>
+          </button>
+        </div>
+        <div id="storeSearchResults" class="store-search-results" role="listbox" aria-label="Chrome Web Store results" hidden></div>
       </div>
 
       <p class="fast-secure-text" id="statusText">Fast And Secure</p>
@@ -96,17 +79,6 @@
         <h3 style="margin-bottom: 12px;">Scan Results</h3>
         <div id="resultsSummary" style="color:#a0a0a0; margin-bottom: 12px;"></div>
 
-        <!-- Toggle button -->
-        <!-- <button id="toggleDetailsBtn" class="scan-button" type="button" style="padding:10px 16px; border-radius:10px; font-size:14px; font-weight:700; width:auto;">
-          Show details
-        </button>
-        <pre id="htmlReport"
-              style="margin-top:12px; white-space:pre-wrap; word-break:break-word; color:#ffffff; background:#0a0a0a; border:1px solid #2a2a2a; padding:14px; border-radius:12px;"></pre> -->
-
-        <!-- Hidden details area -->
-        <!-- <pre id="resultsJson"
-          style="display:none; margin-top:12px; white-space:pre-wrap; word-break:break-word; color:#ffffff;"></pre> -->
-
           <!-- Tabs -->
           <div class="tabs">
             <button class="tab active" data-tab="summary">Summary</button>
@@ -124,8 +96,6 @@
             <div class="tab-panel" id="tab-css"></div>
             <div class="tab-panel" id="tab-js"></div>
           </div>
-
-        <!-- <pre id="resultsJson" style="white-space:pre-wrap; word-break:break-word; color:#ffffff;"></pre> -->
       </div>
     </div>
   </section>
