@@ -13,35 +13,42 @@ from sklearn.metrics import (
     precision_recall_curve
 )
 
+from sklearn.metrics import roc_curve
+
 '''
     Main file for loading in data, creating model, and training model
 '''
+K_BEST_FEATURES = [
+    "specific_characters", "avg_line_length", "dynamic_code_gen_functions",
+    "event_handlers", "DOM_operations", "keyword_density", "whitespace %",
+    "DOM_change_sinks_density", "string_entropy", "word_size",
+    "webRequestBlocking", "DOM_operations_density", "event_handlers_density",
+    "XMLHttpRequests_density", "num_external_urls", "DOM_change_sinks",
+    "num_script_src_attrs", "num_script_tags", "num_background_image",
+    "storage", "All https domains", "XMLHttpRequests", "num_import_rules",
+    "tabs", "modification_callbacks_density", "webRequest", "security_policy",
+    "cookies", "num_iframe_tags", "num_http_urls", "modification_callbacks",
+    "management", "num_form_tags", "num_meta_refresh",
+    "num_external_iframe_src", "num_behavior", "notifications",
+]
 
 if __name__ == "__main__":
     TRAINING_CSV = "/Users/ishapatel/COMPS/fie-comps/ML/datasets/training.csv"
+    MODEL_BUNDLE_PATH = "/Users/ishapatel/COMPS/fie-comps/ML/models/svm_rbf_bundle.joblib"
 
-    # Load in dataframe
-    ext_dataset_csv_df = pd.read_csv(TRAINING_CSV)
+    # TRAINING_CSV = str(TRAINING_CSV)
+    # MODEL_BUNDLE_PATH = str(SVM_BUNDLE_PATH)
 
-    # Drop ext names
-    ext_dataset_csv_df = ext_dataset_csv_df.drop('Extension Name', axis = 1)
+    #Load in dataframe
+    df = pd.read_csv(TRAINING_CSV)
+
+    # Split dataset into features and labels
+    y = df["label"].astype(int)
 
     # Checking each column feature, cvs is nasty
-    print(ext_dataset_csv_df.columns)
+    #print(ext_dataset_csv_df.columns)
 
-    # Split dataset into features and labels
-    # X = ext_dataset_csv_df.loc[:, 'All http domains':'num_object_tags']
-    # X = X.fillna(0)
-    # # y = ext_dataset_csv_df.loc[:, 'label':'label']
-    # y = ext_dataset_csv_df['label']
-    # Split dataset into features and labels
-    y = ext_dataset_csv_df["label"].astype(int)
-
-    # Everything except label is a feature (much safer than slicing)
-    feature_cols = [c for c in ext_dataset_csv_df.columns if c != "label"]
-
-    X = ext_dataset_csv_df[feature_cols].apply(pd.to_numeric, errors="coerce").fillna(0.0)
-
+    X = df[K_BEST_FEATURES].apply(pd.to_numeric, errors="coerce").fillna(0.0)
 
     # Split dataset into X_train, y_train, X_test, Y_test
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
@@ -52,16 +59,18 @@ if __name__ == "__main__":
     print('Test data shape: ', X_test.shape)
     print('Test labels shape: ', y_test.shape)
 
-    # 4) Pipeline: scale then SVM-RBF
+    # Pipeline: scale then SVM-RBF
     pipe = Pipeline([
         ("scaler", StandardScaler()),
-        ("svm", SVC(kernel="rbf", probability=True, class_weight="balanced", random_state=42))
+        # ("svm", SVC(kernel="rbf", probability=True, class_weight="balanced", random_state=42))
+        ("svm", SVC(kernel="rbf", probability=True, class_weight="0:1, 1:1.5", random_state=42))
     ])
 
-    # 5) Hyperparameter tuning
+    # Hyperparameter tuning
     param_grid = {
         "svm__C": [0.1, 1, 10, 100, 1000],
-        "svm__gamma": [1e-4, 1e-3, 1e-2, 1e-1, "scale"],
+        # "svm__gamma": [1e-4, 1e-3, 1e-2, 1e-1, "scale"],
+        "svm__gamma":[1e-4, 3e-4, 1e-3, 3e-3, 1e-2, 3e-2, 1e-1],
     }
 
     cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
@@ -69,7 +78,8 @@ if __name__ == "__main__":
     gs = GridSearchCV(
         pipe,
         param_grid=param_grid,
-        scoring="f1",   
+        # scoring="f1",
+        scoring="average_precision",
         cv=cv,
         n_jobs=-1,
         verbose=2
@@ -78,12 +88,15 @@ if __name__ == "__main__":
     gs.fit(X_train, y_train)
     best_model = gs.best_estimator_
     print("Best params:", gs.best_params_)
-    print("Best CV score:", gs.best_score_)
+    # print("Best CV F1:", gs.best_score_)
+    print("Best CV score (average_precision):", gs.best_score_)
+
 
     # 6) Evaluate on test
     proba = best_model.predict_proba(X_test)[:, 1]
-    pred_05 = (proba >= 0.5).astype(int)
 
+     # baseline @ 0.5
+    pred_05 = (proba >= 0.5).astype(int)
     print("\n=== Test @ threshold 0.5 ===")
     print("ROC-AUC:", roc_auc_score(y_test, proba))
     print("PR-AUC:", average_precision_score(y_test, proba))
@@ -105,86 +118,27 @@ if __name__ == "__main__":
     # 8) Save model bundle
     bundle = {
         "model": best_model,
-        "feature_cols": feature_cols,
+        "feature_cols": K_BEST_FEATURES,
         "threshold": best_thresh,
         "best_params": gs.best_params_,
     }
-    # joblib.dump(bundle, MODEL_BUNDLE_PATH)  # set this in paths.py
-    # print(f"Saved model bundle to: {MODEL_BUNDLE_PATH}")
 
-    import matplotlib.pyplot as plt
-    from sklearn.decomposition import PCA
+    Path(MODEL_BUNDLE_PATH).parent.mkdir(parents=True, exist_ok=True)
+    joblib.dump(bundle, MODEL_BUNDLE_PATH)  # set this in paths.py
+    print(f"Saved model bundle to: {MODEL_BUNDLE_PATH}")
 
-    # Reduce to 2D
-    pca = PCA(n_components=2)
-    X_2d = pca.fit_transform(X_train)
 
-    # Train SVM in 2D space (for visualization only)
-    svm_2d = SVC(kernel="rbf", C=gs.best_params_["svm__C"],
-                gamma=gs.best_params_["svm__gamma"])
-    svm_2d.fit(X_2d, y_train)
+    #ROC curve
+    fpr, tpr, thr = roc_curve(y_test, proba)
+    youden = tpr - fpr
+    thr_youden = float(thr[np.argmax(youden)])
 
-    # Create mesh grid
-    x_min, x_max = X_2d[:, 0].min() - 1, X_2d[:, 0].max() + 1
-    y_min, y_max = X_2d[:, 1].min() - 1, X_2d[:, 1].max() + 1
-    xx, yy = np.meshgrid(np.linspace(x_min, x_max, 200),
-                        np.linspace(y_min, y_max, 200))
+    pred_youden = (proba >= thr_youden).astype(int)
+    print("\n=== Test @ threshold chosen by Youden J (TPR-FPR) ===")
+    print("Chosen threshold:", thr_youden)
+    print("Confusion matrix:\n", confusion_matrix(y_test, pred_youden))
+    print(classification_report(y_test, pred_youden, digits=3))
 
-    Z = svm_2d.predict(np.c_[xx.ravel(), yy.ravel()])
-    Z = Z.reshape(xx.shape)
-
-    plt.figure(figsize=(8,6))
-    plt.contourf(xx, yy, Z, alpha=0.3)
-    plt.scatter(X_2d[:, 0], X_2d[:, 1], c=y_train, edgecolors="k", s=20)
-    plt.title("SVM-RBF Decision Boundary (PCA Projection)")
-    plt.xlabel("PCA 1")
-    plt.ylabel("PCA 2")
-    plt.show()
-
-    from sklearn.metrics import roc_curve
-
-    fpr, tpr, _ = roc_curve(y_test, proba)
-
-    plt.figure()
-    plt.plot(fpr, tpr)
-    plt.plot([0,1],[0,1], linestyle="--")
-    plt.xlabel("False Positive Rate")
-    plt.ylabel("True Positive Rate")
-    plt.title("ROC Curve (AUC = %.3f)" % roc_auc_score(y_test, proba))
-    plt.show()
-
-    plt.figure()
-    plt.plot(recall, precision)
-    plt.xlabel("Recall")
-    plt.ylabel("Precision")
-    plt.title("Precision-Recall Curve (PR-AUC = %.3f)" % average_precision_score(y_test, proba))
-    plt.show()
-
-    import seaborn as sns
-
-    cm = confusion_matrix(y_test, pred_best)
-
-    plt.figure()
-    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues",
-                xticklabels=["Benign", "Malicious"],
-                yticklabels=["Benign", "Malicious"])
-    plt.ylabel("True label")
-    plt.xlabel("Predicted label")
-    plt.title("Confusion Matrix")
-    plt.show()
-
-    from sklearn.inspection import permutation_importance
-
-    result = permutation_importance(best_model, X_test, y_test, n_repeats=10, random_state=42)
-
-    importance = pd.Series(result.importances_mean, index=feature_cols)
-    importance = importance.sort_values(ascending=False).head(15)
-
-    plt.figure(figsize=(8,6))
-    importance.plot(kind="barh")
-    plt.gca().invert_yaxis()
-    plt.title("Top 15 Feature Importances (Permutation)")
-    plt.show()
 
     # # Define the SVM gamma parameter range
     # param_range = np.logspace(-3, 3, 7)
