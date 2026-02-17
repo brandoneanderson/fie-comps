@@ -75,14 +75,23 @@ if __name__ == "__main__":
     # Pipeline: scale then SVM-RBF
     pipe = Pipeline([
         ("scaler", StandardScaler()),
-        ("svm", SVC(kernel="rbf", probability=True, class_weight="balanced", random_state=42))
+        ("svm", SVC(kernel="rbf", probability=True, class_weight = "balanced", random_state=42))
     ])
 
     # Hyperparameter tuning
     param_grid = {
-        "svm__C": [0.1, 1, 10, 100, 1000],
+        # "svm__C": [0.1, 1, 10, 100, 1000],
+        "svm__C": [6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
         # "svm__gamma": [1e-4, 1e-3, 1e-2, 1e-1, "scale"],
-        "svm__gamma":[1e-4, 3e-4, 1e-3, 3e-3, 1e-2, 3e-2, 1e-1],
+        "svm__gamma":[0.005, 0.01, 0.02, 0.03],
+        # "svm__class_weight": [
+        #     None,
+        #     "balanced",
+        #     {0:1, 1:1.5},
+        #     {0:1, 1:2},
+        #     {0:1, 1:3},
+        #     {0:1, 1:4},
+        # ]
     }
 
     cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
@@ -107,7 +116,8 @@ if __name__ == "__main__":
     # Evaluate on test
     cal = CalibratedClassifierCV(best_model, method="sigmoid", cv=5)
     cal.fit(X_train, y_train)
-    proba = best_model.predict_proba(X_test)[:, 1]
+    proba = cal.predict_proba(X_test)[:, 1]
+    # proba = best_model.predict_proba(X_test)[:, 1]
 
      # baseline @ 0.5
     pred_05 = (proba >= 0.5).astype(int)
@@ -131,7 +141,8 @@ if __name__ == "__main__":
 
     # 8) Save model bundle
     bundle = {
-        "model": best_model,
+        # "model": best_model,
+        "model": cal,
         "feature_cols": K_BEST_FEATURES,
         "threshold": best_thresh,
         "best_params": gs.best_params_,
