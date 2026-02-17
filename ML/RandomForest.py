@@ -36,11 +36,11 @@ def randomForest(X, y):
     print("Best error score:", error_scores[best_k_features_size])
 
     # Plot MAE vs number of selected features
-    plt.plot(range(1, len(error_scores)+1), error_scores)
-    plt.xlabel("Number of Features")
-    plt.ylabel("Cross-Validated MAE")
-    plt.title("MAE vs Number of Selected Features")
-    plt.show()
+    # plt.plot(range(1, len(error_scores)+1), error_scores)
+    # plt.xlabel("Number of Features")
+    # plt.ylabel("Cross-Validated MAE")
+    # plt.title("MAE vs Number of Selected Features")
+    # plt.show()
 
     optimized_features = get_top_k_features(X, y, tree_count, best_k_features_size)
 
@@ -139,6 +139,14 @@ def get_top_k_features(X, y, tree_count, k):
 
     # select top-k indices
     top_k_indices = ranked_indices[:k]
+
+    # # Grab top indices and their attached value of importance
+    # top_features_dict = {}
+
+    # for index in top_k_indices:
+    #     top_features_dict[index] = importances[index]
+
+    # print(top_features_dict)
 
     # Get feature names of top-k indices
     top_k_feature_names = X.columns[top_k_indices]
