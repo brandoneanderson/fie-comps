@@ -1,23 +1,22 @@
-from paths import *
+from pathlib import Path
 import pandas as pd
 import numpy as np
 import joblib
 
-from sklearn.model_selection import train_test_split, StratifiedKFold, GridSearchCV
+from sklearn.model_selection import train_test_split, StratifiedKFold, GridSearchCV, learning_curve
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
+from sklearn.calibration import CalibratedClassifierCV
 from sklearn.metrics import (
     classification_report, confusion_matrix,
     roc_auc_score, average_precision_score,
-    precision_recall_curve
+    precision_recall_curve, roc_curve
 )
 
 from sklearn.metrics import roc_curve
 
-'''
-    Main file for loading in data, creating model, and training model
-'''
+# K-best features from RF output
 K_BEST_FEATURES = [
     "specific_characters", "avg_line_length", "dynamic_code_gen_functions",
     "event_handlers", "DOM_operations", "keyword_density", "whitespace %",
@@ -31,6 +30,18 @@ K_BEST_FEATURES = [
     "management", "num_form_tags", "num_meta_refresh",
     "num_external_iframe_src", "num_behavior", "notifications",
 ]
+
+def pick_threshold_max_f1(y_true, proba):
+    precision, recall, thresholds = precision_recall_curve(y_true, proba)
+    f1 = (2 * precision[:-1] * recall[:-1]) / (precision[:-1] + recall[:-1] + 1e-12)
+    i = int(np.argmax(f1))
+    return float(thresholds[i])
+
+def pick_threshold_youden(y_true, proba):
+    fpr, tpr, thr = roc_curve(y_true, proba)
+    i = int(np.argmax(tpr - fpr))
+    return float(thr[i])
+
 
 if __name__ == "__main__":
     TRAINING_CSV = "/Users/ishapatel/COMPS/fie-comps/ML/datasets/training.csv"
@@ -51,7 +62,8 @@ if __name__ == "__main__":
     X = df[K_BEST_FEATURES].apply(pd.to_numeric, errors="coerce").fillna(0.0)
 
     # Split dataset into X_train, y_train, X_test, Y_test
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42, stratify=y)
 
     # See if shapes match expected output
     print('Training data shape: ', X_train.shape)
@@ -62,8 +74,7 @@ if __name__ == "__main__":
     # Pipeline: scale then SVM-RBF
     pipe = Pipeline([
         ("scaler", StandardScaler()),
-        # ("svm", SVC(kernel="rbf", probability=True, class_weight="balanced", random_state=42))
-        ("svm", SVC(kernel="rbf", probability=True, class_weight="0:1, 1:1.5", random_state=42))
+        ("svm", SVC(kernel="rbf", probability=True, class_weight="balanced", random_state=42))
     ])
 
     # Hyperparameter tuning
@@ -92,7 +103,9 @@ if __name__ == "__main__":
     print("Best CV score (average_precision):", gs.best_score_)
 
 
-    # 6) Evaluate on test
+    # Evaluate on test
+    cal = CalibratedClassifierCV(best_model, method="sigmoid", cv=5)
+    cal.fit(X_train, y_train)
     proba = best_model.predict_proba(X_test)[:, 1]
 
      # baseline @ 0.5
