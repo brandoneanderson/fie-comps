@@ -1,8 +1,17 @@
 #This is the new verison
 
-import sys, json
+import os
+import sys
+import json
+import traceback
 from pathlib import Path
 
+# Add project root (…/fie-comps) to Python path so `import ML` works
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+import re
+from paths import *
 import extension
 from extractor import *
 from Scanners.manifest_parser import * 
@@ -11,10 +20,14 @@ from Scanners.js_parser import *
 from Scanners.css_parser import *
 from Scanners.html_parser import *
 #from Scanners.html_report import html_report_section
+import joblib
+import pandas as pd
+from ML.scoring import risk_score_thresholded, risk_level, recommended_action, confidence_from_margin
+from ML.vectorize import vectorizeExt
+
 
 
 import re
-
 
 def resolve_i18n_name(ext, extract_dir: Path) -> str:
     """
@@ -57,6 +70,62 @@ def resolve_i18n_name(ext, extract_dir: Path) -> str:
 # If you want logs, send them to stderr so stdout stays JSON-clean
 def log(*args):
     print(*args, file=sys.stderr)
+
+# def vectorize_for_ml(ext) -> dict:
+#     all_features = {}
+#     # merge in the feature dicts your Extension already stores
+#     for d in [
+#         getattr(ext, "permissions", {}) or {},
+#         getattr(ext, "js_features", {}) or {},
+#         getattr(ext, "css_features", {}) or {},
+#         getattr(ext, "html_features", {}) or {},
+#     ]:
+#         all_features.update(d)
+#     return all_features
+def vectorize_for_ml(ext) -> dict:
+    feat = vectorizeExt(ext)
+    feat.pop("Extension Name", None)
+    return feat
+
+
+# # SVM_BUNDLE = joblib.load(SVM_BUNDLE_PATH)
+# # SVM_MODEL = SVM_BUNDLE["model"]
+# # SVM_FEATURES = SVM_BUNDLE["feature_cols"]
+# # SVM_THRESHOLD = float(SVM_BUNDLE["threshold"])
+def load_svm_bundle(bundle_path: str):
+    bundle = joblib.load(bundle_path)
+    return (
+        bundle["model"],
+        bundle["feature_cols"],
+        float(bundle["threshold"])
+    )
+
+
+def predict_svm(ext, model, feature_cols, threshold) -> dict:
+    feat = vectorize_for_ml(ext)
+
+    X = pd.DataFrame([feat])
+
+    # make sure all required feature columns exist
+    for c in feature_cols:
+        if c not in X.columns:
+            X[c] = 0.0
+
+    X = X[feature_cols].apply(pd.to_numeric, errors="coerce").fillna(0.0)
+
+    prob = float(model.predict_proba(X)[0, 1])
+    score = risk_score_thresholded(prob, threshold)
+    level = risk_level(score)
+
+    return {
+        "label": "MALICIOUS" if prob >= threshold else "BENIGN",
+        "prob_malicious": prob,
+        "risk_score": score,
+        "risk_level": level,
+        "threshold": float(threshold),
+        "confidence": confidence_from_margin(prob, threshold),
+        "action": recommended_action(level),
+    }
 
 if __name__ == "__main__":
     # Expect: python3 manager.py /path/to/extracted_extension_dir
@@ -111,13 +180,18 @@ if __name__ == "__main__":
                     # Don't crash whole run on one file; log and continue
                     log(f"[WARN] File analysis failed: {file} :: {e}")
 
-        # Score & prediction
-        ext.setFinalJSTotals()
-        prediction = Score_Report(ext)
-        prediction.predict()
-        print(ext.js_features)
-        
+        # Load ML bundle and predict
+        if "SVM_BUNDLE_PATH" not in globals():
+            print(json.dumps({"ok": False, "detail": "SVM_BUNDLE_PATH not defined in paths.py", "extract_dir": str(extract_dir)}))
+            sys.exit(1)
+
+        model, feature_cols, threshold = load_svm_bundle(SVM_BUNDLE_PATH)
+        log("Loaded bundle:", SVM_BUNDLE_PATH, "num_features=", len(feature_cols), "threshold=", threshold)
+
+        ml_pred = predict_svm(ext, model, feature_cols, threshold)
+
         resolved_name = resolve_i18n_name(ext, extract_dir)
+
         
         # Build JSON-safe output
         output = {
@@ -125,25 +199,8 @@ if __name__ == "__main__":
             "extension_name": resolved_name,
             #"extension_name": ext.getName(),
             "extract_dir": str(extract_dir),
-            "prediction": prediction.PREDICTION,
+            "prediction": ml_pred
         }
-
-        # if  Extension class stores useful structured fields, include them.
-        # Only include JSON-serializable values.
-        #
-        # Example ideas
-        # output["permissions"] = getattr(ext, "permissions", None)
-        # output["host_permissions"] = getattr(ext, "host_permissions", None)
-        # output["urls_found"] = list(getattr(ext, "urls", []))  # if it’s a set
-        ##### I don't think I actually need the following"
-        # Include HTML report + structured data in JSON for UI
-       # try:
-           # output["html_report"] = html_report_section(ext)
-            #if ext.html_features or ext.html_examples:
-               # log("\n" + output["html_report"] + "\n")
-        #except Exception as e:
-            #output["html_report"] = None
-            #log(f"[WARN] Could not build html_report: {e}")
 
         output["html_features"] = getattr(ext, "html_features", None)
         output["html_examples"] = getattr(ext, "html_examples", None)
@@ -160,12 +217,6 @@ if __name__ == "__main__":
         output["js_features"] = getattr(ext, "js_features", None)
         output["js_examples"] = getattr(ext, "js_examples", None)
 
-        
-        # Also print to stderr for terminal debugging (won't break JSON stdout)
-       # try:
-            #log("\n" + output["html_report"] + "\n")
-        #except Exception:
-            #pass
 
 
         print(json.dumps(output))
@@ -178,4 +229,5 @@ if __name__ == "__main__":
             "extract_dir": str(extract_dir),
         }))
         sys.exit(1)
-        
+
+

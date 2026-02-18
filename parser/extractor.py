@@ -32,6 +32,10 @@ def _crx_to_zip_bytes(crx_path: Path) -> bytes:
         zip_start = 12 + header_size
         return data[zip_start:]
 
+    if len(data) < 16 or data[:4] != b"Cr24":
+        print(f"DEBUG: File does not have CRX header. Starts with: {data[:10]}")
+        return data
+    
     return data
 
 # def extractExtension(filepath: Path) -> Path | None:

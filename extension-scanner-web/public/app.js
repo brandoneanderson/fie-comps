@@ -20,6 +20,20 @@ function $(id) {
   return document.getElementById(id);
 }
 
+// Debug toggle: enable by visiting /?debug=1 or setting localStorage DEBUG_UI=1
+const DEBUG_UI =
+  new URLSearchParams(window.location.search).get("debug") === "1" ||
+  localStorage.getItem("DEBUG_UI") === "1";
+
+function dlog(...args) {
+  if (DEBUG_UI) console.log("[DEBUG_UI]", ...args);
+}
+function setDebug(obj) {
+  if (!debugOut) return;
+  debugOut.textContent = obj ? JSON.stringify(obj, null, 2) : "";
+  if (DEBUG_UI) debugOut.style.display = "block";
+}
+
 function setTab(name) {
   document.querySelectorAll(".tab").forEach(t =>
     t.classList.toggle("active", t.dataset.tab === name)
@@ -38,10 +52,10 @@ function setStatus(msg) {
   if (statusText) statusText.textContent = msg;
 }
 
-function setDebug(obj) {
-  if (!debugOut) return;
-  debugOut.textContent = obj ? JSON.stringify(obj, null, 2) : "";
-}
+// function setDebug(obj) {
+//   if (!debugOut) return;
+//   debugOut.textContent = obj ? JSON.stringify(obj, null, 2) : "";
+// }
 
 // Optional: unwrap Google redirect URLs from CSE
 function normalizeStoreUrl(input) {
@@ -79,11 +93,50 @@ function showResults(vm) {
   resultsPanel.style.display = "block";
 
   const analysis = vm?.analysis?.report;
-  if (!analysis) {
-    $("tab-summary").textContent = "No analysis report returned.";
+  // if (!analysis) {
+  //   $("tab-summary").textContent = "No analysis report returned.";
+  //   return;
+  // }
+  const wrapper = vm?.analysis;          // vm.analysis from downloader
+  const report = wrapper?.report;        // manager.py JSON (if parsed)
+  const stderr = wrapper?.stderr || "";
+  const stdout = wrapper?.stdout || "";
+  const raw = wrapper?.raw_output || "";
+
+  dlog("VM wrapper:", wrapper);
+
+  // If we didn't even get a parsed report, show diagnostics
+  if (!report) {
+    $("tab-summary").textContent = "No analysis report returned (no report parsed).";
+
+    setDebug({
+      note: "manager.py did not produce parseable JSON (or parsing failed)",
+      vm_analysis: wrapper,
+      stderr,
+      stdout,
+      raw_output: raw,
+    });
+
+    setTab("summary");
     return;
   }
 
+  // If manager returned ok:false, show why
+  if (report.ok === false) {
+    $("tab-summary").textContent =
+      `Analysis failed inside manager.py:\n\n` +
+      `${report.detail || "Unknown error"}`;
+
+    setDebug({
+      note: "manager.py returned ok:false",
+      report,
+      stderr,
+      stdout,
+    });
+
+    setTab("summary");
+    return;
+  }
   // SUMMARY TAB
   $("tab-summary").textContent =
     `Extension: ${analysis.extension_name}\n\n` +

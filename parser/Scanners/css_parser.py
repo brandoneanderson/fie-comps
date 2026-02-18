@@ -24,7 +24,7 @@ def analyze_CSS(cssFile, extClass):
 
     css_features, css_examples = _ensure_css_fields(extClass)
 
-    with open(cssFile, 'r', encoding='utf-8') as file:
+    with open(cssFile, 'r', encoding='utf-8', errors='ignore') as file:
         css = file.read()
 
     features = {
