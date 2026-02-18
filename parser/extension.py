@@ -1,5 +1,5 @@
 from pathlib import Path
-from Scanners.manifest_parser import * 
+from Scanners.manifest_parser import *
 import os
 
 
@@ -34,21 +34,23 @@ class Extension:
         self.version = None
         self.js_features = {
             "dynamic_code_gen_functions": 0, "whitespace %": 0, 
-            "avg line length": 0, "specific characters": 0, "word size": 0,
-            "string entropy": 0, "DOM change methods": 0, "event handlers": 0,
-            "HTTP scripts": 0, "modification callbacks": 0, "XMLHttpRequests": 0,
-            "keyword density": 0}
+            "avg_line_length": 0, "specific_characters": 0, "word_size": 0,
+            "string_entropy": 0, "DOM_operations": 0, "DOM_change_sinks": 0, "event_handlers": 0,
+            "HTTP_scripts": 0, "modification_callbacks": 0, "XMLHttpRequests": 0,
+            "keyword_density": 0}
         self.js_totals = {"total_chars": 0, "whitespace": 0, "specific_chars":0, "file_count":0, "total_lines": 0, "total_line_chars":0, "total_words":0, "entropy_strings":0}
         self.js_keyword_den = {f"kw_{kw}": 0 for kw in keywords}
-        self.html_features = None
+        self.html_features = {'num_iframe_tags': 0, 'num_form_tags': 0, 'num_script_tags': 0, 
+                              "num_inline_event_handlers":0, "num_password_inputs":0, "num_meta_refresh":0,
+                              "num_http_urls":0, "num_external_urls":0, "num_javascript_urls":0, "num_data_urls":0,
+                              "num_external_iframe_src":0, "num_external_script_src":0, "num_script_src_attrs":0}
         self.html_examples = None
 
-        self.css_features = None
+        self.css_features = {'num_background_image': 0, 'num_behavior': 0, 'num_import_rules': 0, 'num_external_urls': 0}
         self.css_examples = None     
         self.js_examples = None      
         self.manifest_examples = None 
 
-        self.css_features = None
         self.security_policy = False
         self.host_permissions = None
 
@@ -173,7 +175,7 @@ class Extension:
 
         # Set average line length across all files
         if self.js_totals["total_lines"] > 0:
-            self.js_features["avg line length"] = (
+            self.js_features["avg_line_length"] = (
                 self.js_totals["total_line_chars"] /
                 self.js_totals["total_lines"]
             )
@@ -181,19 +183,80 @@ class Extension:
         # Set avg white space & and frequency of specific characters spotted
         if total_chars > 0:
             self.js_features["whitespace %"] = (self.js_totals["whitespace"] / total_chars)
-            self.js_features["specific characters"] = (self.js_totals["specific_chars"] / total_chars)
+            self.js_features["specific_characters"] = (self.js_totals["specific_chars"] / total_chars)
 
         # Set average word size & keyword density (sum of all tracked keywords / total words)
         # Set keyword density
         if total_words > 0:
-            self.js_features["word size"] = self.js_features["word size"] / total_words
+            self.js_features["word_size"] = self.js_features["word_size"] / total_words
             total_kw_count = sum(self.js_keyword_den.values())
-            self.js_features["keyword density"] = total_kw_count / total_words
+            self.js_features["keyword_density"] = total_kw_count / total_words
 
         # Set average string entropy
         if self.js_totals.get("entropy_strings", 0) > 0:
-            self.js_features["string entropy"] = (self.js_features["string entropy"] / self.js_totals["entropy_strings"])
+            self.js_features["string_entropy"] = (self.js_features["string_entropy"] / self.js_totals["entropy_strings"])
         else:
-            self.js_features["avg string entropy"] = 0
+            self.js_features["string_entropy"] = 0
 
         return
+    
+    def safe_div(self, n, d):
+        if d > 0:
+            return n/d
+        else:
+            return 0.0
+    
+    def normalizeJSBehavior(self):
+        lines = self.js_totals["total_lines"]
+
+        self.js_features["DOM_operations_density"] = self.safe_div(self.js_features["DOM_operations"], lines)
+
+        self.js_features["DOM_change_sinks_density"] = self.safe_div(self.js_features["DOM_change_sinks"], lines)
+
+        self.js_features["XMLHttpRequests_density"] = self.safe_div(self.js_features["XMLHttpRequests"], lines)
+
+        self.js_features["event_handlers_density"] = self.safe_div(self.js_features["event_handlers"], lines)
+
+        self.js_features["modification_callbacks_density"] = self.safe_div(self.js_features["modification_callbacks"], lines)
+
+        self.js_features["HTTP_scripts_density"] = self.safe_div(self.js_features["HTTP_scripts"], lines)
+
+
+    def setVulnerablePermissions(self):
+        permissions = self.permissions
+        host_perms = self.host_permissions
+        sec_policy = self.security_policy
+
+        vulnerable_perm = {"All http domains": 0, "All https domains": 0, "webRequest": 0,
+                           "webRequestBlocking": 0, "tabs": 0, "storage": 0, "notifications": 0,
+                           "cookies":0, "management": 0, "contextmenus": 0, "security_policy": 0}
+        
+        # Set permissions found to true
+        if permissions != None:
+            for perm in permissions:
+                if not isinstance(perm, str):
+                    print(f"[WARN] Non-string permission in {self.name}: {perm}")
+                elif perm in vulnerable_perm:
+                    vulnerable_perm[perm] = 1
+        
+        if host_perms != None:
+            # Set any host permissions found
+            for host in host_perms:
+                if host.startswith("http://") and "*" in host:
+                    vulnerable_perm["All http domains"] = 1
+                if host.startswith("https://") and "*" in host:
+                    vulnerable_perm["All https domains"] = 1
+        
+        # Set security policy flag
+        if sec_policy:
+            vulnerable_perm["security_policy"] = 1
+        
+        # Set final permissions dict
+        self.permissions = vulnerable_perm
+
+        return
+    
+    def setFinalValues(self):
+        self.setFinalJSTotals()
+        self.normalizeJSBehavior()
+        self.setVulnerablePermissions()

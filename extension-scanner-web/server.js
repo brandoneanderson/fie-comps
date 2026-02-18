@@ -1,63 +1,3 @@
-// import express from "express";
-// import path from "path";
-// import { fileURLToPath } from "url";
-// import { execFile } from "child_process";
-
-// const app = express();
-// app.use(express.json());
-
-// // --- config ---
-// const PORT = 3000;
-// const VM_USER = "fiecomps";
-// const VM_IP = "192.168.217.128";
-// const VM_DOWNLOADER = "/home/fiecomps/vm_downloader.py";
-
-// // --- static site ---
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = path.dirname(__filename);
-// app.use(express.static(path.join(__dirname, "public")));
-
-// // --- helpers ---
-// function shellEscapeSingleQuotes(s) {
-//   return `'${String(s).replace(/'/g, `'\\''`)}'`;
-// }
-
-// function runVmDownloaderOverSsh(store_url) {
-//   return new Promise((resolve, reject) => {
-//     const sshPath = "/usr/bin/ssh";
-//     const safeUrl = shellEscapeSingleQuotes(store_url);
-
-//     // Run a single remote command so special chars (like &) won't break
-//     const remoteCmd = `python3 ${VM_DOWNLOADER} ${safeUrl}`;
-
-//     execFile(
-//       sshPath,
-//       ["-4", "-o", "BatchMode=yes", "-o", "ConnectTimeout=8", `${VM_USER}@${VM_IP}`, remoteCmd],
-//       { timeout: 120000 },
-//       (err, stdout, stderr) => {
-//         if (err) return reject(new Error((stderr || stdout || String(err)).trim()));
-//         resolve(stdout.trim());
-//       }
-//     );
-//   });
-// }
-
-// // --- routes ---
-// app.post("/api/download", async (req, res) => {
-//   try {
-//     const { store_url } = req.body || {};
-//     if (!store_url) return res.status(400).json({ detail: "Missing store_url" });
-
-//     const outText = await runVmDownloaderOverSsh(store_url);
-//     res.type("application/json").send(outText);
-//   } catch (e) {
-//     res.status(500).json({ detail: String(e) });
-//   }
-// });
-
-// app.listen(PORT, () => {
-//   console.log(`UI: http://localhost:${PORT}`);
-// });
 
 // NEW INTEGRATED DESIGN
 import express from "express";
@@ -73,7 +13,8 @@ app.use(express.json());
 const PORT = 3000;
 
 const VM_USER = process.env.VM_USER || "fiecomps";
-const VM_IP = process.env.VM_IP || "192.168.217.128";
+// const VM_IP = process.env.VM_IP || "192.168.217.128"; 
+const VM_IP = process.env.VM_IP || "192.168.173.128"; 
 const VM_DOWNLOADER = process.env.VM_DOWNLOADER || "/home/fiecomps/vm_downloader.py";
 
 // If you want to force a specific SSH key file, set VM_SSH_KEY=/path/to/key
