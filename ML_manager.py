@@ -18,7 +18,7 @@ from sklearn.metrics import (
 from sklearn.metrics import roc_curve
 
 
-if __name__ == "__main__":
+def query_model(predict_new_df):
 
     # Load the bundled pipeline
     model_bundle = joblib.load(SVM_BUNDLE_PATH)
@@ -31,7 +31,7 @@ if __name__ == "__main__":
     # svm_rb = SVC(kernel = 'rbf', C = 10, class_weight='balanced', gamma=0.01, random_state=42)
     # X = df[K_BEST_FEATURES].apply(pd.to_numeric, errors="coerce").fillna(0.0)
 
-    predict_new_df = pd.read_csv(FINAL_B_CSV)
+    # predict_new_df = pd.read_csv(FINAL_B_CSV)
 
     X_new = (
         predict_new_df[feature_cols]

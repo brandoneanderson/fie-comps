@@ -44,7 +44,8 @@ def setExtML(set_exts):
 
     df = pd.DataFrame(rows)
     df.to_csv('outputM_allextsChrome', index=False)
-    print(df.shape)
+
+    return df
 
 def test():
     # test_dict = {"test":test_ext}
