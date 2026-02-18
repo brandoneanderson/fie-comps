@@ -57,13 +57,19 @@ function normalizeStoreUrl(input) {
   return input;
 }
 
-// If user pastes extension ID, build a canonical URL
+// If user types/pastes extension ID or URL, produce a canonical store URL for scanning
 function coerceToWebStoreUrl(value) {
   const v = value.trim();
-  // Chrome extension IDs are 32 chars, lowercase a-p
-  if (/^[a-p]{32}$/.test(v)) {
-    return `https://chromewebstore.google.com/detail/${v}/${v}`;
+  if (!v) return v;
+  const lower = v.toLowerCase();
+  // Chrome extension IDs are 32 chars, [a-p]; accept exact ID or extract ID from text
+  const exactId = lower.match(/^[a-p]{32}$/);
+  const embeddedId = lower.match(/[a-p]{32}/);
+  const id = exactId ? exactId[0] : (embeddedId ? embeddedId[0] : null);
+  if (id) {
+    return `https://chromewebstore.google.com/detail/${id}/${id}`;
   }
+  // Already a URL (or Google redirect handled by normalizeStoreUrl)
   return v;
 }
 
