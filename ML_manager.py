@@ -11,7 +11,7 @@ def load_svm_bundle(bundle_path):
     model = bundle["model"]
     feature_cols = bundle["feature_cols"]
     threshold = float(bundle["threshold"])
-    return model, feature_cols, threshold, bundle
+    return model, feature_cols, threshold
 
 def predict_from_feature_dict(feat: dict, model, feature_cols, threshold):
     X = pd.DataFrame([feat])
@@ -36,8 +36,8 @@ def predict_from_feature_dict(feat: dict, model, feature_cols, threshold):
         "threshold": float(threshold),
         "action": recommended_action(level),
     }
-def batch_score_csv(csv_path, model, feature_cols, threshold):
-    df = pd.read_csv(csv_path)
+
+def batch_score_csv(df, model, feature_cols, threshold):
 
     X = (
         df[feature_cols]
@@ -62,15 +62,15 @@ def batch_score_csv(csv_path, model, feature_cols, threshold):
     print("avg_risk_score:", float(np.mean(scores)))
     print("risk_level_counts:", pd.Series(levels).value_counts().to_dict())
 
-if __name__ == "__main__":
-    model, feature_cols, threshold, bundle = load_svm_bundle(SVM_BUNDLE_PATH)
+def query_model(df):
+    model, feature_cols, threshold = load_svm_bundle(SVM_BUNDLE_PATH)
 
     print("Loaded bundle:", SVM_BUNDLE_PATH)
     print("Threshold:", threshold)
     print("Num features:", len(feature_cols))
 
     # batch test on benign CSV by default
-    batch_score_csv(FINAL_B_CSV, model, feature_cols, threshold)
+    batch_score_csv(df, model, feature_cols, threshold)
 
     # # Load the bundled pipeline
     # model_bundle = joblib.load(SVM_BUNDLE_PATH)
