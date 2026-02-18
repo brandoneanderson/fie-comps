@@ -87,13 +87,14 @@ def vectorize_for_ml(ext) -> dict:
 # SVM_MODEL = SVM_BUNDLE["model"]
 # SVM_FEATURES = SVM_BUNDLE["feature_cols"]
 # SVM_THRESHOLD = float(SVM_BUNDLE["threshold"])
-def load_svm_bundle():
-    bundle = joblib.load(SVM_BUNDLE_PATH)
+def load_svm_bundle(bundle_path: str):
+    bundle = joblib.load(bundle_path)
     return (
         bundle["model"],
         bundle["feature_cols"],
         float(bundle["threshold"])
     )
+
 
 def predict_svm(ext) -> dict:
     feat = vectorize_for_ml(ext)
@@ -176,7 +177,8 @@ if __name__ == "__main__":
 
         # Load ML bundle and predict
         if "SVM_BUNDLE_PATH" not in globals():
-            fail(extract_dir, "SVM_BUNDLE_PATH not defined in paths.py")
+            print(json.dumps({"ok": False, "detail": "SVM_BUNDLE_PATH not defined in paths.py", "extract_dir": str(extract_dir)}))
+            sys.exit(1)
 
         model, feature_cols, threshold = load_svm_bundle(SVM_BUNDLE_PATH)
         log("Loaded bundle:", SVM_BUNDLE_PATH, "num_features=", len(feature_cols), "threshold=", threshold)
