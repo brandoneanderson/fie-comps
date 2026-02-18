@@ -10,6 +10,10 @@ os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 # >>> SET THIS to your real manager.py path on the VM <<<
 MANAGER_PY = os.path.expanduser("~/fie-comps/parser/manager.py")
 PYTHON = "python3"
+# PYTHON = "/home/fiecomps/fie-comps/venv3139/bin/python"
+# Use the VM venv python by default; allow override via env var if needed.
+PYTHON = os.environ.get("FIECOMPS_PYTHON", "/home/fiecomps/fie-comps/venv3139/bin/python")
+
 
 def extract_json_object_from_mixed_output(text: str):
     """
@@ -109,6 +113,10 @@ def run_manager(extract_dir: str) -> dict:
     """
     if not os.path.exists(MANAGER_PY):
         return {"ok": False, "error": f"manager.py not found at {MANAGER_PY}"}
+    
+    if not os.path.exists(PYTHON):
+        return {"ok": False, "error": f"Python interpreter not found at {PYTHON}"}
+
 
     cmd = [PYTHON, MANAGER_PY, extract_dir]
     try:
