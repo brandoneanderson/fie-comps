@@ -95,8 +95,11 @@ function buildSummaryHtml(analysis, metadata) {
   const level = pred.risk_level || "";
   const action = pred.action || "";
   const name = metadata?.name || analysis.extension_name || "Unknown extension";
-  const ratingValue = metadata?.ratingValue != null ? Number(metadata.ratingValue).toFixed(1) : null;
-  const ratingCount = metadata?.ratingCount != null ? Number(metadata.ratingCount).toLocaleString() : null;
+  // Rating from dataset (metadata) or from analysis report if backend provides it
+  const rawRatingValue = metadata?.ratingValue ?? analysis.ratingValue;
+  const rawRatingCount = metadata?.ratingCount ?? analysis.ratingCount;
+  const ratingValue = rawRatingValue != null ? Number(rawRatingValue).toFixed(1) : null;
+  const ratingCount = rawRatingCount != null ? Number(rawRatingCount).toLocaleString() : null;
 
   let scoreClass = "summary-risk-low";
   if (level === "HIGH" || level === "CRITICAL") scoreClass = "summary-risk-high";
@@ -112,10 +115,11 @@ function buildSummaryHtml(analysis, metadata) {
 
   const metaParts = [];
   metaParts.push(`<div class="summary-meta-row"><span class="summary-meta-label">Extension</span><span class="summary-meta-value">${escapeHtml(name)}</span></div>`);
-  if (ratingValue != null && ratingCount != null) {
-    metaParts.push(`<div class="summary-meta-row"><span class="summary-meta-label">Rating</span><span class="summary-meta-value">${escapeHtml(ratingValue)} ★ · ${escapeHtml(ratingCount)} ratings</span></div>`);
-  } else if (ratingCount != null) {
-    metaParts.push(`<div class="summary-meta-row"><span class="summary-meta-label">Ratings</span><span class="summary-meta-value">${escapeHtml(ratingCount)}</span></div>`);
+  if (ratingValue != null || ratingCount != null) {
+    const ratingParts = [];
+    if (ratingValue != null) ratingParts.push(`${escapeHtml(ratingValue)} ★`);
+    if (ratingCount != null) ratingParts.push(`${escapeHtml(ratingCount)} ratings`);
+    metaParts.push(`<div class="summary-meta-row"><span class="summary-meta-label">Rating</span><span class="summary-meta-value">${ratingParts.join(" · ")}</span></div>`);
   }
   if (action) {
     metaParts.push(`<div class="summary-meta-row"><span class="summary-meta-label">Recommendation</span><span class="summary-meta-value">${escapeHtml(action)}</span></div>`);
@@ -207,6 +211,8 @@ function getSampleResultsVm() {
     analysis: {
       report: {
         extension_name: "Sample Extension (Test Data)",
+        ratingValue: 4.4,
+        ratingCount: 60989,
         prediction: {
           label: "BENIGN",
           risk_score: 12,
