@@ -1,2 +1,31 @@
 [1 1 1 0 0 0 0 1 0 0 1 1 0 0 0 0 0 1 1 1 0 1 0 0 1 1 0 0 1 1 0 1] - calibrated model 
 [1 0 1 0 0 0 0 0 0 0 1 0 0 0 0 0 0 1 1 1 0 1 0 0 1 0 0 0 1 1 0 1]
+
+{np.int64(13): np.float64(0.07418164173367067), np.int64(14): np.float64(0.06490362392621521), np.int64(11): np.float64(0.06209774584671131), np.int64(19): np.float64(0.059971116919849375), np.int64(17): np.float64(0.057603426249855885), np.int64(23): np.float64(0.05159734046605353), np.int64(12): np.float64(0.050916893313871545), np.int64(25): np.float64(0.04959301818856829), np.int64(16): np.float64(0.04836290946644585), np.int64(15): np.float64(0.04577229247736393), np.int64(24): np.float64(0.0440165424546659), np.int64(3): np.float64(0.04185354633929719), np.int64(27): np.float64(0.03898865489759435), np.int64(33): np.float64(0.03163710752410178), np.int64(18): np.float64(0.03121837543457086), np.int64(26): np.float64(0.027986679283779615), np.int64(36): np.float64(0.025397933341298074), np.int64(45): np.float64(0.024374087418276156), np.int64(30): np.float64(0.021989375026512752), np.int64(5): np.float64(0.016802356651206517), np.int64(1): np.float64(0.016388405352072064), np.int64(22): np.float64(0.012540586474272638), np.int64(4): np.float64(0.008486839287270441), np.int64(2): np.float64(0.008371417722491767), np.int64(28): np.float64(0.008326380153399033), np.int64(32): np.float64(0.00792476067608563), np.int64(10): np.float64(0.007589436841516539), np.int64(34): np.float64(0.006121872467616724), np.int64(35): np.float64(0.005819297028810429), np.int64(7): np.float64(0.005598803006106482), np.int64(43): np.float64(0.004644377386354273), np.int64(6): np.float64(0.004602688639246235), np.int64(40): np.float64(0.0044669984993918575), np.int64(21): np.float64(0.004223407438874428), np.int64(39): np.float64(0.004222136874487635), np.int64(31): np.float64(0.004156226252549203), np.int64(8): np.float64(0.0039431899255314845), np.int64(0): np.float64(0.003577393815031011), np.int64(38): np.float64(0.0022737923444621586), np.int64(44): np.float64(0.002154475801145005), np.int64(46): np.float64(0.0018524905836337677), np.int64(41): np.float64(0.001214256214116022), np.int64(37): np.float64(0.0012073719706952874), np.int64(42): np.float64(0.0008305022349967252), np.int64(47): np.float64(0.00011424417112950953), np.int64(48): np.float64(7.60107907891683e-05), np.int64(29): np.float64(5.714929214218646e-06), np.int64(20): np.float64(2.256158801543178e-06), np.int64(9): np.float64(0.0)}
+
+{'avg_line_length' : 0.0741, 'specific_characters', 'dynamic_code_gen_functions',
+       'event_handlers', 'DOM_operations', 'keyword_density', 'whitespace %',
+       'event_handlers', 'DOM_operations', 'keyword_density', 'whitespace %',
+       'DOM_change_sinks_density', 'string_entropy', 'word_size',
+       'DOM_change_sinks_density', 'string_entropy', 'word_size',
+       'DOM_operations_density', 'webRequestBlocking',
+       'event_handlers_density', 'num_external_urls', 'DOM_change_sinks',
+       'event_handlers_density', 'num_external_urls', 'DOM_change_sinks',
+       'XMLHttpRequests_density', 'num_script_tags', 'num_script_src_attrs',
+       'num_background_image', 'storage', 'All https domains',
+       'XMLHttpRequests', 'tabs', 'webRequest',
+       'modification_callbacks_density', 'num_import_rules', 'security_policy',
+       'num_iframe_tags', 'num_form_tags', 'cookies',
+       'num_external_iframe_src', 'notifications', 'num_http_urls',
+       'modification_callbacks', 'num_meta_refresh', 'num_behavior',
+       'management', 'All http domains', 'num_password_inputs',
+       'num_external_script_src', 'num_external_form_actions',
+       'num_javascript_urls', 'num_inline_event_handlers', 'num_data_urls',
+       'num_embed_tags', 'num_object_tags', 'HTTP_scripts_density',
+       'HTTP_scripts', 'contextmenus'}
+
+Benign counts
+{'0-10': 2354, '10-20': 689, '20-30': 163, '30-40': 41, '40-50': 25, '50-60': 21, '60-70': 3, '70-80': 1, '80-90': 2, '90-100': 24}
+
+Mal counts
+{'0-10': 38, '10-20': 65, '20-30': 85, '30-40': 166, '40-50': 186, '50-60': 233, '60-70': 288, '70-80': 458, '80-90': 649, '90-100': 1426}
