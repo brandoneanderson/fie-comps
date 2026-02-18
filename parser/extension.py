@@ -1,5 +1,5 @@
 from pathlib import Path
-from parser.Scanners.manifest_parser import *
+from Scanners.manifest_parser import *
 import os
 
 
