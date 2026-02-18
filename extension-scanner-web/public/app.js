@@ -20,20 +20,6 @@ function $(id) {
   return document.getElementById(id);
 }
 
-// Debug toggle: enable by visiting /?debug=1 or setting localStorage DEBUG_UI=1
-const DEBUG_UI =
-  new URLSearchParams(window.location.search).get("debug") === "1" ||
-  localStorage.getItem("DEBUG_UI") === "1";
-
-function dlog(...args) {
-  if (DEBUG_UI) console.log("[DEBUG_UI]", ...args);
-}
-function setDebug(obj) {
-  if (!debugOut) return;
-  debugOut.textContent = obj ? JSON.stringify(obj, null, 2) : "";
-  if (DEBUG_UI) debugOut.style.display = "block";
-}
-
 function setTab(name) {
   document.querySelectorAll(".tab").forEach(t =>
     t.classList.toggle("active", t.dataset.tab === name)
@@ -52,10 +38,10 @@ function setStatus(msg) {
   if (statusText) statusText.textContent = msg;
 }
 
-// function setDebug(obj) {
-//   if (!debugOut) return;
-//   debugOut.textContent = obj ? JSON.stringify(obj, null, 2) : "";
-// }
+function setDebug(obj) {
+  if (!debugOut) return;
+  debugOut.textContent = obj ? JSON.stringify(obj, null, 2) : "";
+}
 
 // Optional: unwrap Google redirect URLs from CSE
 function normalizeStoreUrl(input) {
@@ -87,60 +73,97 @@ function coerceToWebStoreUrl(value) {
   return v;
 }
 
+// Extract Chrome extension ID (32 chars [a-p]) from store URL or return null
+function getExtensionIdFromStoreUrl(url) {
+  if (!url || typeof url !== "string") return null;
+  const m = url.toLowerCase().match(/[a-p]{32}/);
+  return m ? m[0] : null;
+}
 
-function showResults(vm) {
+// Format risk level for display (LOW -> "Low risk", etc.)
+function formatRiskLevel(level) {
+  if (!level) return "Unknown";
+  const s = String(level).toUpperCase();
+  const labels = { LOW: "Low risk", MEDIUM: "Medium risk", HIGH: "High risk", CRITICAL: "Critical risk" };
+  return labels[s] || level;
+}
+
+// Build summary tab HTML from analysis + optional dataset metadata
+function buildSummaryHtml(analysis, metadata) {
+  const pred = analysis.prediction || {};
+  const score = pred.risk_score != null ? Number(pred.risk_score) : null;
+  const level = pred.risk_level || "";
+  const action = pred.action || "";
+  const name = metadata?.name || analysis.extension_name || "Unknown extension";
+  const ratingValue = metadata?.ratingValue != null ? Number(metadata.ratingValue).toFixed(1) : null;
+  const ratingCount = metadata?.ratingCount != null ? Number(metadata.ratingCount).toLocaleString() : null;
+
+  let scoreClass = "summary-risk-low";
+  if (level === "HIGH" || level === "CRITICAL") scoreClass = "summary-risk-high";
+  else if (level === "MEDIUM") scoreClass = "summary-risk-medium";
+
+  const scoreHtml = score != null
+    ? `<div class="summary-score-wrap"><span class="summary-score ${scoreClass}">${score}</span><span class="summary-score-label">Risk score</span></div>`
+    : "";
+
+  const levelHtml = level
+    ? `<div class="summary-level summary-level-${level.toLowerCase()}">${formatRiskLevel(level)}</div>`
+    : "";
+
+  const metaParts = [];
+  metaParts.push(`<div class="summary-meta-row"><span class="summary-meta-label">Extension</span><span class="summary-meta-value">${escapeHtml(name)}</span></div>`);
+  if (ratingValue != null && ratingCount != null) {
+    metaParts.push(`<div class="summary-meta-row"><span class="summary-meta-label">Rating</span><span class="summary-meta-value">${escapeHtml(ratingValue)} ★ · ${escapeHtml(ratingCount)} ratings</span></div>`);
+  } else if (ratingCount != null) {
+    metaParts.push(`<div class="summary-meta-row"><span class="summary-meta-label">Ratings</span><span class="summary-meta-value">${escapeHtml(ratingCount)}</span></div>`);
+  }
+  if (action) {
+    metaParts.push(`<div class="summary-meta-row"><span class="summary-meta-label">Recommendation</span><span class="summary-meta-value">${escapeHtml(action)}</span></div>`);
+  }
+
+  return `
+    <div class="summary-cards">
+      ${scoreHtml}
+      ${levelHtml}
+    </div>
+    <div class="summary-meta">${metaParts.join("")}</div>
+  `;
+}
+
+function escapeHtml(s) {
+  if (s == null) return "";
+  const div = document.createElement("div");
+  div.textContent = String(s);
+  return div.innerHTML;
+}
+
+function showResults(vm, extensionId) {
   if (!resultsPanel) return;
   resultsPanel.style.display = "block";
 
-  const analysis = vm?.analysis?.report;
-  // if (!analysis) {
-  //   $("tab-summary").textContent = "No analysis report returned.";
-  //   return;
-  // }
-  const wrapper = vm?.analysis;          // vm.analysis from downloader
-  const report = wrapper?.report;        // manager.py JSON (if parsed)
-  const stderr = wrapper?.stderr || "";
-  const stdout = wrapper?.stdout || "";
-  const raw = wrapper?.raw_output || "";
-
-  dlog("VM wrapper:", wrapper);
-
-  // If we didn't even get a parsed report, show diagnostics
-  if (!report) {
-    $("tab-summary").textContent = "No analysis report returned (no report parsed).";
-
-    setDebug({
-      note: "manager.py did not produce parseable JSON (or parsing failed)",
-      vm_analysis: wrapper,
-      stderr,
-      stdout,
-      raw_output: raw,
-    });
-
-    setTab("summary");
+  // Support both nested (sample) and flat (real VM) response
+  const analysis = vm?.analysis?.report ?? vm;
+  if (!analysis || typeof analysis !== "object") {
+    $("tab-summary").innerHTML = "<p class=\"summary-empty\">No analysis report returned.</p>";
     return;
   }
 
-  // If manager returned ok:false, show why
-  if (report.ok === false) {
-    $("tab-summary").textContent =
-      `Analysis failed inside manager.py:\n\n` +
-      `${report.detail || "Unknown error"}`;
+  // SUMMARY TAB: show loading then fill with risk score, level, metadata
+  const summaryEl = $("tab-summary");
+  summaryEl.innerHTML = "<p class=\"summary-loading\">Loading summary…</p>";
 
-    setDebug({
-      note: "manager.py returned ok:false",
-      report,
-      stderr,
-      stdout,
-    });
-
-    setTab("summary");
-    return;
-  }
-  // SUMMARY TAB
-  $("tab-summary").textContent =
-    `Extension: ${analysis.extension_name}\n\n` +
-    `Prediction: ${JSON.stringify(analysis.prediction, null, 2)}`;
+  (async () => {
+    let metadata = null;
+    if (extensionId) {
+      try {
+        const r = await fetch(`/api/extension/${encodeURIComponent(extensionId)}`);
+        if (r.ok) metadata = await r.json();
+      } catch {
+        // ignore
+      }
+    }
+    summaryEl.innerHTML = buildSummaryHtml(analysis, metadata);
+  })();
 
   // MANIFEST TAB
   $("tab-manifest").textContent = JSON.stringify({
@@ -175,6 +198,80 @@ function showResults(vm) {
 
   // Default tab
   setTab("summary");
+}
+
+// ========== TEMPORARY_SAMPLE_RESULTS: delete from here through the showSampleResultsBtn listener (see index.html + styles.css) ==========
+// Mock VM payload for previewing results without a running VM
+function getSampleResultsVm() {
+  return {
+    analysis: {
+      report: {
+        extension_name: "Sample Extension (Test Data)",
+        prediction: {
+          label: "BENIGN",
+          risk_score: 12,
+          risk_level: "LOW",
+          action: "Allow",
+          confidence: "HIGH"
+        },
+        permissions: [
+          "storage",
+          "activeTab",
+          "https://example.com/*"
+        ],
+        host_permissions: [
+          "https://*.example.com/*",
+          "https://api.example.com/*"
+        ],
+        security_policy: {
+          content_security_policy: "script-src 'self'; object-src 'self'",
+          sandbox: null
+        },
+        html_features: {
+          script_tags: 3,
+          iframe_count: 0,
+          form_count: 1,
+          external_links: 2
+        },
+        html_examples: [
+          { tag: "script", src: "popup.js", inline: false },
+          { tag: "a", href: "https://example.com/help" }
+        ],
+        html_report: null,
+        css_features: {
+          external_stylesheets: 1,
+          inline_styles: 2,
+          url_fetches: ["https://fonts.googleapis.com/css?family=Roboto"]
+        },
+        css_examples: [
+          { rule: "@import", value: "url('theme.css')" },
+          { property: "background", value: "linear-gradient(...)" }
+        ],
+        js_features: {
+          eval_usage: false,
+          dom_access: true,
+          network_requests: ["fetch", "XMLHttpRequest"],
+          storage_access: ["chrome.storage.local", "localStorage"]
+        },
+        js_examples: [
+          { pattern: "chrome.tabs.query", file: "background.js", line: 42 },
+          { pattern: "eval(", file: null, line: null }
+        ],
+        js_totals: {
+          files_analyzed: 5,
+          total_lines: 1200,
+          api_calls: 18
+        }
+      }
+    }
+  };
+}
+
+function showSampleResults() {
+  if (resultsLink) resultsLink.style.display = "inline-flex";
+  setStatus("Sample results (no scan performed)");
+  setDebug(null);
+  showResults(getSampleResultsVm(), null);
 }
 
 async function runScan() {
@@ -222,8 +319,8 @@ async function runScan() {
     setStatus("Downloaded successfully ✓");
     if (resultsLink) resultsLink.style.display = "inline-flex";
 
-    // Show analysis results from VM
-    showResults(data.vm);
+    const extensionId = getExtensionIdFromStoreUrl(url);
+    showResults(data.vm, extensionId);
 
   } catch (e) {
     console.error("Network error:", e);
@@ -255,6 +352,12 @@ if (scanButton && extensionUrlInput) {
     if (e.key === "Enter") runScan();
   });
 }
+
+const showSampleResultsBtn = document.getElementById("showSampleResults");
+if (showSampleResultsBtn) {
+  showSampleResultsBtn.addEventListener("click", showSampleResults);
+}
+// ========== /TEMPORARY_SAMPLE_RESULTS ==========
 
 // --- Chrome Web Store search (dataset: extensions_clean.json) ---
 (function () {

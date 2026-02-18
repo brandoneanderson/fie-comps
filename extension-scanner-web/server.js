@@ -82,6 +82,21 @@ app.get("/api/store-search", async (req, res) => {
   }
 });
 
+// Get one extension by ID from dataset (for summary metadata)
+app.get("/api/extension/:id", async (req, res) => {
+  const id = (req.params.id || "").trim().toLowerCase();
+  if (!id) return res.status(400).json({ error: "Missing extension id" });
+  try {
+    const list = await loadExtensions();
+    const ext = list.find((e) => (e.id || "").toLowerCase() === id);
+    if (!ext) return res.status(404).json({ error: "Extension not found", id });
+    res.json(ext);
+  } catch (e) {
+    console.error("[extension] Error:", e);
+    res.status(500).json({ error: "Lookup failed", detail: String(e?.message || e) });
+  }
+});
+
 function shellEscapeSingleQuotes(s) {
   return `'${String(s).replace(/'/g, `'\\''`)}'`;
 }
