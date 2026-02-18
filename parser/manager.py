@@ -2,7 +2,8 @@
 
 import sys, json
 from pathlib import Path
-
+import re
+from paths import *
 import extension
 from extractor import *
 from Scanners.manifest_parser import * 
@@ -11,6 +12,9 @@ from Scanners.js_parser import *
 from Scanners.css_parser import *
 from Scanners.html_parser import *
 #from Scanners.html_report import html_report_section
+import joblib
+import pandas as pd
+from ML.scoring import risk_score_thresholded, risk_level, recommended_action, confidence_from_margin
 
 
 import re
@@ -57,6 +61,57 @@ def resolve_i18n_name(ext, extract_dir: Path) -> str:
 # If you want logs, send them to stderr so stdout stays JSON-clean
 def log(*args):
     print(*args, file=sys.stderr)
+
+def vectorize_for_ml(ext) -> dict:
+    all_features = {}
+    # merge in the feature dicts your Extension already stores
+    for d in [
+        getattr(ext, "permissions", {}) or {},
+        getattr(ext, "js_features", {}) or {},
+        getattr(ext, "css_features", {}) or {},
+        getattr(ext, "html_features", {}) or {},
+    ]:
+        all_features.update(d)
+    return all_features
+
+
+# SVM_BUNDLE = joblib.load(SVM_BUNDLE_PATH)
+# SVM_MODEL = SVM_BUNDLE["model"]
+# SVM_FEATURES = SVM_BUNDLE["feature_cols"]
+# SVM_THRESHOLD = float(SVM_BUNDLE["threshold"])
+def load_svm_bundle():
+    bundle = joblib.load(SVM_BUNDLE_PATH)
+    return (
+        bundle["model"],
+        bundle["feature_cols"],
+        float(bundle["threshold"])
+    )
+
+def predict_svm(ext) -> dict:
+    feat = vectorize_for_ml(ext)
+
+    X = pd.DataFrame([feat])
+
+    # make sure all required feature columns exist
+    for c in feature_cols:
+        if c not in X.columns:
+            X[c] = 0.0
+
+    X = X[feature_cols].apply(pd.to_numeric, errors="coerce").fillna(0.0)
+
+    prob = float(model.predict_proba(X)[0, 1])
+    score = risk_score_thresholded(prob, threshold)
+    level = risk_level(score)
+
+    return {
+        "label": "MALICIOUS" if prob >= threshold else "BENIGN",
+        "prob_malicious": prob,
+        "risk_score": score,
+        "risk_level": level,
+        "threshold": float(threshold),
+        "confidence": confidence_from_margin(prob, threshold),
+        "action": recommended_action(level),
+    }
 
 if __name__ == "__main__":
     # Expect: python3 manager.py /path/to/extracted_extension_dir
@@ -111,13 +166,10 @@ if __name__ == "__main__":
                     # Don't crash whole run on one file; log and continue
                     log(f"[WARN] File analysis failed: {file} :: {e}")
 
-        # Score & prediction
-        ext.setFinalJSTotals()
-        prediction = Score_Report(ext)
-        prediction.predict()
-        print(ext.js_features)
+        ml_pred = predict_svm(ext)
         
         resolved_name = resolve_i18n_name(ext, extract_dir)
+        ml_pred = predict_svm(ext, model, feature_cols, threshold)
         
         # Build JSON-safe output
         output = {
@@ -125,25 +177,8 @@ if __name__ == "__main__":
             "extension_name": resolved_name,
             #"extension_name": ext.getName(),
             "extract_dir": str(extract_dir),
-            "prediction": prediction.PREDICTION,
+            "prediction": ml_pred
         }
-
-        # if  Extension class stores useful structured fields, include them.
-        # Only include JSON-serializable values.
-        #
-        # Example ideas
-        # output["permissions"] = getattr(ext, "permissions", None)
-        # output["host_permissions"] = getattr(ext, "host_permissions", None)
-        # output["urls_found"] = list(getattr(ext, "urls", []))  # if it’s a set
-        ##### I don't think I actually need the following"
-        # Include HTML report + structured data in JSON for UI
-       # try:
-           # output["html_report"] = html_report_section(ext)
-            #if ext.html_features or ext.html_examples:
-               # log("\n" + output["html_report"] + "\n")
-        #except Exception as e:
-            #output["html_report"] = None
-            #log(f"[WARN] Could not build html_report: {e}")
 
         output["html_features"] = getattr(ext, "html_features", None)
         output["html_examples"] = getattr(ext, "html_examples", None)
@@ -160,12 +195,6 @@ if __name__ == "__main__":
         output["js_features"] = getattr(ext, "js_features", None)
         output["js_examples"] = getattr(ext, "js_examples", None)
 
-        
-        # Also print to stderr for terminal debugging (won't break JSON stdout)
-       # try:
-            #log("\n" + output["html_report"] + "\n")
-        #except Exception:
-            #pass
 
 
         print(json.dumps(output))
@@ -178,4 +207,8 @@ if __name__ == "__main__":
             "extract_dir": str(extract_dir),
         }))
         sys.exit(1)
-        
+
+        model, feature_cols, threshold = load_svm_bundle()
+        ml_pred = predict_svm(ext, model, feature_cols, threshold)
+
+
