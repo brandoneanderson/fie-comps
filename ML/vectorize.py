@@ -14,12 +14,23 @@ from pathlib import Path
 # test_ext.css_features = {'num_background_image': 1, 'num_behavior': 0, 'num_import_rules': 10, 'num_external_urls': 164}
 # test_ext.html_features = {'num_script_tags': 8, 'num_script_src_attrs': 8, 'num_external_urls': 16}
 
+def _perm_to_dict(perms):
+    # perms can be dict OR list/set/tuple of strings
+    if perms is None:
+        return {}
+    if isinstance(perms, dict):
+        return perms
+    if isinstance(perms, (list, set, tuple)):
+        return {str(p): 1.0 for p in perms}
+    return {}
+
 def vectorizeExt(extension : Extension):
     # Grab all features & metadata info
     js_features = extension.js_features # dict
     css_features = extension.css_features # dict
     html_features = extension.html_features # dict
-    permissions = extension.permissions # dict
+    # permissions = extension.permissions # dict
+    permissions = _perm_to_dict(getattr(extension, "permissions", None))
 
     all_features = {}
 
@@ -29,7 +40,8 @@ def vectorizeExt(extension : Extension):
     all_features.update(html_features)
     name = extension.name
     
-    all_features["Extension Name"] = name
+    # all_features["Extension Name"] = name
+    all_features["Extension Name"] = getattr(extension, "name", None)
 
     return all_features
 
