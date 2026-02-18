@@ -96,7 +96,7 @@ def load_svm_bundle(bundle_path: str):
     )
 
 
-def predict_svm(ext) -> dict:
+def predict_svm(ext, model, feature_cols, threshold) -> dict:
     feat = vectorize_for_ml(ext)
 
     X = pd.DataFrame([feat])
