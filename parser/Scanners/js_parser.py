@@ -86,7 +86,8 @@ def beautify_file(script, extClass):
 
 def parseScript(script):
     # Esprima options to mark location of lines
-    options = {"jsx": True,"tolerant":True, 'tokens':True, 'range':True, 'loc':True}
+    # options = {"jsx": True,"tolerant":True, 'tokens':True, 'range':True, 'loc':True}
+    options = {"jsx": True,"tolerant":True}
     # Attempt to read file
     try:
         with open(script, 'r', encoding='utf-8', errors='ignore') as file:
@@ -130,10 +131,43 @@ def traverseNode(node, extClass):
         if node.callee.name == "Function":
             extClass.js_features["dynamic_code_gen_functions"] += 1
 
-    # HTML DOM Change Methods and Properties
+    # # HTML DOM Change Methods and Properties
+    # if node.type == "MemberExpression":
+    #     if node.property.name in {"innerHTML", "outerHTML", "write", "appendChild", "insertAdjacentHTML"}:
+    #         extClass.js_features["DOM_change_methods"] += 1
+
+    # DOM change sinks (document.write, document.writeIn, innerHTML)
+    if node.type == "AssignmentExpression":
+        if (
+            node.operator == "=" and
+            node.left.type == "MemberExpression" and
+            node.left.property and
+            node.left.property.name in {"innerHTML", "outerHTML"}
+        ):
+            extClass.js_features["DOM_change_sinks"] += 1
+
+    if node.type == "CallExpression":
+        if (
+            node.callee.type == "MemberExpression" and
+            node.callee.property and
+            node.callee.property.name in {"write", "writeln", "insertAdjacentHTML"}
+        ):
+            extClass.js_features["DOM_change_sinks"] += 1
+
+
+    # DOM operations counts
     if node.type == "MemberExpression":
-        if node.property.name in {"innerHTML", "outerHTML", "write", "appendChild", "insertAdjacentHTML"}:
-            extClass.js_features["DOM change methods"] += 1
+        if node.property and node.property.name in {
+            "createElement",
+            "createElementNS",
+            "getElementById",
+            "getElementsByClassName",
+            "getElementsByTagName",
+            "appendChild",
+            "navigator",
+            "location"
+        }:
+            extClass.js_features["DOM_operations"] += 1
 
     # Number of Event Handlers
     if node.type == "CallExpression":
@@ -141,7 +175,7 @@ def traverseNode(node, extClass):
         if callee.type == "MemberExpression":
             prop = callee.property
             if prop and prop.type == "Identifier" and prop.name in {"addEventListener", "attachEvent"}:
-                extClass.js_features["event handlers"] += 1
+                extClass.js_features["event_handlers"] += 1
     
     # Number of XMLHttpRequests
     if node.type == "NewExpression":
@@ -158,7 +192,7 @@ def traverseNode(node, extClass):
                 if obj.type == "MemberExpression":
                     event_prop = obj.property
                     if (event_prop.type == "Identifier" and event_prop.name in {"onBeforeSendHeaders","onHeadersReceived","onSendHeaders"}):
-                        extClass.js_features["modification callbacks"] += 1
+                        extClass.js_features["modification_callbacks"] += 1
 
     # Number of HTTP Scripts
     if node.type == "AssignmentExpression":
@@ -171,7 +205,7 @@ def traverseNode(node, extClass):
             and isinstance(right.value, str)
             and right.value.startswith(("http://"))
         ):
-            extClass.js_features["HTTP scripts"] += 1
+            extClass.js_features["HTTP_scripts"] += 1
 
     # Visit node's children
     for attr, value in node.__dict__.items():
@@ -212,7 +246,7 @@ def extractStringFeatures(script, extClass):
 
         # AVG Word Size
         words = re.findall(r'[A-Za-z0-9_]+', content)
-        extClass.js_features["word size"] += sum(len(w) for w in words)
+        extClass.js_features["word_size"] += sum(len(w) for w in words)
         extClass.js_totals["total_words"] += len(words)
 
         # Keyword density
@@ -233,5 +267,5 @@ def extractStringFeatures(script, extClass):
                 p = count / len(string)
                 entropy -= p * log2(p)
 
-            extClass.js_features["string entropy"] += entropy
+            extClass.js_features["string_entropy"] += entropy
             extClass.js_totals["entropy_strings"] += 1

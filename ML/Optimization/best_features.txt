@@ -1,0 +1,22 @@
+With the dataset containing both raw counts and density features we get:
+- Best k feature size: 37
+- Best tree size: 215
+- Lowest MAE error in RF: 0.118
+- Graphs stored in figures folder
+
+The following are the 37 most influential features in prediciting maliciousness
+Ordered from most important to least important
+
+Index(['specific_characters', 'avg_line_length', 'dynamic_code_gen_functions',
+       'event_handlers', 'DOM_operations', 'keyword_density', 'whitespace %',
+       'DOM_change_sinks_density', 'string_entropy', 'word_size',
+       'webRequestBlocking', 'DOM_operations_density',
+       'event_handlers_density', 'XMLHttpRequests_density',
+       'num_external_urls', 'DOM_change_sinks', 'num_script_src_attrs',
+       'num_script_tags', 'num_background_image', 'storage',
+       'All https domains', 'XMLHttpRequests', 'num_import_rules', 'tabs',
+       'modification_callbacks_density', 'webRequest', 'security_policy',
+       'cookies', 'num_iframe_tags', 'num_http_urls', 'modification_callbacks',
+       'management', 'num_form_tags', 'num_meta_refresh',
+       'num_external_iframe_src', 'num_behavior', 'notifications'],
+      dtype='str')
