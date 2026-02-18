@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import os, re, time, zipfile, json, sys
 import requests
+import subprocess
 
 DOWNLOAD_DIR = os.path.expanduser("~/extension_downloads")
 os.makedirs(DOWNLOAD_DIR, exist_ok=True)
@@ -57,11 +58,21 @@ def main():
     download_crx(ext_id, crx_path)
     extract_crx_like_zip(crx_path, extract_dir)
 
+    VENV_PYTHON = "/home/fiecomps/fie-comps/venv3139/bin/python"
+    MANAGER_SCRIPT = "/home/fiecomps/fie-comps/parser/manager.py"
+
+    result = subprocess.run(
+        [VENV_PYTHON, MANAGER_SCRIPT, extract_dir],
+        capture_output=True,
+        text=True
+    )
     print(json.dumps({
         "extension_id": ext_id,
         "crx_path": crx_path,
         "extract_dir": extract_dir,
+         "manager_stdout": result.stdout,
         "message": "Downloaded and extracted on VM via SSH."
+
     }))
     return 0
 
