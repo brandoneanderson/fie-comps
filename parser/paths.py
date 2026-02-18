@@ -39,6 +39,9 @@ TRAINING_CSV = DATASET_DIR / "training.csv"
 
 
 SUB_RESULTS_CSV = DATASET_DIR / "SubcriptionResult.csv"
+SVM_BUNDLE_PATH = DATASET_DIR / "SVM_BUNDLE_PATH"
+
+
 
 if __name__ == "__main__":
     print(PROJECT_ROOT)
