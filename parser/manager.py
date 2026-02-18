@@ -71,57 +71,57 @@ def resolve_i18n_name(ext, extract_dir: Path) -> str:
 def log(*args):
     print(*args, file=sys.stderr)
 
-def vectorize_for_ml(ext) -> dict:
-    all_features = {}
-    # merge in the feature dicts your Extension already stores
-    for d in [
-        getattr(ext, "permissions", {}) or {},
-        getattr(ext, "js_features", {}) or {},
-        getattr(ext, "css_features", {}) or {},
-        getattr(ext, "html_features", {}) or {},
-    ]:
-        all_features.update(d)
-    return all_features
+# def vectorize_for_ml(ext) -> dict:
+#     all_features = {}
+#     # merge in the feature dicts your Extension already stores
+#     for d in [
+#         getattr(ext, "permissions", {}) or {},
+#         getattr(ext, "js_features", {}) or {},
+#         getattr(ext, "css_features", {}) or {},
+#         getattr(ext, "html_features", {}) or {},
+#     ]:
+#         all_features.update(d)
+#     return all_features
 
 
-# SVM_BUNDLE = joblib.load(SVM_BUNDLE_PATH)
-# SVM_MODEL = SVM_BUNDLE["model"]
-# SVM_FEATURES = SVM_BUNDLE["feature_cols"]
-# SVM_THRESHOLD = float(SVM_BUNDLE["threshold"])
-def load_svm_bundle(bundle_path: str):
-    bundle = joblib.load(bundle_path)
-    return (
-        bundle["model"],
-        bundle["feature_cols"],
-        float(bundle["threshold"])
-    )
+# # SVM_BUNDLE = joblib.load(SVM_BUNDLE_PATH)
+# # SVM_MODEL = SVM_BUNDLE["model"]
+# # SVM_FEATURES = SVM_BUNDLE["feature_cols"]
+# # SVM_THRESHOLD = float(SVM_BUNDLE["threshold"])
+# def load_svm_bundle(bundle_path: str):
+#     bundle = joblib.load(bundle_path)
+#     return (
+#         bundle["model"],
+#         bundle["feature_cols"],
+#         float(bundle["threshold"])
+#     )
 
 
-def predict_svm(ext, model, feature_cols, threshold) -> dict:
-    feat = vectorizeExt(ext)
+# def predict_svm(ext, model, feature_cols, threshold) -> dict:
+#     feat = vectorizeExt(ext)
 
-    X = pd.DataFrame([feat])
+#     X = pd.DataFrame([feat])
 
-    # make sure all required feature columns exist
-    for c in feature_cols:
-        if c not in X.columns:
-            X[c] = 0.0
+#     # make sure all required feature columns exist
+#     for c in feature_cols:
+#         if c not in X.columns:
+#             X[c] = 0.0
 
-    X = X[feature_cols].apply(pd.to_numeric, errors="coerce").fillna(0.0)
+#     X = X[feature_cols].apply(pd.to_numeric, errors="coerce").fillna(0.0)
 
-    prob = float(model.predict_proba(X)[0, 1])
-    score = risk_score_thresholded(prob, threshold)
-    level = risk_level(score)
+#     prob = float(model.predict_proba(X)[0, 1])
+#     score = risk_score_thresholded(prob, threshold)
+#     level = risk_level(score)
 
-    return {
-        "label": "MALICIOUS" if prob >= threshold else "BENIGN",
-        "prob_malicious": prob,
-        "risk_score": score,
-        "risk_level": level,
-        "threshold": float(threshold),
-        "confidence": confidence_from_margin(prob, threshold),
-        "action": recommended_action(level),
-    }
+#     return {
+#         "label": "MALICIOUS" if prob >= threshold else "BENIGN",
+#         "prob_malicious": prob,
+#         "risk_score": score,
+#         "risk_level": level,
+#         "threshold": float(threshold),
+#         "confidence": confidence_from_margin(prob, threshold),
+#         "action": recommended_action(level),
+#     }
 
 if __name__ == "__main__":
     # Expect: python3 manager.py /path/to/extracted_extension_dir
@@ -177,14 +177,14 @@ if __name__ == "__main__":
                     log(f"[WARN] File analysis failed: {file} :: {e}")
 
         # Load ML bundle and predict
-        if "SVM_BUNDLE_PATH" not in globals():
-            print(json.dumps({"ok": False, "detail": "SVM_BUNDLE_PATH not defined in paths.py", "extract_dir": str(extract_dir)}))
-            sys.exit(1)
+        # if "SVM_BUNDLE_PATH" not in globals():
+        #     print(json.dumps({"ok": False, "detail": "SVM_BUNDLE_PATH not defined in paths.py", "extract_dir": str(extract_dir)}))
+        #     sys.exit(1)
 
-        model, feature_cols, threshold = load_svm_bundle(SVM_BUNDLE_PATH)
-        log("Loaded bundle:", SVM_BUNDLE_PATH, "num_features=", len(feature_cols), "threshold=", threshold)
+        # model, feature_cols, threshold = load_svm_bundle(SVM_BUNDLE_PATH)
+        # log("Loaded bundle:", SVM_BUNDLE_PATH, "num_features=", len(feature_cols), "threshold=", threshold)
 
-        ml_pred = predict_svm(ext, model, feature_cols, threshold)
+        # ml_pred = predict_svm(ext, model, feature_cols, threshold)
 
         resolved_name = resolve_i18n_name(ext, extract_dir)
 
@@ -195,7 +195,7 @@ if __name__ == "__main__":
             "extension_name": resolved_name,
             #"extension_name": ext.getName(),
             "extract_dir": str(extract_dir),
-            "prediction": ml_pred
+            # "prediction": ml_pred
         }
 
         output["html_features"] = getattr(ext, "html_features", None)
