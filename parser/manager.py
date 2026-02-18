@@ -23,6 +23,7 @@ from Scanners.html_parser import *
 import joblib
 import pandas as pd
 from ML.scoring import risk_score_thresholded, risk_level, recommended_action, confidence_from_margin
+from ML.vectorize import vectorizeExt
 
 
 
@@ -97,7 +98,7 @@ def load_svm_bundle(bundle_path: str):
 
 
 def predict_svm(ext, model, feature_cols, threshold) -> dict:
-    feat = vectorize_for_ml(ext)
+    feat = vectorizeExt(ext)
 
     X = pd.DataFrame([feat])
 
