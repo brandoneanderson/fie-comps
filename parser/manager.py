@@ -86,7 +86,7 @@ def predict_svm(ext, model, feature_cols, threshold) -> dict:
 
     X = pd.DataFrame([feat])
 
-    score = assign_scores(feat)
+    score = assign_scores(X)
     # score = risk_score_thresholded(prob, threshold)
     level = risk_level(score)
 
