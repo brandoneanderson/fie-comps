@@ -95,7 +95,7 @@ def predict_svm(ext, model, feature_cols, threshold) -> dict:
 
     prob = float(model.predict_proba(X)[0, 1])
     label = "MALICIOUS" if prob >= float(threshold) else "BENIGN"
-    score = assign_scores(feat)
+    score = assign_scores(X)
     # score = risk_score_thresholded(prob, threshold)
     level = risk_level(score)
 
