@@ -94,22 +94,23 @@ def predict_svm(ext, model, feature_cols, threshold) -> dict:
     X = X[feature_cols].apply(pd.to_numeric, errors="coerce").fillna(0.0)
 
     prob = float(model.predict_proba(X)[0, 1])
+    # X = X.drop("Extension_name")
     label = "MALICIOUS" if prob >= float(threshold) else "BENIGN"
-    score = assign_scores(X)
+    score = assign_scores(feat)
     # score = risk_score_thresholded(prob, threshold)
     level = risk_level(score)
 
     return {
         "label": label,
         "threshold": float(threshold),
-        "risk_score": score,
+        # "risk_score": score,
         # "label": "MALICIOUS" if prob >= threshold else "BENIGN",
         # "prob_malicious": prob,
         # "risk_score": score,
         # "risk_level": level,
         # "threshold": float(threshold),
         # "confidence": confidence_from_margin(prob, threshold),
-        "action": recommended_action(level),
+        # "action": recommended_action(level),
     }
 
 if __name__ == "__main__":

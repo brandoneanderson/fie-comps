@@ -56,6 +56,8 @@ def setExtML(set_exts):
 
     df = pd.DataFrame(rows)
     df.to_csv('outputM_allextsChrome', index=False)
+    print("length:", len(df.columns))
+    print(df.columns)
 
     return df
 

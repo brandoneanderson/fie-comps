@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import joblib
 
-from ML.scoring import *
+from scoring import *
 
 
 def load_svm_bundle(bundle_path):
@@ -13,29 +13,36 @@ def load_svm_bundle(bundle_path):
     threshold = float(bundle["threshold"])
     return model, feature_cols, threshold
 
-# def predict_from_feature_dict(feat: dict, model, feature_cols, threshold):
-#     X = pd.DataFrame([feat])
+def predict_from_feature_dict(feat: dict, model, feature_cols, threshold):
+    X = pd.DataFrame([feat])
 
-#     # align columns
-#     for c in feature_cols:
-#         if c not in X.columns:
-#             X[c] = 0.0
+    # align columns
+    for c in feature_cols:
+        if c not in X.columns:
+            X[c] = 0.0
 
-#     X = X[feature_cols].apply(pd.to_numeric, errors="coerce").fillna(0.0)
+    X = X[feature_cols].apply(pd.to_numeric, errors="coerce").fillna(0.0)
 
-#     prob = float(model.predict_proba(X)[0, 1])
-#     score = risk_score_thresholded(prob, threshold)
-#     level = risk_level(score)
+    prob = float(model.predict_proba(X)[0, 1])
+    prob = float(model.predict_proba(X)[0, 1])
+    X = X.drop("Extension_name")
+    label = "MALICIOUS" if prob >= float(threshold) else "BENIGN"
+    score = assign_scores(X)
+    # score = risk_score_thresholded(prob, threshold)
+    level = risk_level(score)
 
-#     return {
-#         "label": "MALICIOUS" if prob >= threshold else "BENIGN",
-#         "prob_malicious": prob,
-#         "risk_score": score,
-#         "risk_level": level,
-#         "confidence": confidence_from_margin(prob, threshold),
-#         "threshold": float(threshold),
-#         "action": recommended_action(level),
-#     }
+    return {
+        "label": label,
+        "threshold": float(threshold),
+        "risk_score": score,
+        # "label": "MALICIOUS" if prob >= threshold else "BENIGN",
+        # "prob_malicious": prob,
+        # "risk_score": score,
+        # "risk_level": level,
+        # "threshold": float(threshold),
+        # "confidence": confidence_from_margin(prob, threshold),
+        "action": recommended_action(level),
+    }
 
 def batch_score_csv(df, model, feature_cols, threshold):
 
@@ -70,6 +77,6 @@ def query_model(df):
     print("Num features:", len(feature_cols))
 
     # batch test on benign CSV by default
-    batch_score_csv(df, model, feature_cols, threshold)
+    # batch_score_csv(df, model, feature_cols, threshold)
 
 
