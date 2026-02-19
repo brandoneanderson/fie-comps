@@ -1,3 +1,83 @@
+NEW
+With the dataset containing both raw counts and density features we get:
+- Best k feature size: 36
+- Best tree size: 275
+- Lowest MAE error in RF: 0.128
+- Need new graphs
+
+The following are the 37 most influential features in prediciting maliciousness
+Ordered from most important to least important
+
+Index(['avg_line_length', 'specific_characters', 'dynamic_code_gen_functions',
+       'event_handlers', 'DOM_operations', 'keyword_density', 'whitespace %',
+       'DOM_change_sinks_density', 'string_entropy', 'word_size',
+       'DOM_operations_density', 'webRequestBlocking',
+       'event_handlers_density', 'num_external_urls', 'DOM_change_sinks',
+       'XMLHttpRequests_density', 'num_script_tags', 'num_script_src_attrs',
+       'num_background_image', 'storage', 'All https domains',
+       'XMLHttpRequests', 'tabs', 'webRequest',
+       'modification_callbacks_density', 'num_import_rules', 'security_policy',
+       'num_iframe_tags', 'num_form_tags', 'cookies',
+       'num_external_iframe_src', 'notifications', 'num_http_urls',
+       'modification_callbacks', 'num_meta_refresh', 'num_behavior'],
+      dtype='str')
+
+Features ranked by importance
+[13 14 11 19 17 23 12 25 16 15 24  3 27 33 18 26 36 45 30  5  1 22  4  2
+ 28 32 10 34 35  7 43  6 40 21 39 31  8  0 38 44 46 41 37 42 47 48 29 20
+  9]
+
+Best params: {'svm__C': 7, 'svm__class_weight': None, 'svm__gamma': 0.03}
+Best CV F1: 0.7936216812565634
+
+=== Test @ threshold 0.5 ===
+ROC-AUC: 0.8566055555555556
+PR-AUC: 0.7679872306667364
+Confusion matrix:
+ [[557  43]
+ [109 191]]
+              precision    recall  f1-score   support
+
+           0      0.836     0.928     0.880       600
+           1      0.816     0.637     0.715       300
+
+    accuracy                          0.831       900
+   macro avg      0.826     0.782     0.798       900
+weighted avg      0.830     0.831     0.825       900
+
+
+=== Test @ threshold chosen by max F1 ===
+Chosen threshold: 0.37662920778594533
+Confusion matrix:
+ [[533  67]
+ [ 86 214]]
+              precision    recall  f1-score   support
+
+           0      0.861     0.888     0.874       600
+           1      0.762     0.713     0.737       300
+
+    accuracy                          0.830       900
+   macro avg      0.811     0.801     0.806       900
+weighted avg      0.828     0.830     0.829       900
+
+Saved model bundle to: C:\Users\frana\College_HW_Submissions\COMPS\fie-comps\ML\SVM_BUNDLE_PATH
+
+=== Test @ threshold chosen by Youden J (TPR-FPR) ===
+Chosen threshold: 0.37662920778594533
+Confusion matrix:
+ [[533  67]
+ [ 86 214]]
+              precision    recall  f1-score   support
+
+           0      0.861     0.888     0.874       600
+           1      0.762     0.713     0.737       300
+
+    accuracy                          0.830       900
+   macro avg      0.811     0.801     0.806       900
+weighted avg      0.828     0.830     0.829       900
+
+
+OLD - - - - - - - - - - - - - - - - -- - - - - - - - - - - - - - - - - - - -
 With the dataset containing both raw counts and density features we get:
 - Best k feature size: 37
 - Best tree size: 215

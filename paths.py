@@ -41,5 +41,11 @@ TRAINING_CSV = DATASET_DIR / "training.csv"
 SUB_RESULTS_CSV = DATASET_DIR / "SubcriptionResult.csv"
 
 SVM_BUNDLE_PATH = ML_DIR / "SVM_BUNDLE_PATH"
+
+RF_ALL_FEATURES_PATH = ML_DIR / "models" / "RF_BUNDLE_PATH"
+RF_ALL_FEATURES = ML_DIR / 'models' / 'rf_all_features.pkl'
+ALL_FEATURES = ML_DIR / 'models' / 'rf_all_features2.pkl'
+
+
 if __name__ == "__main__":
     print(PROJECT_ROOT)
