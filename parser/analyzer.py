@@ -1,4 +1,4 @@
-from .extractor import *
+from extractor import *
 
 '''
     File to run all analysis on everything parsers collected and stored into extensions
