@@ -22,7 +22,7 @@ from Scanners.html_parser import *
 #from Scanners.html_report import html_report_section
 import joblib
 import pandas as pd
-from ML.scoring import risk_score_thresholded, risk_level, recommended_action, confidence_from_margin
+from ML.scoring import *
 from ML.vectorize import vectorizeExt
 
 
@@ -71,27 +71,6 @@ def resolve_i18n_name(ext, extract_dir: Path) -> str:
 def log(*args):
     print(*args, file=sys.stderr)
 
-# def vectorize_for_ml(ext) -> dict:
-#     all_features = {}
-#     # merge in the feature dicts your Extension already stores
-#     for d in [
-#         getattr(ext, "permissions", {}) or {},
-#         getattr(ext, "js_features", {}) or {},
-#         getattr(ext, "css_features", {}) or {},
-#         getattr(ext, "html_features", {}) or {},
-#     ]:
-#         all_features.update(d)
-#     return all_features
-def vectorize_for_ml(ext) -> dict:
-    feat = vectorizeExt(ext)
-    feat.pop("Extension Name", None)
-    return feat
-
-
-# # SVM_BUNDLE = joblib.load(SVM_BUNDLE_PATH)
-# # SVM_MODEL = SVM_BUNDLE["model"]
-# # SVM_FEATURES = SVM_BUNDLE["feature_cols"]
-# # SVM_THRESHOLD = float(SVM_BUNDLE["threshold"])
 def load_svm_bundle(bundle_path: str):
     bundle = joblib.load(bundle_path)
     return (
@@ -102,7 +81,8 @@ def load_svm_bundle(bundle_path: str):
 
 
 def predict_svm(ext, model, feature_cols, threshold) -> dict:
-    feat = vectorize_for_ml(ext)
+    feat = vectorizeExt(ext)
+    feat.pop("Extension Name", None)
 
     X = pd.DataFrame([feat])
 
@@ -114,8 +94,9 @@ def predict_svm(ext, model, feature_cols, threshold) -> dict:
     X = X[feature_cols].apply(pd.to_numeric, errors="coerce").fillna(0.0)
 
     prob = float(model.predict_proba(X)[0, 1])
-    score = risk_score_thresholded(prob, threshold)
-    level = risk_level(score)
+    score = assign_scores(feat)
+    # score = risk_score_thresholded(prob, threshold)
+    # level = risk_level(score)
 
     return {
         "label": "MALICIOUS" if prob >= threshold else "BENIGN",
