@@ -1,2 +1,53 @@
 All http domains,All https domains,webRequest,webRequestBlocking,tabs,storage,notifications,cookies,management,contextmenus,security_policy,dynamic_code_gen_functions,whitespace %,avg_line_length,specific_characters,word_size,string_entropy,DOM_operations,DOM_change_sinks,event_handlers,HTTP_scripts,modification_callbacks,XMLHttpRequests,keyword_density,DOM_operations_density,DOM_change_sinks_density,XMLHttpRequests_density,event_handlers_density,modification_callbacks_density,HTTP_scripts_density,num_background_image,num_behavior,num_import_rules,num_external_urls,num_iframe_tags,num_form_tags,num_script_tags,num_inline_event_handlers,num_password_inputs,num_meta_refresh,num_http_urls,num_javascript_urls,num_data_urls,num_external_iframe_src,num_external_script_src,num_script_src_attrs,Extension Name
 0,0,0,0,1,1,0,0,0,0,0,40,0.5220769541883091,36.79168097822353,0.0919287626162788,3.5898609863719786,2.7216360389671026,52,5,44,0,0,2,0.06010582217189269,0.001786082297176616,0.00017173868242082848,6.869547296833139e-05,0.0015113004053032904,0.0,0.0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,MyBib: Free Citation Generator
+
+TOP 30 MORE MAL EXAMPLES
+
+Best params: {'svm__C': 12, 'svm__class_weight': None, 'svm__gamma': 0.02}
+Best CV F1: 0.781842122892735
+
+=== Test @ threshold 0.5 ===
+ROC-AUC: 0.8529527777777778
+PR-AUC: 0.7582606308481472
+Confusion matrix:
+ [[553  47]
+ [123 177]]
+              precision    recall  f1-score   support
+
+           0      0.818     0.922     0.867       600
+           1      0.790     0.590     0.676       300
+
+    accuracy                          0.811       900
+   macro avg      0.804     0.756     0.771       900
+weighted avg      0.809     0.811     0.803       900
+
+
+=== Test @ threshold chosen by max F1 ===
+Chosen threshold: 0.30552848907170205
+Confusion matrix:
+ [[502  98]
+ [ 74 226]]
+              precision    recall  f1-score   support
+
+           0      0.872     0.837     0.854       600
+           1      0.698     0.753     0.724       300
+
+    accuracy                          0.809       900
+   macro avg      0.785     0.795     0.789       900
+weighted avg      0.814     0.809     0.811       900
+
+Saved model bundle to: C:\Users\frana\College_HW_Submissions\COMPS\fie-comps\ML\SVM_BUNDLE_PATH
+
+=== Test @ threshold chosen by Youden J (TPR-FPR) ===
+Chosen threshold: 0.30552848907170205
+Confusion matrix:
+ [[502  98]
+ [ 74 226]]
+              precision    recall  f1-score   support
+
+           0      0.872     0.837     0.854       600
+           1      0.698     0.753     0.724       300
+
+    accuracy                          0.809       900
+   macro avg      0.785     0.795     0.789       900
+weighted avg      0.814     0.809     0.811       900

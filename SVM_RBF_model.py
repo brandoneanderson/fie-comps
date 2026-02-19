@@ -32,18 +32,47 @@ from sklearn.metrics import roc_curve
 #     "num_external_iframe_src", "num_behavior", "notifications",
 # ]
 
-K_BEST_FEATURES = ['avg_line_length', 'specific_characters', 'dynamic_code_gen_functions',
-       'event_handlers', 'DOM_operations', 'keyword_density', 'whitespace %',
-       'DOM_change_sinks_density', 'string_entropy', 'word_size',
-       'DOM_operations_density', 'webRequestBlocking',
-       'event_handlers_density', 'num_external_urls', 'DOM_change_sinks',
-       'XMLHttpRequests_density', 'num_script_tags', 'num_script_src_attrs',
-       'num_background_image', 'storage', 'All https domains',
-       'XMLHttpRequests', 'tabs', 'webRequest',
-       'modification_callbacks_density', 'num_import_rules', 'security_policy',
-       'num_iframe_tags', 'num_form_tags', 'cookies',
-       'num_external_iframe_src', 'notifications', 'num_http_urls',
-       'modification_callbacks', 'num_meta_refresh', 'num_behavior']
+K_BEST_FEATURES = [
+    "avg_line_length",
+    "specific_characters",
+    "dynamic_code_gen_functions",
+    "event_handlers",
+    "DOM_operations",
+    "keyword_density",
+    "whitespace %",
+    "DOM_change_sinks_density",
+    "string_entropy",
+    "word_size",
+    "DOM_operations_density",
+    "webRequestBlocking",
+    "event_handlers_density",
+    "DOM_change_sinks",
+    "num_external_urls",
+    "XMLHttpRequests_density",
+    "num_script_tags",
+    "num_script_src_attrs",
+    "num_background_image",
+    "storage",
+    "All https domains",
+    "XMLHttpRequests",
+    "num_import_rules",
+    "tabs",
+    "webRequest",
+    "modification_callbacks_density",
+    "security_policy",
+    "num_iframe_tags",
+    "num_form_tags",
+    "cookies",
+    "notifications",
+    "num_http_urls",
+    "num_external_iframe_src",
+    "modification_callbacks",
+    "num_password_inputs",
+    "num_behavior",
+    "management",
+    "All http domains",
+    "num_inline_event_handlers"
+]
 
 def pick_threshold_max_f1(y_true, proba):
     precision, recall, thresholds = precision_recall_curve(y_true, proba)
@@ -93,17 +122,15 @@ if __name__ == "__main__":
 
     # Hyperparameter tuning
     param_grid = {
-        # "svm__C": [0.1, 1, 10, 100, 1000],
-        "svm__C": [3, 4, 5, 6, 7, 8, 9, 10],
-        # "svm__gamma": [1e-4, 1e-3, 1e-2, 1e-1, "scale"],
-        "svm__gamma":[0.02, 0.03, 0.04, 0.05, 0.06],
+        "svm__C": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "svm__gamma":[0.01, 0.02,0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.055, 0.06],
         "svm__class_weight": [
             None,
             "balanced",
-            {0:1, 1:1.5},
-            {0:1, 1:2},
-            {0:1, 1:3},
-            {0:1, 1:4},
+            # {0:1, 1:1.5},
+            # {0:1, 1:2},
+            # {0:1, 1:3},
+            # {0:1, 1:4},
         ]
     }
 

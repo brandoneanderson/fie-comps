@@ -29,3 +29,58 @@ Benign counts
 
 Mal counts
 {'0-10': 38, '10-20': 65, '20-30': 85, '30-40': 166, '40-50': 186, '50-60': 233, '60-70': 288, '70-80': 458, '80-90': 649, '90-100': 1426}
+
+
+NEW MODEL MORE EVEN CLASS DIST.
+47
+We think 30 was: modification_callbacks
+We chose 30 beacuase the MAE doesn't really drop much after that
+
+['avg_line_length', 'specific_characters', 'dynamic_code_gen_functions',
+       'event_handlers', 'DOM_operations', 'keyword_density', 'whitespace %',
+       'DOM_change_sinks_density', 'string_entropy', 'word_size',
+       'DOM_operations_density', 'webRequestBlocking',
+       'event_handlers_density', 'DOM_change_sinks', 'num_external_urls',
+       'XMLHttpRequests_density', 'num_script_tags', 'num_script_src_attrs',
+       'num_background_image', 'storage', 'All https domains',
+       'XMLHttpRequests', 'num_import_rules', 'tabs', 'webRequest',
+       'modification_callbacks_density', 'security_policy', 'num_iframe_tags',
+       'num_form_tags', 'cookies', 'notifications', 'num_http_urls',
+       'num_external_iframe_src', 'modification_callbacks', 'num_meta_refresh',
+       'num_behavior', 'management', 'All http domains', 'num_password_inputs',
+       'num_external_script_src', 'num_external_form_actions',
+       'num_inline_event_handlers', 'num_javascript_urls']
+
+TOP 30 FEATURES
+selected_features = [
+    "avg_line_length",
+    "specific_characters",
+    "dynamic_code_gen_functions",
+    "event_handlers",
+    "DOM_operations",
+    "keyword_density",
+    "whitespace %",
+    "DOM_change_sinks_density",
+    "string_entropy",
+    "word_size",
+    "DOM_operations_density",
+    "webRequestBlocking",
+    "event_handlers_density",
+    "DOM_change_sinks",
+    "num_external_urls",
+    "XMLHttpRequests_density",
+    "num_script_tags",
+    "num_script_src_attrs",
+    "num_background_image",
+    "storage",
+    "All https domains",
+    "XMLHttpRequests",
+    "num_import_rules",
+    "tabs",
+    "webRequest",
+    "modification_callbacks_density",
+    "security_policy",
+    "num_iframe_tags",
+    "num_form_tags",
+    "cookies"
+]

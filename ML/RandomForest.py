@@ -44,7 +44,10 @@ def randomForest(X, y):
 
     optimized_features = get_top_k_features(X, y, tree_count, best_k_features_size)
 
-    return optimized_features
+    final_rf = RandomForestClassifier(n_estimators=tree_count, random_state=42, n_jobs=-1)
+    final_rf.fit(X,y)
+
+    return optimized_features, final_rf
 
 def compute_optimized_tree_count(X, y):
     '''
@@ -54,7 +57,7 @@ def compute_optimized_tree_count(X, y):
     '''
     # Set up params
     min_trees = 15
-    max_trees = 300
+    max_trees = 500
     trees_range = range(min_trees, max_trees + 1, 10)
     oob_errors = []
 
@@ -138,15 +141,28 @@ def get_top_k_features(X, y, tree_count, k):
     ranked_indices = np.argsort(importances)[::-1]
 
     # select top-k indices
-    top_k_indices = ranked_indices[:k]
+    # top_k_indices = ranked_indices[:k]
 
-    # # Grab top indices and their attached value of importance
-    # top_features_dict = {}
+    # GRAB EVERYTHING
+    top_k_indices = ranked_indices
 
-    # for index in top_k_indices:
-    #     top_features_dict[index] = importances[index]
+    # Grab top indices and their attached value of importance
+    top_features_dict = {}
 
-    # print(top_features_dict)
+    for index in top_k_indices:
+        top_features_dict[index] = importances[index]
+
+    print(top_features_dict)
+
+    import sys
+
+    # Store original standard output
+    original_stdout = sys.stdout
+
+    with open('ALL_FEATURES_RANKED.txt', 'w') as f:
+        # Redirect standard output to the file
+        sys.stdout = f
+        print(top_features_dict)
 
     # Get feature names of top-k indices
     top_k_feature_names = X.columns[top_k_indices]
