@@ -82,13 +82,13 @@ def load_svm_bundle(bundle_path: str):
 
 def predict_svm(ext, model, feature_cols, threshold) -> dict:
     feat = vectorizeExt(ext)
-    score = assign_scores(feat)
-    # score = risk_score_thresholded(prob, threshold)
-    level = risk_level(score)
-
     feat.pop("Extension Name", None)
 
     X = pd.DataFrame([feat])
+
+    score = assign_scores(feat)
+    # score = risk_score_thresholded(prob, threshold)
+    level = risk_level(score)
 
     # make sure all required feature columns exist
     for c in feature_cols:

@@ -65,10 +65,16 @@ def assign_scores(feature_df):
     rf_model = joblib.load(RF_ALL_FEATURES)
     rf_features = joblib.load(ALL_FEATURES)
 
+     # Ensure all required RF features exist
+    for col in rf_features:
+        if col not in feature_df.columns:
+            feature_df[col] = 0.0
+
+    X_rf = feature_df[rf_features].apply(pd.to_numeric, errors="coerce").fillna(0.0)
 
     # Assigns a score based off the product of the raw counts and weights from RF
     # for row in range(feature_df.shape[0]):
-    prob = rf_model.predict_proba(feature_df[rf_features])[0][1]
+    prob = rf_model.predict_proba(X_rf)[0][1]
     score = round(prob * 100, 2)
     
     return score
