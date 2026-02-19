@@ -67,9 +67,9 @@ def assign_scores(feature_df):
 
 
     # Assigns a score based off the product of the raw counts and weights from RF
-    for row in range(feature_df.shape[0]):
-        prob = rf_model.predict_proba(feature_df[rf_features])[row][1]
-        score = round(prob * 100, 2)
+    # for row in range(feature_df.shape[0]):
+    prob = rf_model.predict_proba(feature_df[rf_features])[0][1]
+    score = round(prob * 100, 2)
     
     return score
 
