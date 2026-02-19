@@ -23,7 +23,7 @@ from Scanners.html_parser import *
 import joblib
 import pandas as pd
 from scoring import *
-from ML.vectorize import vectorizeExt
+from ML.vectorize import *
 
 
 
@@ -81,10 +81,11 @@ def load_svm_bundle(bundle_path: str):
 
 
 def predict_svm(ext, model, feature_cols, threshold) -> dict:
-    feat = vectorizeExt(ext)
+    feat = setExtML(ext)
     feat.pop("Extension Name", None)
+    feat.pop("label", None)
 
-    X = pd.DataFrame([feat])
+    # X = pd.DataFrame([feat])
 
     score = assign_scores(feat)
     # score = risk_score_thresholded(prob, threshold)

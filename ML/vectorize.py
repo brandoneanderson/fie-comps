@@ -63,5 +63,5 @@ def setExtML(set_exts):
 
 def test():
     # test_dict = {"test":test_ext}
-    # setExtML(test_dict)
+    setExtML()
     return
