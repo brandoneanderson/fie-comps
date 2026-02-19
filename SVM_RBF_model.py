@@ -18,19 +18,32 @@ from sklearn.metrics import (
 from sklearn.metrics import roc_curve
 
 # K-best features from RF output
-K_BEST_FEATURES = [
-    "specific_characters", "avg_line_length", "dynamic_code_gen_functions",
-    "event_handlers", "DOM_operations", "keyword_density", "whitespace %",
-    "DOM_change_sinks_density", "string_entropy", "word_size",
-    "webRequestBlocking", "DOM_operations_density", "event_handlers_density",
-    "XMLHttpRequests_density", "num_external_urls", "DOM_change_sinks",
-    "num_script_src_attrs", "num_script_tags", "num_background_image",
-    "storage", "All https domains", "XMLHttpRequests", "num_import_rules",
-    "tabs", "modification_callbacks_density", "webRequest", "security_policy",
-    "cookies", "num_iframe_tags", "num_http_urls", "modification_callbacks",
-    "management", "num_form_tags", "num_meta_refresh",
-    "num_external_iframe_src", "num_behavior", "notifications",
-]
+# OLD_K_BEST_FEATURES = [
+#     "specific_characters", "avg_line_length", "dynamic_code_gen_functions",
+#     "event_handlers", "DOM_operations", "keyword_density", "whitespace %",
+#     "DOM_change_sinks_density", "string_entropy", "word_size",
+#     "webRequestBlocking", "DOM_operations_density", "event_handlers_density",
+#     "XMLHttpRequests_density", "num_external_urls", "DOM_change_sinks",
+#     "num_script_src_attrs", "num_script_tags", "num_background_image",
+#     "storage", "All https domains", "XMLHttpRequests", "num_import_rules",
+#     "tabs", "modification_callbacks_density", "webRequest", "security_policy",
+#     "cookies", "num_iframe_tags", "num_http_urls", "modification_callbacks",
+#     "management", "num_form_tags", "num_meta_refresh",
+#     "num_external_iframe_src", "num_behavior", "notifications",
+# ]
+
+K_BEST_FEATURES = ['avg_line_length', 'specific_characters', 'dynamic_code_gen_functions',
+       'event_handlers', 'DOM_operations', 'keyword_density', 'whitespace %',
+       'DOM_change_sinks_density', 'string_entropy', 'word_size',
+       'DOM_operations_density', 'webRequestBlocking',
+       'event_handlers_density', 'num_external_urls', 'DOM_change_sinks',
+       'XMLHttpRequests_density', 'num_script_tags', 'num_script_src_attrs',
+       'num_background_image', 'storage', 'All https domains',
+       'XMLHttpRequests', 'tabs', 'webRequest',
+       'modification_callbacks_density', 'num_import_rules', 'security_policy',
+       'num_iframe_tags', 'num_form_tags', 'cookies',
+       'num_external_iframe_src', 'notifications', 'num_http_urls',
+       'modification_callbacks', 'num_meta_refresh', 'num_behavior']
 
 def pick_threshold_max_f1(y_true, proba):
     precision, recall, thresholds = precision_recall_curve(y_true, proba)
@@ -81,17 +94,17 @@ if __name__ == "__main__":
     # Hyperparameter tuning
     param_grid = {
         # "svm__C": [0.1, 1, 10, 100, 1000],
-        "svm__C": [6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "svm__C": [3, 4, 5, 6, 7, 8, 9, 10],
         # "svm__gamma": [1e-4, 1e-3, 1e-2, 1e-1, "scale"],
-        "svm__gamma":[0.005, 0.01, 0.02, 0.03],
-        # "svm__class_weight": [
-        #     None,
-        #     "balanced",
-        #     {0:1, 1:1.5},
-        #     {0:1, 1:2},
-        #     {0:1, 1:3},
-        #     {0:1, 1:4},
-        # ]
+        "svm__gamma":[0.02, 0.03, 0.04, 0.05, 0.06],
+        "svm__class_weight": [
+            None,
+            "balanced",
+            {0:1, 1:1.5},
+            {0:1, 1:2},
+            {0:1, 1:3},
+            {0:1, 1:4},
+        ]
     }
 
     cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
