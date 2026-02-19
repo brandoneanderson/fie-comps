@@ -141,6 +141,52 @@ function escapeHtml(s) {
   return div.innerHTML;
 }
 
+// Permission names -> description for Manifest tab (keys lowercase for lookup)
+const PERMISSION_DESCRIPTIONS = {
+  webrequest: "Allows an extension to analyse network traffic by intercepting, blocking, and modifying requests in the browser",
+  webrequestblocking: "Allows an extension to analyse network traffic by intercepting, blocking, and modifying requests in the browser",
+  tabs: "Used to communicate with Chrome's tabs system by creating, modifying, or rearranging tabs in the browser",
+  storage: "Provides data storage for client-side data",
+  notifications: "Used to display desktop notifications to the user",
+  cookies: "Used to query and modify browser's cookies.",
+  management: "Provides ways to manipulate other extensions that are installed in the browser",
+  contextmenus: "Allows an extension to add additional objects such as images, hyperlinks, and pages to Chrome's context menu",
+  contentmenus: "Allows an extension to add additional objects such as images, hyperlinks, and pages to Chrome's context menu"
+};
+
+function getPermissionDescription(permission) {
+  if (!permission || typeof permission !== "string") return null;
+  const key = permission.toLowerCase().replace(/[^a-z0-9]/g, "");
+  return PERMISSION_DESCRIPTIONS[key] || null;
+}
+
+function buildManifestHtml(analysis) {
+  const perms = Array.isArray(analysis.permissions) ? analysis.permissions : [];
+  const hostPerms = Array.isArray(analysis.host_permissions) ? analysis.host_permissions : [];
+  const securityPolicy = analysis.security_policy;
+
+  const permissionBars = perms.map((p) => {
+    const desc = getPermissionDescription(p);
+    const descHtml = desc ? `<div class="manifest-permission-desc">${escapeHtml(desc)}</div>` : "";
+    return `<div class="manifest-permission-bar" data-permission="${escapeHtml(String(p))}"><div class="manifest-permission-label">${escapeHtml(String(p))}</div>${descHtml}</div>`;
+  });
+
+  let html = "";
+  if (permissionBars.length) {
+    html += `<div class="manifest-section"><h4 class="manifest-section-title">Permissions</h4><div class="manifest-permission-list">${permissionBars.join("")}</div></div>`;
+  }
+  if (hostPerms.length) {
+    const hostBars = hostPerms.map((p) => `<div class="manifest-permission-bar manifest-host"><div class="manifest-permission-label">${escapeHtml(String(p))}</div><div class="manifest-permission-desc">Host or URL pattern this extension can access.</div></div>`);
+    html += `<div class="manifest-section"><h4 class="manifest-section-title">Host permissions</h4><div class="manifest-permission-list">${hostBars.join("")}</div></div>`;
+  }
+  if (securityPolicy && typeof securityPolicy === "object" && Object.keys(securityPolicy).length) {
+    const policyText = JSON.stringify(securityPolicy, null, 2);
+    html += `<div class="manifest-section"><h4 class="manifest-section-title">Security policy</h4><pre class="manifest-policy-pre">${escapeHtml(policyText)}</pre></div>`;
+  }
+  if (!html) html = "<p class=\"manifest-empty\">No manifest permissions or policy data.</p>";
+  return html;
+}
+
 function showResults(vm, extensionId) {
   if (!resultsPanel) return;
   resultsPanel.style.display = "block";
@@ -169,12 +215,17 @@ function showResults(vm, extensionId) {
     summaryEl.innerHTML = buildSummaryHtml(analysis, metadata);
   })();
 
-  // MANIFEST TAB
-  $("tab-manifest").textContent = JSON.stringify({
-    permissions: analysis.permissions,
-    host_permissions: analysis.host_permissions,
-    security_policy: analysis.security_policy,
-  }, null, 2);
+  // MANIFEST TAB: permission bars with click-to-expand descriptions
+  const manifestEl = $("tab-manifest");
+  manifestEl.innerHTML = buildManifestHtml(analysis);
+  manifestEl.classList.add("manifest-tab");
+  manifestEl.querySelectorAll(".manifest-permission-bar").forEach((bar) => {
+    bar.addEventListener("click", () => {
+      const desc = bar.querySelector(".manifest-permission-desc");
+      if (!desc) return;
+      bar.classList.toggle("expanded");
+    });
+  });
 
   // HTML TAB
   $("tab-html").textContent =
@@ -222,8 +273,8 @@ function getSampleResultsVm() {
         },
         permissions: [
           "storage",
-          "activeTab",
-          "https://example.com/*"
+          "tabs",
+          "webrequest",
         ],
         host_permissions: [
           "https://*.example.com/*",

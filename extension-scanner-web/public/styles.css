@@ -804,3 +804,110 @@ body {
   font-size: 14px;
   color: #e5e5e5;
 }
+
+/* Manifest tab: permission bars with click-to-expand descriptions */
+#tab-manifest.manifest-tab {
+  white-space: normal;
+  font-family: inherit;
+}
+
+.manifest-empty {
+  color: #a0a0a0;
+  margin: 0;
+}
+
+.manifest-section {
+  margin-bottom: 24px;
+}
+
+.manifest-section:last-child {
+  margin-bottom: 0;
+}
+
+.manifest-section-title {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #808080;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.manifest-permission-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.manifest-permission-bar {
+  border: 1px solid rgba(42, 42, 42, 0.8);
+  border-radius: 10px;
+  background: rgba(30, 30, 30, 0.8);
+  cursor: pointer;
+  overflow: hidden;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.manifest-permission-bar:hover {
+  background: rgba(45, 45, 45, 0.9);
+  border-color: rgba(70, 70, 70, 0.9);
+}
+
+.manifest-permission-bar .manifest-permission-label {
+  padding: 12px 14px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #e5e5e5;
+  display: flex;
+  align-items: center;
+}
+
+.manifest-permission-bar .manifest-permission-label::after {
+  content: "";
+  margin-left: auto;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid #808080;
+  transition: transform 0.2s ease;
+}
+
+.manifest-permission-bar.expanded .manifest-permission-label::after {
+  transform: rotate(180deg);
+}
+
+.manifest-permission-bar .manifest-permission-desc {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.25s ease;
+  font-size: 13px;
+  color: #a0a0a0;
+  line-height: 1.5;
+  padding: 0 14px;
+}
+
+.manifest-permission-bar.expanded .manifest-permission-desc {
+  max-height: 120px;
+  padding: 0 14px 14px;
+  padding-top: 0;
+  margin-top: -4px;
+}
+
+.manifest-permission-bar.manifest-host .manifest-permission-label {
+  font-family: ui-monospace, monospace;
+  font-size: 13px;
+}
+
+.manifest-policy-pre {
+  margin: 0;
+  padding: 14px;
+  border-radius: 10px;
+  background: rgba(20, 20, 20, 0.9);
+  border: 1px solid rgba(42, 42, 42, 0.6);
+  font-size: 12px;
+  color: #c0c0c0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: ui-monospace, monospace;
+}
