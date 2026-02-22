@@ -89,6 +89,7 @@
           <!-- Tabs -->
           <div class="tabs">
             <button class="tab active" data-tab="summary">Summary</button>
+            <button class="tab" data-tab="ml">ML</button>
             <button class="tab" data-tab="manifest">Manifest</button>
             <button class="tab" data-tab="html">HTML</button>
             <button class="tab" data-tab="css">CSS</button>
@@ -99,6 +100,24 @@
           <!-- Tab Panels -->
           <div class="tab-panels">
             <div class="tab-panel active" id="tab-summary"></div>
+
+            <div class="tab-panel" id="tab-ml">
+              <h3 style="margin: 0 0 10px;">Machine Learning</h3>
+              <p style="color:#a0a0a0; margin: 0 0 14px;">
+                Learn how our models classify extensions as benign vs malicious, how we built the dataset,
+                and how the models performed on our test set.
+              </p>
+
+              <button
+                type="button"
+                class="scan-button"
+                id="mlMoreButton"
+                style="width: fit-content;"
+              >
+                Click to view more about ML
+                <div class="arrow-icon"></div>
+              </button>
+            </div>
             <div class="tab-panel" id="tab-manifest"></div>
             <div class="tab-panel" id="tab-html"></div>
             <div class="tab-panel" id="tab-css"></div>

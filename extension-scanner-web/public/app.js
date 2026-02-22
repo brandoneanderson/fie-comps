@@ -33,6 +33,13 @@ document.querySelectorAll(".tab").forEach(btn => {
   btn.addEventListener("click", () => setTab(btn.dataset.tab));
 });
 
+const mlMoreButton = document.getElementById("mlMoreButton");
+if (mlMoreButton) {
+  mlMoreButton.addEventListener("click", () => {
+    window.location.href = "/ml.html";
+  });
+}
+
 
 function setStatus(msg) {
   if (statusText) statusText.textContent = msg;
@@ -708,5 +715,6 @@ if (showSampleResultsBtn) {
     if (!extensionUrlInput.closest(".store-search-wrap")?.contains(e.target)) {
       hideResults();
     }
-  });
+  }
+);
 })();
