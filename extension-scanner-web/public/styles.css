@@ -806,9 +806,69 @@ body {
 }
 
 /* Manifest tab: permission bars with click-to-expand descriptions */
-#tab-manifest.manifest-tab {
+#tab-manifest.manifest-tab,
+#tab-html.manifest-tab,
+#tab-css.manifest-tab,
+#tab-js.manifest-tab,
+#tab-ml.manifest-tab {
   white-space: normal;
   font-family: inherit;
+}
+
+/* ML Prediction tab */
+.ml-prediction-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  margin-bottom: 20px;
+}
+
+.ml-prediction-label {
+  font-size: 28px;
+  font-weight: 700;
+  padding: 10px 20px;
+  border-radius: 12px;
+}
+
+.ml-label-benign {
+  background: rgba(34, 197, 94, 0.25);
+  color: #22c55e;
+}
+
+.ml-label-malicious {
+  background: rgba(239, 68, 68, 0.25);
+  color: #ef4444;
+}
+
+.ml-label-unknown {
+  background: rgba(100, 100, 100, 0.25);
+  color: #a0a0a0;
+}
+
+.ml-prediction-sublabel {
+  font-size: 13px;
+  color: #808080;
+}
+
+.ml-tab-content .summary-meta-row {
+  margin-bottom: 8px;
+}
+
+.ml-learn-more-wrap {
+  margin: 24px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid rgba(42, 42, 42, 0.6);
+}
+
+.ml-learn-more {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.ml-learn-more:hover {
+  text-decoration: underline;
 }
 
 .manifest-empty {
@@ -899,15 +959,8 @@ body {
   font-size: 13px;
 }
 
-.manifest-policy-pre {
+.manifest-policy-status {
   margin: 0;
-  padding: 14px;
-  border-radius: 10px;
-  background: rgba(20, 20, 20, 0.9);
-  border: 1px solid rgba(42, 42, 42, 0.6);
-  font-size: 12px;
-  color: #c0c0c0;
-  white-space: pre-wrap;
-  word-break: break-word;
-  font-family: ui-monospace, monospace;
+  font-size: 14px;
+  color: #e5e5e5;
 }

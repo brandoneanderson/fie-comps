@@ -179,12 +179,155 @@ function buildManifestHtml(analysis) {
     const hostBars = hostPerms.map((p) => `<div class="manifest-permission-bar manifest-host"><div class="manifest-permission-label">${escapeHtml(String(p))}</div><div class="manifest-permission-desc">Host or URL pattern this extension can access.</div></div>`);
     html += `<div class="manifest-section"><h4 class="manifest-section-title">Host permissions</h4><div class="manifest-permission-list">${hostBars.join("")}</div></div>`;
   }
-  if (securityPolicy && typeof securityPolicy === "object" && Object.keys(securityPolicy).length) {
-    const policyText = JSON.stringify(securityPolicy, null, 2);
-    html += `<div class="manifest-section"><h4 class="manifest-section-title">Security policy</h4><pre class="manifest-policy-pre">${escapeHtml(policyText)}</pre></div>`;
-  }
+  const hasSecurityPolicy = securityPolicy === true ||
+    (securityPolicy && typeof securityPolicy === "object" && Object.keys(securityPolicy).length > 0);
+  const cspDesc = "Help prevent websites from inadvertently executing malicious content.";
+  html += `<div class="manifest-section"><h4 class="manifest-section-title">Security policy</h4><div class="manifest-permission-list"><div class="manifest-permission-bar"><div class="manifest-permission-label">${hasSecurityPolicy ? "Present" : "Not present"}</div><div class="manifest-permission-desc">${escapeHtml(cspDesc)}</div></div></div></div>`;
   if (!html) html = "<p class=\"manifest-empty\">No manifest permissions or policy data.</p>";
   return html;
+}
+
+// HTML tab: feature key -> description (same bar + dropdown pattern as Manifest)
+const HTML_FEATURE_DESCRIPTIONS = {
+  num_object_tags: "Counts the number of object HTML tags. The tag places an object in a document and contains information for retrieving ActiveX controls that are known to be exploitable.",
+  num_embed_tags: "Counts <embed> and <applet> tags.",
+  num_applet_tags: "Counts <embed> and <applet> tags.",
+  num_iframe_tags: "Counts <iframe> tags in extension HTML pages. Allows the introducing of another HTML page into the current webpage. Common in phishing attacks.",
+  num_inline_event_handlers: "Counts inline onclick=, onload=, etc. Represents the number of tags that attackers can make use of to jeopardize the victims' browsers through an XSS attack.",
+  num_javascript_urls: "Counts javascript: URLs in attributes.",
+  num_data_urls: "Counts data: URLs in attributes.",
+  num_external_script_src: "Counts remote script loading (<script src=\"https://...\">).",
+  num_meta_refresh: "Counts <meta http-equiv=\"refresh\"> redirects.",
+  num_external_iframe_src: "Counts <iframe src=\"https://...\"> (external embedded content).",
+  num_form_tags: "Counts <form> elements. Might be inserted and has the potential to be abused by an attacker.",
+  num_external_form_actions: "Counts forms submitting to external URLs.",
+  num_password_inputs: "Counts <input type=\"password\"> fields.",
+  num_script_tags: "Counts <script> tags.",
+  num_http_urls: "Counts http: URLs in attributes (insecure transport).",
+  num_external_urls: "Counts external (http/https) URLs in attributes.",
+  num_script_src_attrs: "Counts script src attributes (local or external).",
+};
+
+function getHtmlFeatureDescription(key) {
+  return HTML_FEATURE_DESCRIPTIONS[key] || null;
+}
+
+function buildHtmlTabHtml(analysis) {
+  const features = analysis.html_features && typeof analysis.html_features === "object" ? analysis.html_features : {};
+  const keys = Object.keys(features).sort();
+  if (!keys.length) return "<p class=\"manifest-empty\">No HTML features data.</p>";
+
+  const bars = keys.map((key) => {
+    const value = features[key];
+    const desc = getHtmlFeatureDescription(key);
+    const descHtml = desc ? `<div class="manifest-permission-desc">${escapeHtml(desc)}</div>` : "";
+    const label = `${key}: ${value}`;
+    return `<div class="manifest-permission-bar"><div class="manifest-permission-label">${escapeHtml(label)}</div>${descHtml}</div>`;
+  });
+
+  return `<div class="manifest-section"><div class="manifest-permission-list">${bars.join("")}</div></div>`;
+}
+
+// CSS tab: feature key -> description (same bar + dropdown pattern)
+const CSS_FEATURE_DESCRIPTIONS = {
+  num_background_image: "Records how many background-image properties contained in a CSS file. Malicious images could be injected into background properties.",
+  num_behavior: "Calculates the frequency that behaviour property appears in a CSS file. It is possible to inject malicious codes into stylesheets via the property.",
+  num_import_rules: "Counting the number of @import rules in a CSS file is because attacks would be likely to occur when untrusted files are loaded by the method.",
+  num_external_urls: "Counts url() references in CSS that load external resources.",
+};
+
+function getCssFeatureDescription(key) {
+  return CSS_FEATURE_DESCRIPTIONS[key] || null;
+}
+
+function buildCssTabHtml(analysis) {
+  const features = analysis.css_features && typeof analysis.css_features === "object" ? analysis.css_features : {};
+  const keys = Object.keys(features).sort();
+  if (!keys.length) return "<p class=\"manifest-empty\">No CSS features data.</p>";
+
+  const bars = keys.map((key) => {
+    const value = features[key];
+    const desc = getCssFeatureDescription(key);
+    const descHtml = desc ? `<div class="manifest-permission-desc">${escapeHtml(desc)}</div>` : "";
+    const label = `${key}: ${value}`;
+    return `<div class="manifest-permission-bar"><div class="manifest-permission-label">${escapeHtml(label)}</div>${descHtml}</div>`;
+  });
+
+  return `<div class="manifest-section"><div class="manifest-permission-list">${bars.join("")}</div></div>`;
+}
+
+// JS tab: feature key -> description (same bar + dropdown pattern)
+const JS_FEATURE_DESCRIPTIONS = {
+  "whitespace %": "Used to detect common characteristics of obfuscated and packed malicious JS scripts. Lower whitespace % hints at such scripts.",
+  avg_line_length: "Used to detect common characteristics of obfuscated and packed malicious JS scripts. Longer line lengths hints at such scripts.",
+  specific_characters: "Obfuscated strings use excessively specific characters such as \\, [, ], @, x, and u.",
+  word_size: "Obfuscated strings often use excessively long string sizes.",
+  string_entropy: "Checks distribution of used byte codes. Low entropy signals easy predictability for character sequence (aaaaaaa). High entropy signals low predictability (4f!a8Z9#vP2@qR) signaling obfuscation.",
+  dynamic_code_gen_functions: "Enables developers to create code dynamically in the form of a string (e.g., eval, setTimeout, and setInterval).",
+  DOM_change_sinks: "Methods allow data to get executed if it is written in the context of a page. Passing unsanitized data to these sinks would inevitably lead to drive-by-download or DOM-based XSS vulnerabilities.",
+  DOM_operations: "DOM change methods allow data to get executed if written in the context of a page. Passing unsanitized data to these sinks can lead to drive-by-download or DOM-based XSS vulnerabilities.",
+  event_handlers: "Inline event handlers can allow JS to be invoked when the specified event occurs leading to potential vulnerabilities.",
+  HTTP_scripts: "Counts the number of external scripts that are loaded over HTTPS. Importing scripts in background pages over HTTPS is extremely easy to create vulnerabilities.",
+  modification_callbacks: "To effectively implement man-in-the-middle attacks, malicious extensions could strip or modify the security-related HTTP request and response headers by using callbacks in webRequest API.",
+  XMLHttpRequests: "Can be used by extensions to access the network and deploy network attacks such as SQL injection and drive-by-download.",
+  keyword_density: "Calculates the percentage of times JavaScript keywords appear in JavaScript code segment compared with the total amount of words. Malicious JS scripts have lower rates of keywords such as this, if, and var.",
+  event_handlers_density: "Inline event handlers can allow JS to be invoked when the specified event occurs leading to potential vulnerabilities.",
+  modification_callbacks_density: "To effectively implement man-in-the-middle attacks, malicious extensions could strip or modify the security-related HTTP request and response headers by using callbacks in webRequest API.",
+  XMLHttpRequests_density: "Can be used by extensions to access the network and deploy network attacks such as SQL injection and drive-by-download.",
+  HTTP_scripts_density: "Counts the number of external scripts that are loaded over HTTPS. Importing scripts in background pages over HTTPS is extremely easy to create vulnerabilities.",
+  DOM_operations_density: "DOM change methods allow data to get executed if written in the context of a page. Passing unsanitized data to these sinks can lead to drive-by-download or DOM-based XSS vulnerabilities.",
+  DOM_change_sinks_density: "Methods allow data to get executed if it is written in the context of a page. Passing unsanitized data to these sinks would inevitably lead to drive-by-download or DOM-based XSS vulnerabilities.",
+};
+
+function getJsFeatureDescription(key) {
+  return JS_FEATURE_DESCRIPTIONS[key] || null;
+}
+
+function buildJsTabHtml(analysis) {
+  const features = analysis.js_features && typeof analysis.js_features === "object" ? analysis.js_features : {};
+  const keys = Object.keys(features).sort();
+  if (!keys.length) return "<p class=\"manifest-empty\">No JavaScript features data.</p>";
+
+  const bars = keys.map((key) => {
+    const value = features[key];
+    const desc = getJsFeatureDescription(key);
+    const descHtml = desc ? `<div class="manifest-permission-desc">${escapeHtml(desc)}</div>` : "";
+    const label = `${key}: ${value}`;
+    return `<div class="manifest-permission-bar"><div class="manifest-permission-label">${escapeHtml(label)}</div>${descHtml}</div>`;
+  });
+
+  return `<div class="manifest-section"><div class="manifest-permission-list">${bars.join("")}</div></div>`;
+}
+
+function buildMlTabHtml(analysis) {
+  const pred = analysis.prediction || {};
+  const label = (pred.label || "").toUpperCase();
+  const isBenign = label === "BENIGN";
+  const isMalicious = label === "MALICIOUS";
+  const riskScore = pred.risk_score != null ? pred.risk_score : null;
+  const riskLevel = pred.risk_level || "";
+  const confidence = pred.confidence || "";
+  const action = pred.action || "";
+
+  let labelClass = "ml-label-unknown";
+  let labelText = "No prediction";
+  if (isBenign) {
+    labelClass = "ml-label-benign";
+    labelText = "Benign";
+  } else if (isMalicious) {
+    labelClass = "ml-label-malicious";
+    labelText = "Malicious";
+  }
+
+  const parts = [];
+  parts.push(`<div class="ml-prediction-card"><span class="ml-prediction-label ${labelClass}">${escapeHtml(labelText)}</span><span class="ml-prediction-sublabel">Machine learning prediction</span></div>`);
+  if (riskScore != null) parts.push(`<div class="summary-meta-row"><span class="summary-meta-label">Risk score</span><span class="summary-meta-value">${escapeHtml(String(riskScore))}</span></div>`);
+  if (riskLevel) parts.push(`<div class="summary-meta-row"><span class="summary-meta-label">Risk level</span><span class="summary-meta-value">${escapeHtml(riskLevel)}</span></div>`);
+  if (confidence) parts.push(`<div class="summary-meta-row"><span class="summary-meta-label">Confidence</span><span class="summary-meta-value">${escapeHtml(confidence)}</span></div>`);
+  if (action) parts.push(`<div class="summary-meta-row"><span class="summary-meta-label">Recommendation</span><span class="summary-meta-value">${escapeHtml(action)}</span></div>`);
+  parts.push(`<p class="ml-learn-more-wrap"><a href="/ml-explanation.html" target="_blank" rel="noopener noreferrer" class="ml-learn-more">Learn more</a> about how we use machine learning to generate these predictions.</p>`);
+
+  return `<div class="manifest-section"><div class="ml-tab-content">${parts.join("")}</div></div>`;
 }
 
 function showResults(vm, extensionId) {
@@ -227,29 +370,46 @@ function showResults(vm, extensionId) {
     });
   });
 
-  // HTML TAB
-  $("tab-html").textContent =
-    analysis.html_report ||
-    JSON.stringify({
-      features: analysis.html_features,
-      examples: analysis.html_examples,
-    }, null, 2);
+  // HTML TAB: feature bars with click-to-expand descriptions
+  const htmlTabEl = $("tab-html");
+  htmlTabEl.innerHTML = buildHtmlTabHtml(analysis);
+  htmlTabEl.classList.add("manifest-tab");
+  htmlTabEl.querySelectorAll(".manifest-permission-bar").forEach((bar) => {
+    bar.addEventListener("click", () => {
+      const desc = bar.querySelector(".manifest-permission-desc");
+      if (!desc) return;
+      bar.classList.toggle("expanded");
+    });
+  });
 
-  // CSS TAB
-  //$("tab-css").textContent = JSON.stringify(analysis.css_features || {}, null, 2);
-  $("tab-css").textContent = JSON.stringify({
-    features: analysis.css_features || {},
-    examples: analysis.css_examples || {}
-  }, null, 2);
+  // CSS TAB: feature bars with click-to-expand descriptions
+  const cssTabEl = $("tab-css");
+  cssTabEl.innerHTML = buildCssTabHtml(analysis);
+  cssTabEl.classList.add("manifest-tab");
+  cssTabEl.querySelectorAll(".manifest-permission-bar").forEach((bar) => {
+    bar.addEventListener("click", () => {
+      const desc = bar.querySelector(".manifest-permission-desc");
+      if (!desc) return;
+      bar.classList.toggle("expanded");
+    });
+  });
 
-  // JS TAB
-  // $("tab-js").textContent = JSON.stringify(analysis.js_features || {}, null, 2);
-// JS TAB
-  $("tab-js").textContent = JSON.stringify({
-    features: analysis.js_features || {},
-    examples: analysis.js_examples || {},
-    totals: analysis.js_totals || null
-  }, null, 2);
+  // JS TAB: feature bars with click-to-expand descriptions
+  const jsTabEl = $("tab-js");
+  jsTabEl.innerHTML = buildJsTabHtml(analysis);
+  jsTabEl.classList.add("manifest-tab");
+  jsTabEl.querySelectorAll(".manifest-permission-bar").forEach((bar) => {
+    bar.addEventListener("click", () => {
+      const desc = bar.querySelector(".manifest-permission-desc");
+      if (!desc) return;
+      bar.classList.toggle("expanded");
+    });
+  });
+
+  // ML PREDICTION TAB
+  const mlTabEl = $("tab-ml");
+  mlTabEl.innerHTML = buildMlTabHtml(analysis);
+  mlTabEl.classList.add("manifest-tab");
 
   // Default tab
   setTab("summary");
@@ -296,29 +456,31 @@ function getSampleResultsVm() {
         ],
         html_report: null,
         css_features: {
-          external_stylesheets: 1,
-          inline_styles: 2,
-          url_fetches: ["https://fonts.googleapis.com/css?family=Roboto"]
+          num_background_image: 2,
+          num_behavior: 0,
+          num_import_rules: 1,
+          num_external_urls: 3
         },
         css_examples: [
           { rule: "@import", value: "url('theme.css')" },
           { property: "background", value: "linear-gradient(...)" }
         ],
         js_features: {
-          eval_usage: false,
-          dom_access: true,
-          network_requests: ["fetch", "XMLHttpRequest"],
-          storage_access: ["chrome.storage.local", "localStorage"]
+          "whitespace %": 0.18,
+          avg_line_length: 42,
+          specific_characters: 0.02,
+          word_size: 4.2,
+          string_entropy: 3.1,
+          dynamic_code_gen_functions: 2,
+          DOM_change_sinks: 0,
+          event_handlers: 1,
+          HTTP_scripts: 0,
+          modification_callbacks: 0,
+          XMLHttpRequests: 1,
+          keyword_density: 0.08
         },
-        js_examples: [
-          { pattern: "chrome.tabs.query", file: "background.js", line: 42 },
-          { pattern: "eval(", file: null, line: null }
-        ],
-        js_totals: {
-          files_analyzed: 5,
-          total_lines: 1200,
-          api_calls: 18
-        }
+        js_examples: [],
+        js_totals: { file_count: 5, total_lines: 1200, total_chars: 45000 }
       }
     }
   };
