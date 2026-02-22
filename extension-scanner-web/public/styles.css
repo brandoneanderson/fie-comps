@@ -800,6 +800,12 @@ body {
   letter-spacing: 0.03em;
 }
 
+.summary-meta-label-recommendation {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
 .summary-meta-value {
   font-size: 14px;
   color: #e5e5e5;

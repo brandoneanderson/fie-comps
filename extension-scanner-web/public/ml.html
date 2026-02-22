@@ -156,6 +156,27 @@
       font-size: 13px;
     }
 
+     .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 20px; 
+      justify-items: center; 
+      margin: 20px;
+    }
+
+    .gallery figure img {
+      width: 100%;   
+      height: auto;  
+      max-width: 400px; 
+      display: block;
+    }
+
+    .gallery figure figcaption {
+      text-align: center;
+      font-size: 1.5em;
+      margin-top: 10px;
+    }
+
     .note {
       border-left: 3px solid var(--accent);
       padding: 10px 12px;
@@ -374,32 +395,34 @@
         </p>
 
         <!-- Update paths to images  -->
-        <figure>
-          <img src="/assets/ml/rf_feature_importance.png" alt="Random Forest feature importance bar chart" />
-          <figcaption>Random Forest feature importances (top features).</figcaption>
-        </figure>
+         <div class="gallery">
+          <figure>
+            <img src="/roc.png" alt="ROC curve on the test set for our Random Forest" />
+            <figcaption>ROC curve (test).</figcaption>
+          </figure>
+          <figure>
+            <img src="/roc.png" alt="ROC curve on the test set for our SVM-RBF" />
+            <figcaption>ROC curve (test).</figcaption>
+          </figure>
+          <figure>
+            <img src="/roc.png" alt="Confusion Matrix on the test set for our Random Forest" />
+            <figcaption>ROC curve (test).</figcaption>
+          </figure>
+          <figure>
+            <img src="/roc.png" alt="Precision-Recall curve on the test set for our Random Forest" />
+            <figcaption>ROC curve (test).</figcaption>
+          </figure>
+          <figure>
+            <img src="/roc.png" alt="Confusion Matrix on the test set for our SVM-RBF" />
+            <figcaption>ROC curve (test).</figcaption>
+          </figure>
+          <figure>
+            <img src="/roc.png" alt="Precision-Recall curve on the test set for our SVM-RBF" />
+            <figcaption>ROC curve (test).</figcaption>
+          </figure>
+        </div>
 
-        <figure>
-          <img src="/assets/ml/confusion_matrix.png" alt="Confusion matrix on the test set" />
-          <figcaption>Confusion matrix on the held-out test set.</figcaption>
-        </figure>
-
-        <figure>
-          <img src="/assets/ml/roc_curve.png" alt="ROC curve on the test set" />
-          <figcaption>ROC curve (test).</figcaption>
-        </figure>
-
-        <figure>
-          <img src="/assets/ml/pr_curve.png" alt="Precision-recall curve on the test set" />
-          <figcaption>Precision–Recall curve (test).</figcaption>
-        </figure>
-
-        <figure>
-          <img src="/assets/ml/shap_summary.png" alt="SHAP summary plot showing global feature impact" />
-          <figcaption>SHAP summary plot for global feature impact.</figcaption>
-        </figure>
-
-        <div class="note">
+        
           
         </div>
       </section>
@@ -407,7 +430,19 @@
   </main>
 
   <footer>
-    <div>© Extension Scanner — Machine Learning Overview</div>
+    <div class="nav">
+      <div class="brand">
+        <span class="dot"></span>
+        <span>Machine Learning</span>
+      </div>
+      <nav class="navlinks">
+        <!-- Update these hrefs -->
+        <a href="/index.html">Home</a>
+        <a href="/scan.html">Scan</a>
+        <a href="/ml.html" class="active">ML</a>
+        <a href="/about.html">About</a>
+      </nav>
+    </div>
   </footer>
 </body>
 </html>

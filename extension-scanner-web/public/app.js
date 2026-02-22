@@ -114,7 +114,10 @@ function buildSummaryHtml(analysis, metadata) {
   else if (level === "MEDIUM") scoreClass = "summary-risk-medium";
 
   const scoreHtml = score != null
-    ? `<div class="summary-score-wrap"><span class="summary-score ${scoreClass}">${score}</span><span class="summary-score-label">Risk score</span></div>`
+    ? `<div class="summary-score-wrap">
+    <span class="summary-score ${scoreClass}">${score}</span>
+    <span class="summary-score-label">Risk score</span>
+    </div>`
     : "";
 
   const levelHtml = level
@@ -130,7 +133,7 @@ function buildSummaryHtml(analysis, metadata) {
     metaParts.push(`<div class="summary-meta-row"><span class="summary-meta-label">Rating</span><span class="summary-meta-value">${ratingParts.join(" · ")}</span></div>`);
   }
   if (action) {
-    metaParts.push(`<div class="summary-meta-row"><span class="summary-meta-label">Recommendation</span><span class="summary-meta-value">${escapeHtml(action)}</span></div>`);
+    metaParts.push(`<div class="summary-meta-row"><span class="summary-meta-label-recommendation ${scoreClass}">Recommendation</span><span class="summary-meta-value">${escapeHtml(action)}</span></div>`);
   }
 
   return `
