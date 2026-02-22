@@ -964,3 +964,24 @@ body {
   font-size: 14px;
   color: #e5e5e5;
 }
+
+.navlinks {
+  display: flex;              
+  justify-content: center;    
+  gap: 24px;                  
+  margin-top: 10px;           
+}
+
+.navlinks a {
+  color: white;               
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.navlinks a:hover {
+  text-decoration: underline;
+}
+
+.navlinks a.active {
+  font-weight: bold;
+}
