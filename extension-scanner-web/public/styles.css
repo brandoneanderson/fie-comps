@@ -843,11 +843,11 @@ body {
   border-bottom: none;
 }
 
-.summary-guide-row.summary-guide-safe td:first-child { color: #22c55e; font-weight: 500; }
+.summary-guide-row.summary-guide-safe td:first-child { color: #198e44; font-weight: 500; }
 .summary-guide-row.summary-guide-low td:first-child { color: #22c55e; font-weight: 500; }
 .summary-guide-row.summary-guide-medium td:first-child { color: #eab308; font-weight: 500; }
-.summary-guide-row.summary-guide-high td:first-child { color: #ef4444; font-weight: 500; }
-.summary-guide-row.summary-guide-critical td:first-child { color: #fca5a5; font-weight: 500; }
+.summary-guide-row.summary-guide-high td:first-child { color: #fca5a5; font-weight: 500; }
+.summary-guide-row.summary-guide-critical td:first-child { color: #ef4444; font-weight: 500; } 
 
 .summary-guide-table td:last-child {
   color: #a0a0a0;
