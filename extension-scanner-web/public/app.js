@@ -179,7 +179,8 @@ function buildManifestHtml(analysis) {
   const permissionBars = perms.map((p) => {
     const desc = getPermissionDescription(p);
     const descHtml = desc ? `<div class="manifest-permission-desc">${escapeHtml(desc)}</div>` : "";
-    return `<div class="manifest-permission-bar" data-permission="${escapeHtml(String(p))}"><div class="manifest-permission-label">${escapeHtml(String(p))}</div>${descHtml}</div>`;
+    const riskyClass = desc ? " manifest-permission-risky" : "";
+    return `<div class="manifest-permission-bar${riskyClass}" data-permission="${escapeHtml(String(p))}"><div class="manifest-permission-label">${escapeHtml(String(p))}</div>${descHtml}</div>`;
   });
 
   let html = "";
@@ -193,7 +194,8 @@ function buildManifestHtml(analysis) {
   const hasSecurityPolicy = securityPolicy === true ||
     (securityPolicy && typeof securityPolicy === "object" && Object.keys(securityPolicy).length > 0);
   const cspDesc = "Help prevent websites from inadvertently executing malicious content.";
-  html += `<div class="manifest-section"><h4 class="manifest-section-title">Security policy</h4><div class="manifest-permission-list"><div class="manifest-permission-bar"><div class="manifest-permission-label">${hasSecurityPolicy ? "Present" : "Not present"}</div><div class="manifest-permission-desc">${escapeHtml(cspDesc)}</div></div></div></div>`;
+  const cspClass = hasSecurityPolicy ? " manifest-csp-present" : " manifest-csp-absent";
+  html += `<div class="manifest-section"><h4 class="manifest-section-title">Security policy</h4><div class="manifest-permission-list"><div class="manifest-permission-bar${cspClass}"><div class="manifest-permission-label">${hasSecurityPolicy ? "Present" : "Not present"}</div><div class="manifest-permission-desc">${escapeHtml(cspDesc)}</div></div></div></div>`;
   if (!html) html = "<p class=\"manifest-empty\">No manifest permissions or policy data.</p>";
   return html;
 }
@@ -501,7 +503,7 @@ function getSampleResultsVm() {
 
 function showSampleResults() {
   if (resultsLink) resultsLink.style.display = "inline-flex";
-  setStatus("Sample results (no scan performed)");
+  setStatus("Sample results generated");
   setDebug(null);
   showResults(getSampleResultsVm(), null);
 }
