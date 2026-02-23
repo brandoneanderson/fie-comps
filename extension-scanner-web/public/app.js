@@ -92,8 +92,31 @@ function getExtensionIdFromStoreUrl(url) {
 function formatRiskLevel(level) {
   if (!level) return "Unknown";
   const s = String(level).toUpperCase();
-  const labels = { LOW: "Low risk", MEDIUM: "Medium risk", HIGH: "High risk", CRITICAL: "Critical risk" };
+  const labels = { SAFE: "Safe", LOW: "Low risk", MEDIUM: "Medium risk", HIGH: "High risk", CRITICAL: "Critical risk" };
   return labels[s] || level;
+}
+
+// Scoring guide thresholds from scoring.py (root) risk_level() – order: SAFE → CRITICAL
+const SCORING_GUIDE = [
+  { level: "SAFE", min: 0, max: 19 },
+  { level: "LOW", min: 20, max: 29 },
+  { level: "MEDIUM", min: 30, max: 49 },
+  { level: "HIGH", min: 50, max: 79 },
+  { level: "CRITICAL", min: 80, max: 100 },
+];
+
+function buildScoringGuideHtml() {
+  const rows = SCORING_GUIDE.map(
+    (r) => `<tr class="summary-guide-row summary-guide-${r.level.toLowerCase()}"><td>${escapeHtml(formatRiskLevel(r.level))}</td><td>${r.min} – ${r.max}</td></tr>`
+  ).join("");
+  return `
+    <div class="summary-guide">
+      <h4 class="summary-guide-title">Scoring guide</h4>
+      <table class="summary-guide-table">
+        <thead><tr><th>Risk level</th><th>Score range</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
 }
 
 // Build summary tab HTML from analysis + optional dataset metadata
@@ -137,11 +160,16 @@ function buildSummaryHtml(analysis, metadata) {
   }
 
   return `
-    <div class="summary-cards">
-      ${scoreHtml}
-      ${levelHtml}
+    <div class="summary-layout">
+      <div class="summary-left">
+        <div class="summary-cards">
+          ${scoreHtml}
+          ${levelHtml}
+        </div>
+        <div class="summary-meta">${metaParts.join("")}</div>
+      </div>
+      <div class="summary-right">${buildScoringGuideHtml()}</div>
     </div>
-    <div class="summary-meta">${metaParts.join("")}</div>
   `;
 }
 
@@ -347,7 +375,8 @@ function buildMlTabHtml(analysis) {
 
 function showResults(vm, extensionId) {
   if (!resultsPanel) return;
-  resultsPanel.style.display = "block";
+  // Keep panel hidden until user clicks "Click to view results"
+  resultsPanel.style.display = "none";
 
   // Support both nested (sample) and flat (real VM) response
   const analysis = vm?.analysis?.report ?? vm;
@@ -441,7 +470,7 @@ function getSampleResultsVm() {
         ratingCount: 60989,
         prediction: {
           label: "BENIGN",
-          risk_score: 12,
+          risk_score: 21,
           risk_level: "LOW",
           action: "Allow",
           confidence: "HIGH"

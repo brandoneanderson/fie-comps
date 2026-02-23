@@ -315,7 +315,7 @@ body {
 .search-container {
     background: linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(20, 20, 20, 0.95) 100%);
     border-radius: 28px;
-    padding: 40px;
+    padding: 20px;
     border: 1px solid rgba(42, 42, 42, 0.6);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.02);
     transition: all 0.3s ease;
@@ -486,7 +486,7 @@ body {
 
 /* Results Section */
 .results-section {
-    padding: 60px 40px 80px;
+    padding: 5px 40px 80px;
     text-align: center;
 }
 
@@ -783,6 +783,75 @@ body {
 .summary-level-medium { background: rgba(234, 179, 8, 0.2); color: #eab308; }
 .summary-level-high { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
 .summary-level-critical { background: rgba(239, 68, 68, 0.35); color: #fca5a5; }
+.summary-level-safe { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+
+.summary-layout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 28px;
+  align-items: flex-start;
+}
+
+.summary-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.summary-right {
+  flex: 0 0 auto;
+}
+
+.summary-guide {
+  background: rgba(10, 10, 10, 0.6);
+  border: 1px solid rgba(42, 42, 42, 0.6);
+  border-radius: 14px;
+  padding: 16px;
+  min-width: 200px;
+}
+
+.summary-guide-title {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #808080;
+  margin: 0 0 12px;
+  font-weight: 600;
+}
+
+.summary-guide-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.summary-guide-table th,
+.summary-guide-table td {
+  padding: 8px 10px;
+  text-align: left;
+  border-bottom: 1px solid rgba(42, 42, 42, 0.5);
+}
+
+.summary-guide-table th {
+  color: #808080;
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.summary-guide-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.summary-guide-row.summary-guide-safe td:first-child { color: #22c55e; font-weight: 500; }
+.summary-guide-row.summary-guide-low td:first-child { color: #22c55e; font-weight: 500; }
+.summary-guide-row.summary-guide-medium td:first-child { color: #eab308; font-weight: 500; }
+.summary-guide-row.summary-guide-high td:first-child { color: #ef4444; font-weight: 500; }
+.summary-guide-row.summary-guide-critical td:first-child { color: #fca5a5; font-weight: 500; }
+
+.summary-guide-table td:last-child {
+  color: #a0a0a0;
+}
 
 .summary-meta {
   display: flex;

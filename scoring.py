@@ -102,8 +102,8 @@ def recommended_action(level):
     return {
         "SAFE": "Safe for now, but be aware of future updates",
         "LOW": "Review permissions & network access",
-        "MEDIUM": "Be warned scary ext booo",
-        "HIGH": "Delete while not using",
+        "MEDIUM": "Review permissions and consider removing if unsure",
+        "HIGH": "Remove when you’re not using it",
         "CRITICAL": "Block / quarantine"
     }[level]
 
