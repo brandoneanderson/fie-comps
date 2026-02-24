@@ -56,10 +56,10 @@ feature_weights = {
     "contextmenus": 0.0
 }
 
-mal_csv = Path(r"C:\Users\frana\College_HW_Submissions\COMPS\fie-comps\FINAL2_M.csv")
-benign_csv = Path(r"C:\Users\frana\College_HW_Submissions\COMPS\fie-comps\FINAL2_B.csv")
-mal = pd.read_csv(mal_csv)
-benign = pd.read_csv(benign_csv)
+# mal_csv = Path(r"C:\Users\frana\College_HW_Submissions\COMPS\fie-comps\FINAL2_M.csv")
+# benign_csv = Path(r"C:\Users\frana\College_HW_Submissions\COMPS\fie-comps\FINAL2_B.csv")
+# mal = pd.read_csv(mal_csv)
+# benign = pd.read_csv(benign_csv)
 
 def assign_scores(feature_df):
     rf_model = joblib.load(RF_ALL_FEATURES)
@@ -137,6 +137,6 @@ def recommended_action(level):
     }[level]
 
 
-if __name__ == "__main__":
-    assign_scores(benign)
-    assign_scores(mal)
+# if __name__ == "__main__":
+#     assign_scores(benign)
+#     assign_scores(mal)
