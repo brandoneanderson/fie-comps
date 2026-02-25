@@ -91,9 +91,17 @@ def download_crx(ext_id: str, out_path: str) -> None:
             raise RuntimeError("Got HTML instead of CRX (private/blocked extension?)")
         with open(out_path, "wb") as f:
             f.write(r.content)
-    except:
-        # update to actually grab versions instead of hardcoding one specific extension
-        download_mal_ext(ext_id, '1.0')
+    except Exception as e:
+        print(f"[WARN] Primary CRX download failed: {e}", file=sys.stderr)
+
+        # Fallback download
+        zip_path = download_mal_ext(ext_id, '1.0')
+
+        if not zip_path or not os.path.exists(zip_path):
+            raise RuntimeError("Fallback download failed.")
+
+        # Rename ZIP to expected crx_path so rest of pipeline works
+        os.rename(zip_path, out_path)
 
 
 def extract_crx_like_zip(crx_path: str, extract_dir: str) -> None:
