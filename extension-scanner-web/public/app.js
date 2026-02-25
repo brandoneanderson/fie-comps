@@ -133,7 +133,8 @@ function buildSummaryHtml(analysis, metadata) {
   const ratingCount = rawRatingCount != null ? Number(rawRatingCount).toLocaleString() : null;
 
   let scoreClass = "summary-risk-low";
-  if (level === "HIGH" || level === "CRITICAL") scoreClass = "summary-risk-high";
+  if (level === "CRITICAL") scoreClass = "summary-risk-critical";
+  if (level === "HIGH") scoreClass = "summary-risk-high";
   else if (level === "MEDIUM") scoreClass = "summary-risk-medium";
 
   const scoreHtml = score != null

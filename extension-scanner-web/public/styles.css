@@ -763,7 +763,8 @@ body {
 
 .summary-risk-low { color: #22c55e; }
 .summary-risk-medium { color: #eab308; }
-.summary-risk-high { color: #ef4444; }
+.summary-risk-high { color: #fca5a5; } 
+.summary-risk-critical { color: #ef4444; }
 
 .summary-score-label {
   font-size: 12px;
@@ -781,8 +782,8 @@ body {
 
 .summary-level-low { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
 .summary-level-medium { background: rgba(234, 179, 8, 0.2); color: #eab308; }
-.summary-level-high { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
-.summary-level-critical { background: rgba(239, 68, 68, 0.35); color: #fca5a5; }
+.summary-level-high { background: rgba(255, 190, 190, 0.348); color: #fca5a5; } 
+.summary-level-critical { background: rgba(239, 68, 68, 0.35); color: #ef4444; }
 .summary-level-safe { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
 
 .summary-layout {
