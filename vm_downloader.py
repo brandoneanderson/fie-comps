@@ -4,6 +4,8 @@ import requests
 from urllib.parse import urlparse, parse_qs, unquote
 import subprocess
 
+from ML.download_mal_ext import *
+
 DOWNLOAD_DIR = os.path.expanduser("~/fie-comps/parser/Extensions")
 os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
@@ -74,19 +76,24 @@ def extract_ext_id(store_url: str) -> str:
 
 
 def download_crx(ext_id: str, out_path: str) -> None:
-    update_url = (
-        "https://clients2.google.com/service/update2/crx"
-        f"?response=redirect&prodversion=120.0&acceptformat=crx2,crx3"
-        f"&x=id%3D{ext_id}%26installsource%3Dondemand%26uc"
-    )
-    r = requests.get(update_url, timeout=60)
-    ct = (r.headers.get("content-type") or "").lower()
-    if r.status_code != 200:
-        raise RuntimeError(f"Download failed: HTTP {r.status_code}")
-    if "text/html" in ct:
-        raise RuntimeError("Got HTML instead of CRX (private/blocked extension?)")
-    with open(out_path, "wb") as f:
-        f.write(r.content)
+    
+    try:
+        update_url = (
+            "https://clients2.google.com/service/update2/crx"
+            f"?response=redirect&prodversion=120.0&acceptformat=crx2,crx3"
+            f"&x=id%3D{ext_id}%26installsource%3Dondemand%26uc"
+        )
+        r = requests.get(update_url, timeout=60)
+        ct = (r.headers.get("content-type") or "").lower()
+        if r.status_code != 200:
+            raise RuntimeError(f"Download failed: HTTP {r.status_code}")
+        if "text/html" in ct:
+            raise RuntimeError("Got HTML instead of CRX (private/blocked extension?)")
+        with open(out_path, "wb") as f:
+            f.write(r.content)
+    except:
+        # update to actually grab versions instead of hardcoding one specific extension
+        download_mal_ext(ext_id, '1.0')
 
 
 def extract_crx_like_zip(crx_path: str, extract_dir: str) -> None:

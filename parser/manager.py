@@ -20,6 +20,7 @@ from analyzer import *
 from Scanners.js_parser import *
 from Scanners.css_parser import *
 from Scanners.html_parser import *
+from ML.download_mal_ext import *
 #from Scanners.html_report import html_report_section
 import joblib
 import pandas as pd
