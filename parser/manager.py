@@ -13,6 +13,7 @@ if str(PROJECT_ROOT) not in sys.path:
 import re
 from paths import *
 import extension
+
 from extractor import *
 from Scanners.manifest_parser import * 
 from analyzer import *
@@ -167,7 +168,10 @@ if __name__ == "__main__":
                 except Exception as e:
                     # Don't crash whole run on one file; log and continue
                     log(f"[WARN] File analysis failed: {file} :: {e}")
+
         ext.setFinalValues() 
+        print("FINAL JS FEATURES:", ext.js_features, file=sys.stderr)
+
         # Load ML bundle and predict
         if "SVM_BUNDLE_PATH" not in globals():
             print(json.dumps({"ok": False, "detail": "SVM_BUNDLE_PATH not defined in paths.py", "extract_dir": str(extract_dir)}))
@@ -203,6 +207,7 @@ if __name__ == "__main__":
         output["css_examples"] = getattr(ext, "css_examples", None)
 
         output["js_features"] = getattr(ext, "js_features", None)
+        output["js_totals"] = getattr(ext, "js_totals", None)
         output["js_examples"] = getattr(ext, "js_examples", None)
 
 

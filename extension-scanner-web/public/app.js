@@ -133,38 +133,52 @@ function showResults(vm) {
   }
   // SUMMARY TAB
   $("tab-summary").textContent =
-    `Extension: ${analysis.extension_name}\n\n` +
-    `Prediction: ${JSON.stringify(analysis.prediction, null, 2)}`;
+    // `Extension: ${analysis.extension_name}\n\n` +
+    `Extension: ${report.extension_name}\n\n` +
+    `Prediction: ${JSON.stringify(report.prediction, null, 2)}`;
+    // `Prediction: ${JSON.stringify(analysis.prediction, null, 2)}`;
 
   // MANIFEST TAB
   $("tab-manifest").textContent = JSON.stringify({
-    permissions: analysis.permissions,
-    host_permissions: analysis.host_permissions,
-    security_policy: analysis.security_policy,
+    permissions: report.permissions,
+    host_permissions: report.host_permissions,
+    security_policy: report.security_policy,
   }, null, 2);
 
   // HTML TAB
   $("tab-html").textContent =
-    analysis.html_report ||
+    report.html_report ||
     JSON.stringify({
-      features: analysis.html_features,
-      examples: analysis.html_examples,
+      features: report.html_features,
+      examples: report.html_examples,
     }, null, 2);
 
   // CSS TAB
   //$("tab-css").textContent = JSON.stringify(analysis.css_features || {}, null, 2);
   $("tab-css").textContent = JSON.stringify({
-    features: analysis.css_features || {},
-    examples: analysis.css_examples || {}
+    features: report.css_features || {},
+    examples: report.css_examples || {}
   }, null, 2);
 
   // JS TAB
   // $("tab-js").textContent = JSON.stringify(analysis.js_features || {}, null, 2);
 // JS TAB
+const normalized = Object.fromEntries(
+  Object.entries(report.js_features || {})
+    .filter(([k]) =>
+      k.endsWith("_density") ||     // normalized behavior
+      k.includes("%") ||            // whitespace %
+      k === "avg_line_length" ||
+      k === "word_size" ||
+      k === "string_entropy" ||
+      k === "keyword_density"
+    )
+);
+
   $("tab-js").textContent = JSON.stringify({
-    features: analysis.js_features || {},
-    examples: analysis.js_examples || {},
-    totals: analysis.js_totals || null
+    features: report.js_features || {},
+    examples: report.js_examples || {},
+    totals: report.js_totals || null
   }, null, 2);
 
   // Default tab
