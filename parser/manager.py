@@ -167,7 +167,7 @@ if __name__ == "__main__":
                 except Exception as e:
                     # Don't crash whole run on one file; log and continue
                     log(f"[WARN] File analysis failed: {file} :: {e}")
-
+        ext.setFinalValues() 
         # Load ML bundle and predict
         if "SVM_BUNDLE_PATH" not in globals():
             print(json.dumps({"ok": False, "detail": "SVM_BUNDLE_PATH not defined in paths.py", "extract_dir": str(extract_dir)}))
