@@ -201,7 +201,16 @@ function getPermissionDescription(permission) {
 }
 
 function buildManifestHtml(analysis) {
-  const perms = Array.isArray(analysis.permissions) ? analysis.permissions : [];
+  // const perms = Array.isArray(analysis.permissions) ? analysis.permissions : [];
+  let perms = [];
+
+  if (Array.isArray(analysis.permissions)) {
+    perms = analysis.permissions;
+  } else if (analysis.permissions && typeof analysis.permissions === "object") {
+    perms = Object.entries(analysis.permissions)
+      .filter(([_, v]) => v === 1)
+      .map(([k]) => k);
+  }
   const hostPerms = Array.isArray(analysis.host_permissions) ? analysis.host_permissions : [];
   const securityPolicy = analysis.security_policy;
 
