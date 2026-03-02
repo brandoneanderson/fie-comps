@@ -22,7 +22,7 @@ from Scanners.html_parser import *
 #from Scanners.html_report import html_report_section
 import joblib
 import pandas as pd
-from ML.scoring import *
+from scoring import *
 from ML.vectorize import vectorizeExt
 
 
@@ -94,17 +94,21 @@ def predict_svm(ext, model, feature_cols, threshold) -> dict:
     X = X[feature_cols].apply(pd.to_numeric, errors="coerce").fillna(0.0)
 
     prob = float(model.predict_proba(X)[0, 1])
-    score = assign_scores(feat)
+    label = "MALICIOUS" if prob >= float(threshold) else "BENIGN"
+    score = assign_scores(X)
     # score = risk_score_thresholded(prob, threshold)
-    # level = risk_level(score)
+    level = risk_level(score)
 
     return {
-        "label": "MALICIOUS" if prob >= threshold else "BENIGN",
-        "prob_malicious": prob,
-        "risk_score": score,
-        "risk_level": level,
+        "label": label,
         "threshold": float(threshold),
-        "confidence": confidence_from_margin(prob, threshold),
+        "risk_score": score,
+        # "label": "MALICIOUS" if prob >= threshold else "BENIGN",
+        # "prob_malicious": prob,
+        # "risk_score": score,
+        # "risk_level": level,
+        # "threshold": float(threshold),
+        # "confidence": confidence_from_margin(prob, threshold),
         "action": recommended_action(level),
     }
 

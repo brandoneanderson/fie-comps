@@ -56,10 +56,10 @@ feature_weights = {
     'contextmenus': 0.0
 }
 
-mal_csv = Path(r"C:\Users\frana\College_HW_Submissions\COMPS\fie-comps\ML\datasets\final_M.csv")
-benign_csv = Path(r"C:\Users\frana\College_HW_Submissions\COMPS\fie-comps\ML\datasets\final_B.csv")
-mal = pd.read_csv(mal_csv)
-benign = pd.read_csv(benign_csv)
+# mal_csv = Path(r"C:\Users\frana\College_HW_Submissions\COMPS\fie-comps\ML\datasets\final_M.csv")
+# benign_csv = Path(r"C:\Users\frana\College_HW_Submissions\COMPS\fie-comps\ML\datasets\final_B.csv")
+# mal = pd.read_csv(mal_csv)
+# benign = pd.read_csv(benign_csv)
 
 def assign_scores(feature_df):
     rf_model = joblib.load(RF_ALL_FEATURES)
@@ -73,19 +73,19 @@ def assign_scores(feature_df):
     
     return score
 
-def clamp(x, lo, hi):
-    return max(lo, min(hi, x))
+# def clamp(x, lo, hi):
+#     return max(lo, min(hi, x))
 
-def risk_score_thresholded(prob, threshold):
-    prob = clamp(float(prob), 0.0, 1.0)
-    threshold = clamp(float(threshold), 1e-6, 1.0 - 1e-6)
+# def risk_score_thresholded(prob, threshold):
+#     prob = clamp(float(prob), 0.0, 1.0)
+#     threshold = clamp(float(threshold), 1e-6, 1.0 - 1e-6)
 
-    if prob < threshold:
-        score = 49.0 * (prob / threshold)
-    else:
-        score = 50.0 + 50.0 * ((prob - threshold) / (1.0 - threshold))
+#     if prob < threshold:
+#         score = 49.0 * (prob / threshold)
+#     else:
+#         score = 50.0 + 50.0 * ((prob - threshold) / (1.0 - threshold))
 
-    return int(round(clamp(score, 0.0, 100.0)))
+#     return int(round(clamp(score, 0.0, 100.0)))
 
 def risk_level(score):
     if score >= 80:
@@ -108,6 +108,6 @@ def recommended_action(level):
     }[level]
 
 
-if __name__ == "__main__":
-    assign_scores(benign)
-    assign_scores(mal)
+# if __name__ == "__main__":
+#     assign_scores(benign)
+#     assign_scores(mal)
