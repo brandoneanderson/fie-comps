@@ -463,6 +463,17 @@ body {
     text-align: center;
     margin-top: 12px;
 }
+
+.sample-results-dropdown-wrap {
+  position: relative;
+}
+
+.sample-results-dropdown {
+  left: center;
+  right: center;
+  min-width: 320px;
+}
+
 .sample-results-btn {
     background: transparent;
     border: 1px solid rgba(100, 100, 100, 0.6);

@@ -201,8 +201,30 @@ function getPermissionDescription(permission) {
 }
 
 function buildManifestHtml(analysis) {
-  const perms = Array.isArray(analysis.permissions) ? analysis.permissions : [];
-  const hostPerms = Array.isArray(analysis.host_permissions) ? analysis.host_permissions : [];
+  // Permissions can be array (e.g. ["tabs", "storage"]) or object of counts from parser (e.g. { "tabs": 1, "storage": 0 })
+  let perms = [];
+  if (Array.isArray(analysis.permissions)) {
+    perms = analysis.permissions;
+  } else if (analysis.permissions && typeof analysis.permissions === "object" && !Array.isArray(analysis.permissions)) {
+    // Use manifest_examples.permissions when available (actual manifest list), else derive from object keys with count > 0
+    const fromExamples = analysis.manifest_examples?.permissions;
+    if (Array.isArray(fromExamples) && fromExamples.length) {
+      perms = fromExamples;
+    } else {
+      perms = Object.entries(analysis.permissions)
+        .filter(([, v]) => Number(v) > 0)
+        .map(([k]) => k);
+    }
+  }
+  // Host permissions: same dual shape
+  let hostPerms = [];
+  if (Array.isArray(analysis.host_permissions)) {
+    hostPerms = analysis.host_permissions;
+  } else if (analysis.host_permissions && typeof analysis.host_permissions === "object" && !Array.isArray(analysis.host_permissions)) {
+    hostPerms = Object.entries(analysis.host_permissions).filter(([, v]) => Number(v) > 0).map(([k]) => k);
+  } else if (analysis.manifest_examples?.host_permissions && Array.isArray(analysis.manifest_examples.host_permissions)) {
+    hostPerms = analysis.manifest_examples.host_permissions;
+  }
   const securityPolicy = analysis.security_policy;
 
   const permissionBars = perms.map((p) => {
@@ -460,82 +482,132 @@ function showResults(vm, extensionId) {
   setTab("summary");
 }
 
-// ========== TEMPORARY_SAMPLE_RESULTS: delete from here through the showSampleResultsBtn listener (see index.html + styles.css) ==========
-// Mock VM payload for previewing results without a running VM
-function getSampleResultsVm() {
-  return {
-    analysis: {
-      report: {
-        extension_name: "Sample Extension (Test Data)",
-        ratingValue: 4.4,
-        ratingCount: 60989,
-        prediction: {
-          label: "BENIGN",
-          risk_score: 21,
-          risk_level: "LOW",
-          action: "Allow",
-          confidence: "HIGH"
-        },
-        permissions: [
-          "storage",
-          "tabs",
-          "webrequest",
-        ],
-        host_permissions: [
-          "https://*.example.com/*",
-          "https://api.example.com/*"
-        ],
-        security_policy: {
-          content_security_policy: "script-src 'self'; object-src 'self'",
-          sandbox: null
-        },
-        html_features: {
-          script_tags: 3,
-          iframe_count: 0,
-          form_count: 1,
-          external_links: 2
-        },
-        html_examples: [
-          { tag: "script", src: "popup.js", inline: false },
-          { tag: "a", href: "https://example.com/help" }
-        ],
-        html_report: null,
-        css_features: {
-          num_background_image: 2,
-          num_behavior: 0,
-          num_import_rules: 1,
-          num_external_urls: 3
-        },
-        css_examples: [
-          { rule: "@import", value: "url('theme.css')" },
-          { property: "background", value: "linear-gradient(...)" }
-        ],
-        js_features: {
-          "whitespace %": 0.18,
-          avg_line_length: 42,
-          specific_characters: 0.02,
-          word_size: 4.2,
-          string_entropy: 3.1,
-          dynamic_code_gen_functions: 2,
-          DOM_change_sinks: 0,
-          event_handlers: 1,
-          HTTP_scripts: 0,
-          modification_callbacks: 0,
-          XMLHttpRequests: 1,
-          keyword_density: 0.08
-        },
-        js_examples: [],
-        js_totals: { file_count: 5, total_lines: 1200, total_chars: 45000 }
-      }
-    }
-  };
+// ========== Sample results dropdown (samples.json + extensions_clean.json) ==========
+const sampleResultsDropdown = document.getElementById("sampleResultsDropdown");
+let samplesList = null; // { vm, title, iconUrl, extensionId, ratingValue, ratingCount, link }[]
+
+function hideSampleDropdown() {
+  if (sampleResultsDropdown) {
+    sampleResultsDropdown.hidden = true;
+  }
 }
 
-function showSampleResults() {
-  if (resultsLink) resultsLink.style.display = "inline-flex";
-  setStatus("Sample results generated");
-  setDebug(null);
-  showResults(getSampleResultsVm(), null);
+function showSampleDropdown() {
+  if (sampleResultsDropdown) sampleResultsDropdown.hidden = false;
+}
+
+function isSampleDropdownVisible() {
+  return sampleResultsDropdown && !sampleResultsDropdown.hidden;
+}
+
+function buildSampleDropdownItem(sample) {
+  const option = document.createElement("div");
+  option.className = "store-search-result-item";
+  option.setAttribute("role", "option");
+  option.tabIndex = 0;
+  const icon = document.createElement("img");
+  icon.className = "store-search-result-icon";
+  icon.alt = "";
+  icon.src = sample.iconUrl || "";
+  icon.onerror = () => {
+    icon.style.display = "none";
+    icon.nextElementSibling?.classList.add("store-search-result-icon-visible");
+  };
+  const placeholder = document.createElement("span");
+  placeholder.className = "store-search-result-icon-placeholder";
+  if (!sample.iconUrl) placeholder.classList.add("store-search-result-icon-visible");
+  placeholder.setAttribute("aria-hidden", "true");
+  const textWrap = document.createElement("div");
+  textWrap.className = "store-search-result-text";
+  const text = document.createElement("span");
+  text.className = "store-search-result-title";
+  text.textContent = sample.title || sample.vm?.analysis?.report?.extension_name || "Extension";
+  const meta = document.createElement("div");
+  meta.className = "store-search-result-meta";
+  const idPart = sample.extensionId ? `ID: ${sample.extensionId}` : "";
+  const ratingPart = sample.ratingValue != null ? `${Number(sample.ratingValue).toFixed(1)} ★` : "";
+  const countPart = sample.ratingCount != null ? `${Number(sample.ratingCount).toLocaleString()} ratings` : "";
+  meta.textContent = [idPart, ratingPart, countPart].filter(Boolean).join(" · ");
+  textWrap.appendChild(text);
+  textWrap.appendChild(meta);
+  option.appendChild(icon);
+  option.appendChild(placeholder);
+  option.appendChild(textWrap);
+  option.addEventListener("click", (e) => {
+    e.stopPropagation();
+    setDebug(null);
+    setStatus("Sample results");
+    if (resultsLink) resultsLink.style.display = "inline-flex";
+    if (resultsPanel) resultsPanel.style.display = "block";
+    showResults(sample.vm, sample.vm.extension_id);
+    hideSampleDropdown();
+  });
+  option.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      option.click();
+    }
+  });
+  return option;
+}
+
+async function loadSamplesAndShowDropdown() {
+  if (!sampleResultsDropdown) return;
+  sampleResultsDropdown.innerHTML = "<div class=\"store-search-result-message\">Loading samples…</div>";
+  sampleResultsDropdown.hidden = false;
+  try {
+    const r = await fetch("/samples.json");
+    if (!r.ok) throw new Error("Failed to load samples");
+    const raw = await r.json();
+    const samples = Array.isArray(raw) ? raw : [];
+    const withVm = samples
+      .filter((item) => item && item.vm && item.vm.extension_id)
+      .map((item) => ({ vm: item.vm, extensionId: item.vm.extension_id }));
+    if (withVm.length === 0) {
+      sampleResultsDropdown.innerHTML = "<div class=\"store-search-result-message\">No sample extensions found.</div>";
+      return;
+    }
+    const metas = await Promise.all(
+      withVm.map((s) =>
+        fetch(`/api/extension/${encodeURIComponent(s.extensionId)}`)
+          .then((res) => (res.ok ? res.json() : null))
+          .catch(() => null)
+      )
+    );
+    samplesList = withVm.map((s, i) => {
+      const m = metas[i];
+      const report = s.vm?.analysis?.report;
+      return {
+        vm: s.vm,
+        title: (m && m.name) || (report && report.extension_name) || "Extension",
+        iconUrl: (m && m.logo) || null,
+        extensionId: s.extensionId,
+        ratingValue: m && m.ratingValue != null ? m.ratingValue : null,
+        ratingCount: m && m.ratingCount != null ? m.ratingCount : null,
+        link: (m && m.url) || `https://chromewebstore.google.com/detail/${s.extensionId}`,
+      };
+    });
+    sampleResultsDropdown.innerHTML = "";
+    samplesList.forEach((sample) => {
+      sampleResultsDropdown.appendChild(buildSampleDropdownItem(sample));
+    });
+  } catch (e) {
+    console.error("Load samples error:", e);
+    sampleResultsDropdown.innerHTML = "<div class=\"store-search-result-message\">Failed to load samples.</div>";
+  }
+}
+
+function toggleSampleResultsDropdown(e) {
+  if (e) e.stopPropagation();
+  if (isSampleDropdownVisible()) {
+    hideSampleDropdown();
+    return;
+  }
+  if (samplesList === null) {
+    loadSamplesAndShowDropdown();
+  } else {
+    showSampleDropdown();
+  }
 }
 
 async function runScan() {
@@ -619,9 +691,17 @@ if (scanButton && extensionUrlInput) {
 
 const showSampleResultsBtn = document.getElementById("showSampleResults");
 if (showSampleResultsBtn) {
-  showSampleResultsBtn.addEventListener("click", showSampleResults);
+  showSampleResultsBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggleSampleResultsDropdown(e);
+  });
 }
-// ========== /TEMPORARY_SAMPLE_RESULTS ==========
+
+// Close sample dropdown when clicking outside
+document.addEventListener("click", () => {
+  if (isSampleDropdownVisible()) hideSampleDropdown();
+});
+// ========== /Sample results dropdown ==========
 
 // --- Chrome Web Store search (dataset: extensions_clean.json) ---
 (function () {
