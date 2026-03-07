@@ -37,7 +37,7 @@ document.querySelectorAll(".tab").forEach(btn => {
 const mlMoreButton = document.getElementById("mlMoreButton");
 if (mlMoreButton) {
   mlMoreButton.addEventListener("click", () => {
-    window.location.href = "/ml.html";
+    window.location.href = "/utils/pages/ml.html";
   });
 }
 
@@ -390,7 +390,7 @@ function buildMlTabHtml(analysis) {
   if (confidence) parts.push(`<div class="summary-meta-row"><span class="summary-meta-label">Confidence</span><span class="summary-meta-value">${escapeHtml(confidence)}</span></div>`);
   if (action) parts.push(`<div class="summary-meta-row"><span class="summary-meta-label">Recommendation</span><span class="summary-meta-value">${escapeHtml(action)}</span></div>`);
   // parts.push(`<p class="ml-learn-more-wrap"><a href="/ml-explanation.html" target="_blank" rel="noopener noreferrer" class="ml-learn-more">Learn more</a> about how we use machine learning to generate these predictions.</p>`);
-  parts.push(`<p class="ml-learn-more-wrap"><a href="/ml.html" target="_blank" rel="noopener noreferrer" class="ml-learn-more">Learn more</a> about how we use machine learning to generate these predictions.</p>`);
+  parts.push(`<p class="ml-learn-more-wrap"><a href="/utils/pages/ml.html" target="_blank" rel="noopener noreferrer" class="ml-learn-more">Learn more</a> about how we use machine learning to generate these predictions.</p>`);
 
 
   return `<div class="manifest-section"><div class="ml-tab-content">${parts.join("")}</div></div>`;
@@ -556,7 +556,7 @@ async function loadSamplesAndShowDropdown() {
   sampleResultsDropdown.innerHTML = "<div class=\"store-search-result-message\">Loading samples…</div>";
   sampleResultsDropdown.hidden = false;
   try {
-    const r = await fetch("/samples.json");
+    const r = await fetch("/utils/samples/samples.json");
     if (!r.ok) throw new Error("Failed to load samples");
     const raw = await r.json();
     const samples = Array.isArray(raw) ? raw : [];
