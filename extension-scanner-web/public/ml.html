@@ -1,267 +1,107 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Machine Learning | Extension Scanner</title>
-  <style>
-    :root {
-      --bg: #0b0f19;
-      --panel: #11182a;
-      --text: #e7ecff;
-      --muted: #b8c0e0;
-      --accent: #7aa2ff;
-      --border: rgba(255,255,255,.10);
-      --shadow: 0 10px 30px rgba(0,0,0,.25);
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: var(--sans);
-      background: radial-gradient(1200px 800px at 15% 10%, rgba(122,162,255,.18), transparent 60%),
-                  radial-gradient(900px 600px at 85% 0%, rgba(129,255,210,.10), transparent 55%),
-                  var(--bg);
-      color: var(--text);
-      line-height: 1.55;
-    }
-    a { color: var(--accent); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-
-    header {
-      position: sticky;
-      top: 0;
-      backdrop-filter: blur(10px);
-      background: rgba(11,15,25,.75);
-      border-bottom: 1px solid var(--border);
-      z-index: 10;
-    }
-    .nav {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 12px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-    }
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 700;
-      letter-spacing: .2px;
-    }
-    .brand .dot {
-      width: 10px; height: 10px; border-radius: 50%;
-      background: var(--accent);
-      box-shadow: 0 0 0 6px rgba(122,162,255,.15);
-    }
-    .navlinks {
-      display: flex; gap: 14px; flex-wrap: wrap;
-      font-size: 14px;
-      color: var(--muted);
-    }
-    .navlinks a { color: var(--muted); }
-    .navlinks a.active { color: var(--text); font-weight: 600; }
-
-    main {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 28px 20px 70px;
-    }
-    .hero {
-      padding: 22px 22px;
-      border: 1px solid var(--border);
-      background: linear-gradient(180deg, rgba(17,24,42,.95), rgba(17,24,42,.75));
-      box-shadow: var(--shadow);
-      border-radius: 18px;
-    }
-    .hero h1 {
-      margin: 0 0 6px;
-      font-size: 30px;
-      letter-spacing: .2px;
-    }
-    .hero p { margin: 0; color: var(--muted); max-width: 75ch; }
-
-    .grid {
-      margin-top: 18px;
-      display: grid;
-      grid-template-columns: repeat(12, 1fr);
-      gap: 16px;
-    }
-    .card {
-      grid-column: span 12;
-      border: 1px solid var(--border);
-      background: rgba(17,24,42,.75);
-      box-shadow: var(--shadow);
-      border-radius: 18px;
-      padding: 18px 18px;
-    }
-    .card h2 {
-      margin: 0 0 10px;
-      font-size: 18px;
-      letter-spacing: .2px;
-    }
-    .muted { color: var(--muted); }
-
-    .two { grid-column: span 12; display: grid; grid-template-columns: repeat(12,1fr); gap: 16px; }
-    .half { grid-column: span 12; }
-    @media (min-width: 900px) {
-      .half { grid-column: span 6; }
-    }
-
-    .kpi {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0,1fr));
-      gap: 10px;
-      margin-top: 10px;
-    }
-    .pill {
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 10px 12px;
-      background: rgba(255,255,255,.03);
-    }
-    .pill .label { font-size: 12px; color: var(--muted); }
-    .pill .value { font-size: 16px; font-weight: 700; margin-top: 3px; }
-
-    .code {
-      font-family: var(--mono);
-      font-size: 13px;
-      background: rgba(0,0,0,.25);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 12px;
-      overflow-x: auto;
-    }
-
-    figure {
-      margin: 10px 0 0;
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      background: rgba(0,0,0,.15);
-      padding: 10px;
-    }
-    figure img {
-      width: 100%;
-      height: auto;
-      display: block;
-      border-radius: 10px;
-    }
-    figcaption {
-      margin-top: 8px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .note {
-      border-left: 3px solid var(--accent);
-      padding: 10px 12px;
-      background: rgba(122,162,255,.08);
-      border-radius: 10px;
-      color: var(--muted);
-      margin-top: 10px;
-    }
-    footer {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 22px 20px 40px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-    .toc a { display: inline-block; margin-right: 10px; margin-bottom: 6px; }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Machine Learning | FIE Security Scanner</title>
+  <link rel="stylesheet" href="/styles.css" />
 </head>
-
 <body>
-  <header>
-    <div class="nav">
-      <div class="brand">
-        <span class="dot"></span>
-        <span>Extension Scanner</span>
+  <header class="title-bar">
+    <div class="logo-section">
+      <div class="shield-icon" aria-hidden="true">
+        <img src="/fie_logo.png" alt="FIE Logo" class="logo-img" />
       </div>
-      <nav class="navlinks">
-        <!-- Update these hrefs to match your site -->
-        <a href="/index.html">Home</a>
-        <a href="/scan.html">Scan</a>
-        <a href="/ml.html" class="active">ML</a>
-        <a href="/about.html">About</a>
-      </nav>
+      <div class="logo-text">
+        <h1>FIE</h1>
+        <p>Security Scanner</p>
+      </div>
     </div>
+    <div class="scanner-badge">
+      <div class="grid-icon"></div>
+      <span>Scanner</span>
+    </div>
+    <nav class="navlinks">
+      <a href="/index.html">Home</a>
+      <a href="/scan.html">Scan</a>
+      <a href="/ml.html" class="active">ML</a>
+      <a href="/about.html">About</a>
+    </nav>
   </header>
 
-  <main>
-    <section class="hero">
-      <h1>Machine Learning Pipeline</h1>
-      <p>
-        This page explains how our project classifies Chrome extensions as <b>benign</b> or <b>malicious</b>
-        using engineered static features, feature selection, and supervised learning. It also summarizes
-        our evaluation results and visual explanations (feature importance + SHAP).
-      </p>
-      <div class="toc note">
-        <b style="color: var(--text);">Jump to:</b><br/>
-        <a href="#data">Dataset</a>
-        <a href="#features">Feature Engineering</a>
-        <a href="#rf">Random Forest</a>
-        <a href="#svm">SVM-RBF</a>
-        <a href="#results">Results</a>
-        <a href="#viz">Visualizations</a>
-      </div>
-    </section>
+  <section class="instruction-section ml-page-hero">
+    <h2>
+      <span class="blue-text">Machine Learning</span>
+      <span class="white-text"> Pipeline</span>
+    </h2>
+    <p class="ml-page-hero-sub">
+      Learn how our project classifies Chrome extensions as <b>benign</b> or <b>malicious</b>
+      using engineered static features, feature selection, and supervised learning. Find summaries of
+      our evaluation results and visual explanations (feature importance + SHAP) down below.
+    </p>
+    <div class="ml-toc">
+      <b>Jump to:</b><br/>
+      <a href="#data">Dataset</a>
+      <a href="#features">Feature Engineering</a>
+      <a href="#rf">Random Forest</a>
+      <a href="#svm">SVM-RBF</a>
+      <a href="#results">Results</a>
+      <a href="#viz">Visualizations</a>
+    </div>
+  </section>
 
-    <div class="grid">
-      <section class="card" id="data">
+  <div class="ml-page">
+    <div class="ml-cards">
+      <section class="ml-card" id="data">
         <h2>Dataset Construction</h2>
         <p class="muted">
           To construct our dataset, we compiled a collection of known malicious and benign Chrome extension IDs.
-          Extension IDs were gathered in large batches using a third-party extension tool, <b>Chrome-Stats</b>.
+          Extension IDs were gathered in large batches using a third-party extension tool, <b> <a href="https://chrome-stats.com" style="color: #3b82f6;" target="_blank"> Chrome-Stats</a></b>.
         </p>
 
-        <div class="two">
-          <div class="card half" style="padding: 14px 14px;">
-            <h2 style="margin-bottom:6px;">Benign Criteria</h2>
+        <div class="ml-two">
+          <div class="ml-card">
+            <h2>Benign Criteria</h2>
             <ul class="muted" style="margin: 6px 0 0; padding-left: 18px;">
               <li>Published on the Chrome Web Store by <b>verified publishers</b></li>
               <li>Store rating <b>&gt; 4.0 / 5</b></li>
-              <li>Low risk score according to Chrome-Stats’ scoring metric</li>
+              <li>Low risk score according to Chrome-Stats' scoring metric</li>
             </ul>
           </div>
-          <div class="card half" style="padding: 14px 14px;">
-            <h2 style="margin-bottom:6px;">Malicious Criteria</h2>
+          <div class="ml-card">
+            <h2>Malicious Criteria</h2>
             <ul class="muted" style="margin: 6px 0 0; padding-left: 18px;">
               <li>Removed from the Chrome Web Store after being classified as <b>malware</b></li>
             </ul>
           </div>
         </div>
 
-        <div class="kpi">
-          <div class="pill">
+        <div class="ml-kpi">
+          <div class="ml-pill">
             <div class="label">Total labeled samples</div>
             <div class="value">5,867</div>
           </div>
-          <div class="pill">
+          <div class="ml-pill">
             <div class="label">Malicious / Benign</div>
             <div class="value">3,001 / 2,866</div>
           </div>
-          <div class="pill">
+          <div class="ml-pill">
             <div class="label">Engineered features per sample</div>
             <div class="value">49</div>
           </div>
-          <div class="pill">
+          <div class="ml-pill">
             <div class="label">Train / Test split</div>
             <div class="value">80% / 20%</div>
           </div>
         </div>
 
-        <p class="note">
+        <p class="ml-note">
           Each labeled extension was scanned using our feature extraction pipeline to produce a structured feature vector.
           We split the dataset into train/test before training to reduce leakage risk and ensure fair evaluation.
         </p>
       </section>
 
-      <section class="card" id="features">
+      <section class="ml-card" id="features">
         <h2>Feature Engineering</h2>
         <p class="muted">
           Our pipeline extracts static indicators from extension files and metadata. The goal is to capture behaviors
@@ -269,9 +109,9 @@
           and risky external connections — using measurable, engineered features.
         </p>
 
-        <div class="two">
-          <div class="card half" style="padding: 14px 14px;">
-            <h2 style="margin-bottom:6px;">Examples of feature groups</h2>
+        <div class="ml-two">
+          <div class="ml-card">
+            <h2>Examples of feature groups</h2>
             <ul class="muted" style="margin: 6px 0 0; padding-left: 18px;">
               <li>JavaScript signals (dynamic code gen functions, suspicious objects, event handlers)</li>
               <li>HTML/DOM signals (DOM operations, sinks density, iframe/form indicators, XSS vectors)</li>
@@ -280,18 +120,18 @@
             </ul>
           </div>
 
-          <div class="card half" style="padding: 14px 14px;">
-            <h2 style="margin-bottom:6px;">Implementation environment</h2>
+          <div class="ml-card">
+            <h2>Implementation environment</h2>
             <p class="muted" style="margin: 6px 0 0;">
               Models were implemented in <b>scikit-learn</b> (Python). We used standard evaluation utilities and
-              saved trained artifacts (e.g., via <span style="font-family: var(--mono);">joblib</span>). We also generated
+              saved trained artifacts (e.g., via <code>joblib</code>). We also generated
               explanation plots (e.g., <b>SHAP</b>) to visualize global feature influence.
             </p>
           </div>
         </div>
       </section>
 
-      <section class="card" id="rf">
+      <section class="ml-card" id="rf">
         <h2>Random Forest: Feature Importance + Scoring</h2>
         <p class="muted">
           We used a Random Forest (RF) model both as a strong baseline and as an interpretable method for computing
@@ -299,21 +139,21 @@
           importance scores indicating how influential each feature is to the final decision.
         </p>
 
-        <div class="two">
-          <div class="card half" style="padding: 14px 14px;">
-            <h2 style="margin-bottom:6px;">OOB tuning</h2>
+        <div class="ml-two">
+          <div class="ml-card">
+            <h2>OOB tuning</h2>
             <p class="muted" style="margin: 6px 0 0;">
               We evaluated forests ranging from <b>10 to 400 trees</b> and selected the configuration with the lowest
               <b>out-of-bag (OOB) error</b>, an internal estimate of generalization error computed using samples not
-              included in each tree’s bootstrap sample.
+              included in each tree's bootstrap sample.
             </p>
-            <p class="note" style="margin-top:10px;">
+            <p class="ml-note" style="margin-top:10px;">
               Selected forest size: <b>(FILL IN: # trees)</b>
             </p>
           </div>
 
-          <div class="card half" style="padding: 14px 14px;">
-            <h2 style="margin-bottom:6px;">Feature ranking</h2>
+          <div class="ml-card">
+            <h2>Feature ranking</h2>
             <p class="muted" style="margin: 6px 0 0;">
               Using the optimized forest, we ranked feature importances in descending order. These ranked values were
               stored and later incorporated into our custom scoring metric and feature-selection workflow.
@@ -322,7 +162,7 @@
         </div>
       </section>
 
-      <section class="card" id="svm">
+      <section class="ml-card" id="svm">
         <h2>SVM-RBF: Top-k Feature Selection</h2>
         <p class="muted">
           To train our final classifier, we used an SVM with an RBF kernel. We selected an optimized subset of features
@@ -330,23 +170,22 @@
           absolute error (MAE) and chose the k that minimized MAE.
         </p>
 
-        <div class="note">
+        <p class="ml-note">
           Final feature subset: <b>(FILL IN: k-best features)</b> &nbsp;|&nbsp;
           Selection metric: <b>lowest MAE</b>
-        </div>
+        </p>
       </section>
 
-      <section class="card" id="results">
+      <section class="ml-card" id="results">
         <h2>Test Evaluation</h2>
         <p class="muted">
           Below we report our final test-set performance. These values come from the evaluation artifacts generated in our training pipeline.
         </p>
 
-        <!-- Replace with your actual numbers -->
-        <div class="two">
-          <div class="card half" style="padding: 14px 14px;">
-            <h2 style="margin-bottom:6px;">Key metrics (Test)</h2>
-            <div class="code">
+        <div class="ml-two">
+          <div class="ml-card">
+            <h2>Key metrics (Test)</h2>
+            <div class="ml-code">
               Accuracy: (FILL IN)<br/>
               Precision: (FILL IN)<br/>
               Recall: (FILL IN)<br/>
@@ -356,8 +195,8 @@
             </div>
           </div>
 
-          <div class="card half" style="padding: 14px 14px;">
-            <h2 style="margin-bottom:6px;">Notes</h2>
+          <div class="ml-card">
+            <h2>Notes</h2>
             <p class="muted" style="margin: 6px 0 0;">
               In a malware detection setting, recall often matters because false negatives are costly. However, we also
               monitor precision to limit false positives. Threshold selection can shift this tradeoff.
@@ -366,49 +205,45 @@
         </div>
       </section>
 
-      <section class="card" id="viz">
+      <section class="ml-card" id="viz">
         <h2>Visualizations</h2>
         <p class="muted">
           These plots help explain model behavior and performance. Place your exported images into a public folder and
-          update the <span style="font-family: var(--mono);">src</span> paths below.
+          update the <code>src</code> paths below.
         </p>
 
-        <!-- Update paths to where you store images (e.g., /assets/ml/...) -->
-        <figure>
-          <img src="/assets/ml/rf_feature_importance.png" alt="Random Forest feature importance bar chart" />
-          <figcaption>Random Forest feature importances (top features).</figcaption>
-        </figure>
-
-        <figure>
-          <img src="/assets/ml/confusion_matrix.png" alt="Confusion matrix on the test set" />
-          <figcaption>Confusion matrix on the held-out test set.</figcaption>
-        </figure>
-
-        <figure>
-          <img src="/assets/ml/roc_curve.png" alt="ROC curve on the test set" />
-          <figcaption>ROC curve (test).</figcaption>
-        </figure>
-
-        <figure>
-          <img src="/assets/ml/pr_curve.png" alt="Precision-recall curve on the test set" />
-          <figcaption>Precision–Recall curve (test).</figcaption>
-        </figure>
-
-        <figure>
-          <img src="/assets/ml/shap_summary.png" alt="SHAP summary plot showing global feature impact" />
-          <figcaption>SHAP summary plot for global feature impact.</figcaption>
-        </figure>
-
-        <div class="note">
-          Tip: If your images already exist under something like <span style="font-family: var(--mono);">rf_outputs/shap/...</span>,
-          copy the exported PNGs into a web-served folder like <span style="font-family: var(--mono);">public/assets/ml/</span>.
+        <div class="ml-gallery">
+          <figure>
+            <img src="/roc.png" alt="ROC curve on the test set for our Random Forest" />
+            <figcaption>ROC curve (test).</figcaption>
+          </figure>
+          <figure>
+            <img src="/roc.png" alt="ROC curve on the test set for our SVM-RBF" />
+            <figcaption>ROC curve (test).</figcaption>
+          </figure>
+          <figure>
+            <img src="/roc.png" alt="Confusion Matrix on the test set for our Random Forest" />
+            <figcaption>ROC curve (test).</figcaption>
+          </figure>
+          <figure>
+            <img src="/roc.png" alt="Precision-Recall curve on the test set for our Random Forest" />
+            <figcaption>ROC curve (test).</figcaption>
+          </figure>
+          <figure>
+            <img src="/roc.png" alt="Confusion Matrix on the test set for our SVM-RBF" />
+            <figcaption>ROC curve (test).</figcaption>
+          </figure>
+          <figure>
+            <img src="/roc.png" alt="Precision-Recall curve on the test set for our SVM-RBF" />
+            <figcaption>ROC curve (test).</figcaption>
+          </figure>
         </div>
       </section>
     </div>
-  </main>
 
-  <footer>
-    <div>© Extension Scanner — Machine Learning Overview</div>
-  </footer>
+    <p class="ml-page-back">
+      <a href="/index.html">&larr; Back to scanner</a>
+    </p>
+  </div>
 </body>
 </html>

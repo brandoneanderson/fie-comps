@@ -12,13 +12,14 @@ def risk_score_thresholded(prob, threshold):
         score = 50.0 + 50.0 * ((prob - threshold) / (1.0 - threshold))
 
     return int(round(clamp(score, 0.0, 100.0)))
+    
 
 def risk_level(score):
-    if score >= 35:
+    if score >= 75:
         return "CRITICAL"
-    if score >= 20:
+    if score >= 50:
         return "HIGH"
-    if score >= 10:
+    if score >= 25:
         return "MEDIUM"
     return "LOW"
 

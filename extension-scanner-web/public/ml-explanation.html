@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Machine Learning &ndash; FIE Security Scanner</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <style>
+    .ml-page-back { margin-bottom: 24px; }
+    .ml-page-back a { color: #3b82f6; text-decoration: none; font-weight: 500; }
+    .ml-page-back a:hover { text-decoration: underline; }
+    .ml-page-content { max-width: 720px; margin: 0 auto; padding: 0 24px 80px; text-align: left; }
+    .ml-page-content h2 { font-size: 20px; margin-top: 32px; margin-bottom: 12px; color: #e5e5e5; }
+    .ml-page-content h2:first-of-type { margin-top: 0; }
+    .ml-page-content p { color: #b0b0b0; line-height: 1.7; margin-bottom: 16px; }
+    .ml-page-content ul { color: #b0b0b0; line-height: 1.8; margin: 0 0 16px 24px; padding: 0; }
+    .ml-page-content li { margin-bottom: 6px; }
+    .ml-page-content code { background: rgba(40,40,40,0.9); padding: 2px 6px; border-radius: 4px; font-size: 13px; color: #c0c0c0; }
+    .ml-page-hero { text-align: center; padding: 40px 24px 32px; }
+    .ml-page-hero h1 { font-size: 28px; color: #fff; margin-bottom: 8px; }
+    .ml-page-hero p { font-size: 16px; color: #a0a0a0; margin: 0; max-width: 560px; margin-left: auto; margin-right: auto; }
+  </style>
+</head>
+<body>
+  <header class="title-bar">
+    <div class="logo-section">
+      <div class="shield-icon" aria-hidden="true">
+        <img src="/fie_logo.png" alt="FIE Logo" class="logo-img" />
+      </div>
+      <div class="logo-text">
+        <h1>FIE</h1>
+        <p>Security Scanner</p>
+      </div>
+    </div>
+    <div class="scanner-badge">
+      <div class="grid-icon"></div>
+      <span>Scanner</span>
+    </div>
+  </header>
+
+  <div class="ml-page-content">
+    <p class="ml-page-back"><a href="/">&larr; Back to scanner</a></p>
+
+    <div class="ml-page-hero">
+      <h1>Machine learning in FIE</h1>
+      <p>How we use an SVM and feature extraction to predict whether a Chrome extension is benign or malicious.</p>
+    </div>
+
+    <h2>Overview</h2>
+    <p>After an extension is downloaded and unpacked, we analyze its manifest, HTML, CSS, and JavaScript to extract a fixed set of features. Those features are turned into a numeric vector and fed into a trained Support Vector Machine (SVM). The model outputs a probability that the extension is malicious; we then convert that into a risk score, risk level, and a recommended action.</p>
+
+    <h2>Extension analysis</h2>
+    <p>We scan the extension&rsquo;s files and build a feature set that captures security-relevant behavior:</p>
+    <ul>
+      <li><strong>Manifest:</strong> Permissions, host permissions, and content security policy (CSP).</li>
+      <li><strong>HTML:</strong> Counts of iframes, forms, scripts, inline event handlers, password inputs, meta refresh, external URLs, and other XSS- or phishing-related patterns.</li>
+      <li><strong>CSS:</strong> Background-image usage, <code>behavior</code> and <code>@import</code> rules, and external <code>url()</code> references.</li>
+      <li><strong>JavaScript:</strong> Obfuscation signals (whitespace %, average line length, specific characters, word size, string entropy), dynamic code generation (e.g. <code>eval</code>, <code>setTimeout</code> with string), DOM sinks, event handlers, HTTP/HTTPS script loading, <code>webRequest</code> modification callbacks, and <code>XMLHttpRequest</code> usage.</li>
+    </ul>
+
+    <h2>Feature vectorization</h2>
+    <p>All of the above are merged into a single feature dictionary: permissions (as binary or counts), JS features, CSS features, and HTML features. The extension name is not used as a model input. This dictionary is converted into a fixed-length numeric vector that matches the columns the SVM was trained on; any missing features are filled with zero.</p>
+
+    <h2>Model and prediction</h2>
+    <p>We use a pre-trained SVM bundle (model, feature columns, and threshold). The model predicts the probability that the extension is malicious. If this probability is at or above the threshold, we label the extension <strong>MALICIOUS</strong>; otherwise we label it <strong>BENIGN</strong>. The same probability is used to compute a risk score (0&ndash;100), confidence (based on distance from the threshold), and a recommended action.</p>
+
+    <h2>Risk score and levels</h2>
+    <p>The risk score is derived from the model&rsquo;s probability and the threshold: below the threshold, the score scales in 0&ndash;49; above it, 50&ndash;100. We then map the score to a risk level (e.g. LOW, MEDIUM, HIGH, CRITICAL) and to a recommended action such as &ldquo;Allow,&rdquo; &ldquo;Review permissions &amp; network access,&rdquo; &ldquo;Warn user / require review,&rdquo; or &ldquo;Block / quarantine.&rdquo;</p>
+
+    <h2>Why this helps</h2>
+    <p>Malicious extensions often differ from benign ones in measurable ways: more sensitive permissions, obfuscated or packed JavaScript, risky DOM or network usage, and loading remote scripts. By turning these into numeric features and training an SVM on labeled data, we can automatically flag extensions that look like known malware while keeping the scanner fast and interpretable through the risk score and per-feature breakdowns in the other tabs.</p>
+
+    <p class="ml-page-back" style="margin-top: 48px;"><a href="/">&larr; Back to scanner</a></p>
+  </div>
+</body>
+</html>
