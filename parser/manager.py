@@ -13,12 +13,14 @@ if str(PROJECT_ROOT) not in sys.path:
 import re
 from paths import *
 import extension
+
 from extractor import *
 from Scanners.manifest_parser import * 
 from analyzer import *
 from Scanners.js_parser import *
 from Scanners.css_parser import *
 from Scanners.html_parser import *
+from ML.download_mal_ext import *
 #from Scanners.html_report import html_report_section
 import joblib
 import pandas as pd
@@ -86,6 +88,10 @@ def predict_svm(ext, model, feature_cols, threshold) -> dict:
 
     X = pd.DataFrame([feat])
 
+    score = assign_scores(X)
+    # score = risk_score_thresholded(prob, threshold)
+    level = risk_level(score)
+
     # make sure all required feature columns exist
     for c in feature_cols:
         if c not in X.columns:
@@ -94,10 +100,9 @@ def predict_svm(ext, model, feature_cols, threshold) -> dict:
     X = X[feature_cols].apply(pd.to_numeric, errors="coerce").fillna(0.0)
 
     prob = float(model.predict_proba(X)[0, 1])
+    # X = X.drop("Extension_name")
     label = "MALICIOUS" if prob >= float(threshold) else "BENIGN"
-    score = assign_scores(X)
-    # score = risk_score_thresholded(prob, threshold)
-    level = risk_level(score)
+    
 
     return {
         "label": label,
@@ -106,7 +111,7 @@ def predict_svm(ext, model, feature_cols, threshold) -> dict:
         # "label": "MALICIOUS" if prob >= threshold else "BENIGN",
         # "prob_malicious": prob,
         # "risk_score": score,
-        # "risk_level": level,
+        "risk_level": level,
         # "threshold": float(threshold),
         # "confidence": confidence_from_margin(prob, threshold),
         "action": recommended_action(level),
@@ -165,6 +170,9 @@ if __name__ == "__main__":
                     # Don't crash whole run on one file; log and continue
                     log(f"[WARN] File analysis failed: {file} :: {e}")
 
+        ext.setFinalValues() 
+        print("FINAL JS FEATURES:", ext.js_features, file=sys.stderr)
+
         # Load ML bundle and predict
         if "SVM_BUNDLE_PATH" not in globals():
             print(json.dumps({"ok": False, "detail": "SVM_BUNDLE_PATH not defined in paths.py", "extract_dir": str(extract_dir)}))
@@ -200,6 +208,7 @@ if __name__ == "__main__":
         output["css_examples"] = getattr(ext, "css_examples", None)
 
         output["js_features"] = getattr(ext, "js_features", None)
+        output["js_totals"] = getattr(ext, "js_totals", None)
         output["js_examples"] = getattr(ext, "js_examples", None)
 
 

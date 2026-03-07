@@ -2,6 +2,7 @@ from manager_old import *
 from ML_manager import *
 import pandas as pd
 
+
 '''
     File to seperate our scanner into two parts
     1. Scan the extension and return a dataframe of the extracted features

@@ -12,7 +12,7 @@ from parser.Scanners.html_parser import *
 # ML MATERIALS / PATHS
 from ML.vectorize import *
 from ML.download_ext import *
-from parser.paths import *
+from paths import *
 from ML.download_mal_ext import *
 import pandas as pd
 
@@ -41,8 +41,8 @@ def Scan_Extension(id):
     
 
     # TESTING DOWNLOAD CRX FUNCTIONS
-    # mybib_id = "phidhnmbkbkbkbknhldmpmnacgicphkf"
-    download_crx(id)
+    mybib_id = "phidhnmbkbkbkbknhldmpmnacgicphkf"
+    download_crx(mybib_id)
 
     # For easy testing
     folderName = 'Extensions'
@@ -118,3 +118,4 @@ def Scan_Extension(id):
     df_ext = setExtML(extensions)
     
     return df_ext
+

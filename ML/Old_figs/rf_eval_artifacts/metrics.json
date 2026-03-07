@@ -1,0 +1,148 @@
+{
+  "created_at": "2026-02-19T14:17:29",
+  "roc_auc": 0.9247333333333334,
+  "pr_auc": 0.8852806564178259,
+  "brier": 0.1023923844992677,
+  "log_loss": 0.3330529738137895,
+  "rf_params": {
+    "bootstrap": true,
+    "ccp_alpha": 0.0,
+    "class_weight": "balanced",
+    "criterion": "gini",
+    "max_depth": null,
+    "max_features": "sqrt",
+    "max_leaf_nodes": null,
+    "max_samples": null,
+    "min_impurity_decrease": 0.0,
+    "min_samples_leaf": 1,
+    "min_samples_split": 2,
+    "min_weight_fraction_leaf": 0.0,
+    "monotonic_cst": null,
+    "n_estimators": 215,
+    "n_jobs": -1,
+    "oob_score": false,
+    "random_state": 42,
+    "verbose": 0,
+    "warm_start": false
+  },
+  "selected_features": [
+    "avg_line_length",
+    "dynamic_code_gen_functions",
+    "specific_characters",
+    "event_handlers",
+    "DOM_operations",
+    "keyword_density",
+    "string_entropy",
+    "whitespace %",
+    "DOM_change_sinks_density",
+    "DOM_operations_density",
+    "word_size",
+    "webRequestBlocking",
+    "event_handlers_density",
+    "DOM_change_sinks",
+    "XMLHttpRequests_density",
+    "num_external_urls",
+    "num_script_src_attrs",
+    "num_script_tags",
+    "num_background_image",
+    "All https domains",
+    "storage",
+    "XMLHttpRequests",
+    "webRequest",
+    "tabs",
+    "num_import_rules",
+    "num_iframe_tags",
+    "modification_callbacks_density",
+    "security_policy",
+    "num_form_tags",
+    "cookies",
+    "num_http_urls",
+    "num_meta_refresh",
+    "num_external_iframe_src",
+    "notifications",
+    "modification_callbacks",
+    "num_behavior",
+    "All http domains",
+    "management",
+    "num_external_form_actions",
+    "num_external_script_src",
+    "num_password_inputs",
+    "num_javascript_urls"
+  ],
+  "thresholds": {
+    "thr_05": 0.5,
+    "thr_f1": 0.4186046511627907,
+    "thr_youden": 0.3953488372093023
+  },
+  "at_thresholds": {
+    "thr_0_5": {
+      "threshold": 0.5,
+      "accuracy": 0.87,
+      "balanced_accuracy": 0.8333333333333334,
+      "precision": 0.8645418326693227,
+      "recall": 0.7233333333333334,
+      "f1": 0.7876588021778584,
+      "mcc": 0.7007865926118891,
+      "confusion_matrix": [
+        [
+          566,
+          34
+        ],
+        [
+          83,
+          217
+        ]
+      ],
+      "classification_report": "              precision    recall  f1-score   support\n\n           0      0.872     0.943     0.906       600\n           1      0.865     0.723     0.788       300\n\n    accuracy                          0.870       900\n   macro avg      0.868     0.833     0.847       900\nweighted avg      0.870     0.870     0.867       900\n"
+    },
+    "thr_max_f1": {
+      "threshold": 0.4186046511627907,
+      "accuracy": 0.8611111111111112,
+      "balanced_accuracy": 0.8466666666666667,
+      "precision": 0.7850162866449512,
+      "recall": 0.8033333333333333,
+      "f1": 0.7940691927512356,
+      "mcc": 0.6894166985651381,
+      "confusion_matrix": [
+        [
+          534,
+          66
+        ],
+        [
+          59,
+          241
+        ]
+      ],
+      "classification_report": "              precision    recall  f1-score   support\n\n           0      0.901     0.890     0.895       600\n           1      0.785     0.803     0.794       300\n\n    accuracy                          0.861       900\n   macro avg      0.843     0.847     0.845       900\nweighted avg      0.862     0.861     0.862       900\n"
+    },
+    "thr_youden": {
+      "threshold": 0.3953488372093023,
+      "accuracy": 0.8566666666666667,
+      "balanced_accuracy": 0.8474999999999999,
+      "precision": 0.7663551401869159,
+      "recall": 0.82,
+      "f1": 0.7922705314009661,
+      "mcc": 0.6839577249948754,
+      "confusion_matrix": [
+        [
+          525,
+          75
+        ],
+        [
+          54,
+          246
+        ]
+      ],
+      "classification_report": "              precision    recall  f1-score   support\n\n           0      0.907     0.875     0.891       600\n           1      0.766     0.820     0.792       300\n\n    accuracy                          0.857       900\n   macro avg      0.837     0.847     0.841       900\nweighted avg      0.860     0.857     0.858       900\n"
+    }
+  },
+  "artifacts": {
+    "roc": "ML/models/rf_eval_artifacts/roc.png",
+    "pr": "ML/models/rf_eval_artifacts/pr.png",
+    "calibration": "ML/models/rf_eval_artifacts/calibration.png",
+    "threshold_f1": "ML/models/rf_eval_artifacts/threshold_f1.png",
+    "cm_thr_0_5": "ML/models/rf_eval_artifacts/cm_thr_0_5.png",
+    "cm_thr_max_f1": "ML/models/rf_eval_artifacts/cm_thr_max_f1.png",
+    "cm_thr_youden": "ML/models/rf_eval_artifacts/cm_thr_youden.png"
+  }
+}
