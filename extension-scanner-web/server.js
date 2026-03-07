@@ -25,7 +25,7 @@ const __dirname = path.dirname(__filename);
 app.use(express.static(path.join(__dirname, "public")));
 
 // --- extensions dataset (lazy load and cache) ---
-const EXTENSIONS_JSON_PATH = path.join(__dirname, "public", "extensions_clean.json");
+const EXTENSIONS_JSON_PATH = path.join(__dirname, "public/utils/samples", "extensions_clean.json");
 const MAX_SEARCH_RESULTS = 20;
 let extensionsLoadPromise = null;
 

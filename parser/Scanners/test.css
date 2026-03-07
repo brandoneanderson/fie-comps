@@ -1,7 +1,0 @@
-@import url("evil.css");
-
-body {
-    background-image: url("http://evil.com/img.jpg");
-    behavior: url("/evil.htc");
-    background-image: url("safe.png");
-}
