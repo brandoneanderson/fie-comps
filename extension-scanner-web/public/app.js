@@ -37,7 +37,7 @@ document.querySelectorAll(".tab").forEach(btn => {
 const mlMoreButton = document.getElementById("mlMoreButton");
 if (mlMoreButton) {
   mlMoreButton.addEventListener("click", () => {
-    window.location.href = "/utils/pages/ml.html";
+    window.location.href = "utils/pages/ml.html";
   });
 }
 
@@ -556,7 +556,7 @@ async function loadSamplesAndShowDropdown() {
   sampleResultsDropdown.innerHTML = "<div class=\"store-search-result-message\">Loading samples…</div>";
   sampleResultsDropdown.hidden = false;
   try {
-    const r = await fetch("/utils/samples/samples.json");
+    const r = await fetch("utils/samples/samples.json");
     if (!r.ok) throw new Error("Failed to load samples");
     const raw = await r.json();
     const samples = Array.isArray(raw) ? raw : [];
