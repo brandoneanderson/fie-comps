@@ -556,7 +556,8 @@ async function loadSamplesAndShowDropdown() {
   sampleResultsDropdown.innerHTML = "<div class=\"store-search-result-message\">Loading samples…</div>";
   sampleResultsDropdown.hidden = false;
   try {
-    const r = await fetch("utils/samples/samples.json");
+    const samplesUrl = new URL("utils/samples/samples.json", window.location.href).toString();
+    const r = await fetch(samplesUrl);
     if (!r.ok) throw new Error("Failed to load samples");
     const raw = await r.json();
     const samples = Array.isArray(raw) ? raw : [];
