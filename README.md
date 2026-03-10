@@ -3,6 +3,8 @@
 Isha Patel, Francisco Arenas, and Ekow Anderson  
 Winter 2026
 
+## Static WebPage: https://brandoneanderson.github.io/fie-comps/
+
 ## Overview
 This project analyzes Chrome browser extensions to help detect potentially malicious behavior. Our system combines **static analysis** of extension files with **machine learning classification** to produce an interpretable security assessment.
 
