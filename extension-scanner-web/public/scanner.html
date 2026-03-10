@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Machine Learning | FIE Security Scanner</title>
+  <title>Scanner | FIE Security Scanner</title>
   <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
   <header class="title-bar">
     <div class="logo-section">
       <div class="shield-icon" aria-hidden="true">
-        <img src="/fie_logo.png" alt="FIE Logo" class="logo-img" />
+        <img src="assets/images/fie_logo.png" alt="FIE Logo" class="logo-img" />
       </div>
       <div class="logo-text">
         <h1>FIE</h1>
@@ -24,221 +24,203 @@
     <nav class="navlinks">
       <a href="/index.html">Home</a>
       <a href="/scanner.html" class="active">Scanner</a>
-      <a href="/ml.html" >ML</a>
+      <a href="/ml.html">ML</a>
       <a href="/about.html">About</a>
     </nav>
   </header>
 
   <section class="instruction-section ml-page-hero">
     <h2>
-      <span class="blue-text">Machine Learning</span>
+      <span class="blue-text">Scanner</span>
       <span class="white-text"> Pipeline</span>
     </h2>
     <p class="ml-page-hero-sub">
-      Learn how our project classifies Chrome extensions as <b>benign</b> or <b>malicious</b>
-      using engineered static features, feature selection, and supervised learning. Find summaries of
-      our evaluation results and visual explanations (feature importance + SHAP) down below.
+      Learn how our system downloads, extracts, and analyzes Chrome extensions to identify
+      potentially malicious behavior. Each file type is routed to a specialized scanner that
+      extracts structural and behavioral features for classification.
     </p>
     <div class="ml-toc">
       <b>Jump to:</b><br/>
-      <a href="#data">Dataset</a>
-      <a href="#features">Feature Engineering</a>
-      <a href="#rf">Random Forest</a>
-      <a href="#svm">SVM-RBF</a>
-      <a href="#results">Results</a>
-      <a href="#viz">Visualizations</a>
+      <a href="#overview">Overview</a>
+      <a href="#js">JS Scanner</a>
+      <a href="#html">HTML Scanner</a>
+      <a href="#manifest">Manifest Scanner</a>
+      <a href="#css">CSS Scanner</a>
     </div>
   </section>
 
   <div class="ml-page">
     <div class="ml-cards">
-      <section class="ml-card" id="data">
-        <h2>Dataset Construction</h2>
+
+      <section class="ml-card" id="overview">
+        <h2>Scanning Overview</h2>
         <p class="muted">
-          To construct our dataset, we compiled a collection of known malicious and benign Chrome extension IDs.
-          Extension IDs were gathered in large batches using a third-party extension tool, <b> <a href="https://chrome-stats.com" style="color: #3b82f6;" target="_blank"> Chrome-Stats</a></b>.
+          After receiving an extension ID, our system downloads the corresponding extension package
+          (either a <code>.zip</code> or <code>.crx</code> file) from sources such as the Chrome Web Store
+          or Chrome Stats. Once downloaded, the contents are extracted so that we can analyze each
+          component of the extension individually.
         </p>
-
-        <div class="ml-two">
-          <div class="ml-card">
-            <h2>Benign Criteria</h2>
-            <ul class="muted" style="margin: 6px 0 0; padding-left: 18px;">
-              <li>Published on the Chrome Web Store by <b>verified publishers</b></li>
-              <li>Store rating <b>&gt; 4.0 / 5</b></li>
-              <li>Low risk score according to Chrome-Stats' scoring metric</li>
-            </ul>
-          </div>
-          <div class="ml-card">
-            <h2>Malicious Criteria</h2>
-            <ul class="muted" style="margin: 6px 0 0; padding-left: 18px;">
-              <li>Removed from the Chrome Web Store after being classified as <b>malware</b></li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="ml-kpi">
-          <div class="ml-pill">
-            <div class="label">Total labeled samples</div>
-            <div class="value">5,867</div>
-          </div>
-          <div class="ml-pill">
-            <div class="label">Malicious / Benign</div>
-            <div class="value">3,001 / 2,866</div>
-          </div>
-          <div class="ml-pill">
-            <div class="label">Engineered features per sample</div>
-            <div class="value">49</div>
-          </div>
-          <div class="ml-pill">
-            <div class="label">Train / Test split</div>
-            <div class="value">80% / 20%</div>
-          </div>
-        </div>
-
-        <p class="ml-note">
-          Each labeled extension was scanned using our feature extraction pipeline to produce a structured feature vector.
-          We split the dataset into train/test before training to reduce leakage risk and ensure fair evaluation.
+        <p class="muted">
+          The extracted files are sorted into several categories based on their type: JavaScript, HTML,
+          CSS, JSON, and a catch-all bin for any remaining file types. Organizing files this way allows
+          each file to be routed to a specialized scanner designed for that specific format.
+        </p>
+        <p class="muted">
+          Each scanner extracts features that may indicate potentially malicious behavior — including
+          both structural characteristics (such as formatting patterns or entropy) and behavioral
+          indicators (such as suspicious function calls or risky permissions). All extracted features
+          are aggregated into a centralized <code>Extension</code> class, which acts as a container
+          for metadata, file contents, and collected features, ready to be passed to our machine
+          learning models for classification.
         </p>
       </section>
 
-      <section class="ml-card" id="features">
-        <h2>Feature Engineering</h2>
+      <section class="ml-card" id="js">
+        <h2>JavaScript Scanner</h2>
         <p class="muted">
-          Our pipeline extracts static indicators from extension files and metadata. The goal is to capture behaviors
-          commonly associated with malicious extensions — such as dynamic code execution, suspicious DOM manipulation,
-          and risky external connections — using measurable, engineered features.
+          JavaScript files are first run through <b>JSBeautify</b> to reverse minification and restore
+          a readable structure. The beautified code is then parsed with <b>Esprima</b> into an Abstract
+          Syntax Tree (AST), which allows us to systematically analyze relationships between functions,
+          variables, and expressions.
         </p>
 
         <div class="ml-two">
           <div class="ml-card">
-            <h2>Examples of feature groups</h2>
-            <ul class="muted" style="margin: 6px 0 0; padding-left: 18px;">
-              <li>JavaScript signals (dynamic code gen functions, suspicious objects, event handlers)</li>
-              <li>HTML/DOM signals (DOM operations, sinks density, iframe/form indicators, XSS vectors)</li>
-              <li>Statistical signals (string entropy, whitespace %, avg line length, keyword density)</li>
-              <li>Network/URL signals (external URL counts, http/https domains)</li>
+            <h2>Structural Features</h2>
+            <p class="muted" style="margin: 6px 0 0;">
+              Structural features identify suspicious formatting patterns that may indicate packed or
+              obfuscated code — for example, very long lines, low whitespace percentage, or unusually
+              high string entropy.
+            </p>
+            <ul class="muted" style="margin: 8px 0 0; padding-left: 18px;">
+              <li>Average line length</li>
+              <li>Frequency of specific characters</li>
+              <li>Average word size</li>
+              <li>String entropy</li>
+              <li>Keyword density</li>
             </ul>
           </div>
 
           <div class="ml-card">
-            <h2>Implementation environment</h2>
+            <h2>Behavioral Features</h2>
             <p class="muted" style="margin: 6px 0 0;">
-              Models were implemented in <b>scikit-learn</b> (Python). We used standard evaluation utilities and
-              saved trained artifacts (e.g., via <code>joblib</code>). We also generated
-              explanation plots (e.g., <b>SHAP</b>) to visualize global feature influence.
+              Behavioral features capture potentially dangerous functionality. We traverse the AST
+              for <code>CallExpression</code> nodes to locate risky APIs commonly abused in malicious
+              extensions.
             </p>
+            <ul class="muted" style="margin: 8px 0 0; padding-left: 18px;">
+              <li>Code generation functions</li>
+              <li>DOM change methods</li>
+              <li>Event handlers</li>
+              <li>Number of HTTPS scripts</li>
+              <li>Modification callbacks</li>
+              <li>XMLHttpRequests</li>
+              <li><code>eval</code> calls</li>
+            </ul>
           </div>
         </div>
       </section>
 
-      <section class="ml-card" id="rf">
-        <h2>Random Forest: Feature Importance + Scoring</h2>
+      <section class="ml-card" id="html">
+        <h2>HTML Scanner</h2>
         <p class="muted">
-          We used a Random Forest (RF) model both as a strong baseline and as an interpretable method for computing
-          feature importances. RF aggregates many decision trees to produce a robust prediction, and it provides
-          importance scores indicating how influential each feature is to the final decision.
+          HTML files are analyzed using Python's native file reading functionality combined with
+          rule-based detection and pattern matching. The scanner looks for elements commonly used
+          in web-based attacks — such as hidden frames, embedded external content, or inline JavaScript
+          execution — that could inject malicious scripts or silently redirect users.
         </p>
 
         <div class="ml-two">
           <div class="ml-card">
-            <h2>OOB tuning</h2>
-            <p class="muted" style="margin: 6px 0 0;">
-              We evaluated forests ranging from <b>10 to 400 trees</b> and selected the configuration with the lowest
-              <b>out-of-bag (OOB) error</b>, an internal estimate of generalization error computed using samples not
-              included in each tree's bootstrap sample.
-            </p>
-            <p class="ml-note" style="margin-top:10px;">
-              Selected forest size: <b>(FILL IN: # trees)</b>
-            </p>
+            <h2>Suspicious Objects &amp; XSS Vectors</h2>
+            <ul class="muted" style="margin: 6px 0 0; padding-left: 18px;">
+              <li><code>num_object_tags</code></li>
+              <li><code>num_embed_tags</code></li>
+              <li><code>num_applet_tags</code></li>
+              <li><code>num_inline_event_handlers</code></li>
+              <li><code>num_javascript_urls</code></li>
+              <li><code>num_data_urls</code></li>
+              <li><code>num_external_script_src</code></li>
+              <li><code>num_meta_refresh</code></li>
+            </ul>
           </div>
 
           <div class="ml-card">
-            <h2>Feature ranking</h2>
-            <p class="muted" style="margin: 6px 0 0;">
-              Using the optimized forest, we ranked feature importances in descending order. These ranked values were
-              stored and later incorporated into our custom scoring metric and feature-selection workflow.
+            <h2>Iframes &amp; Forms</h2>
+            <ul class="muted" style="margin: 6px 0 0; padding-left: 18px;">
+              <li><code>num_iframe_tags</code></li>
+              <li><code>num_external_iframe_src</code></li>
+              <li><code>num_form_tags</code></li>
+              <li><code>num_external_form_actions</code></li>
+              <li><code>num_password_inputs</code></li>
+            </ul>
+            <p class="muted" style="margin: 10px 0 0;">
+              Feature extraction works by scanning the HTML structure and counting occurrences of
+              specific tags, attributes, and URL patterns.
             </p>
           </div>
         </div>
       </section>
 
-      <section class="ml-card" id="svm">
-        <h2>SVM-RBF: Top-k Feature Selection</h2>
+      <section class="ml-card" id="manifest">
+        <h2>Manifest Scanner</h2>
         <p class="muted">
-          To train our final classifier, we used an SVM with an RBF kernel. We selected an optimized subset of features
-          by evaluating models using the top <b>k</b> RF-ranked features (k from 1 to 49). For each k, we computed mean
-          absolute error (MAE) and chose the k that minimized MAE.
-        </p>
-
-        <p class="ml-note">
-          Final feature subset: <b>(FILL IN: k-best features)</b> &nbsp;|&nbsp;
-          Selection metric: <b>lowest MAE</b>
-        </p>
-      </section>
-
-      <section class="ml-card" id="results">
-        <h2>Test Evaluation</h2>
-        <p class="muted">
-          Below we report our final test-set performance. These values come from the evaluation artifacts generated in our training pipeline.
+          Every Chrome extension includes a <code>manifest.json</code> file that defines its
+          configuration and permissions. We load this file using Python's built-in <code>json</code>
+          module, which converts the data into a Python dictionary for straightforward key-based
+          extraction.
         </p>
 
         <div class="ml-two">
           <div class="ml-card">
-            <h2>Key metrics (Test)</h2>
-            <div class="ml-code">
-              Accuracy: (FILL IN)<br/>
-              Precision: (FILL IN)<br/>
-              Recall: (FILL IN)<br/>
-              F1-score: (FILL IN)<br/>
-              ROC-AUC: (FILL IN)<br/>
-              PR-AUC / Avg Precision: (FILL IN)
-            </div>
+            <h2>Features Extracted</h2>
+            <ul class="muted" style="margin: 6px 0 0; padding-left: 18px;">
+              <li>Permissions requested by the extension</li>
+              <li>Whether a Content Security Policy (CSP) is defined</li>
+              <li>Domains from which external content is allowed to load</li>
+            </ul>
           </div>
 
           <div class="ml-card">
-            <h2>Notes</h2>
+            <h2>Why It Matters</h2>
             <p class="muted" style="margin: 6px 0 0;">
-              In a malware detection setting, recall often matters because false negatives are costly. However, we also
-              monitor precision to limit false positives. Threshold selection can shift this tradeoff.
+              Extensions requesting excessive permissions or allowing content from untrusted domains
+              may pose significant security concerns. The manifest provides high-signal metadata that
+              complements the behavioral features extracted from code files.
             </p>
           </div>
         </div>
       </section>
 
-      <section class="ml-card" id="viz">
-        <h2>Visualizations</h2>
+      <section class="ml-card" id="css">
+        <h2>CSS Scanner</h2>
         <p class="muted">
-          These plots help explain model behavior and performance. Place your exported images into a public folder and
-          update the <code>src</code> paths below.
+          CSS files are analyzed using regex-based pattern matching, scanning line by line to track
+          the frequency of properties and directives that can sometimes be abused to load external
+          resources or alter page behavior unexpectedly.
         </p>
 
-        <div class="ml-gallery">
-          <figure>
-            <img src="/roc.png" alt="ROC curve on the test set for our Random Forest" />
-            <figcaption>ROC curve (test).</figcaption>
-          </figure>
-          <figure>
-            <img src="/roc.png" alt="ROC curve on the test set for our SVM-RBF" />
-            <figcaption>ROC curve (test).</figcaption>
-          </figure>
-          <figure>
-            <img src="/roc.png" alt="Confusion Matrix on the test set for our Random Forest" />
-            <figcaption>ROC curve (test).</figcaption>
-          </figure>
-          <figure>
-            <img src="/roc.png" alt="Precision-Recall curve on the test set for our Random Forest" />
-            <figcaption>ROC curve (test).</figcaption>
-          </figure>
-          <figure>
-            <img src="/roc.png" alt="Confusion Matrix on the test set for our SVM-RBF" />
-            <figcaption>ROC curve (test).</figcaption>
-          </figure>
-          <figure>
-            <img src="/roc.png" alt="Precision-Recall curve on the test set for our SVM-RBF" />
-            <figcaption>ROC curve (test).</figcaption>
-          </figure>
+        <div class="ml-two">
+          <div class="ml-card">
+            <h2>Features Extracted</h2>
+            <ul class="muted" style="margin: 6px 0 0; padding-left: 18px;">
+              <li><code>background-image</code> properties</li>
+              <li><code>behavior</code> properties</li>
+              <li><code>@import</code> rules</li>
+            </ul>
+          </div>
+
+          <div class="ml-card">
+            <h2>Extraction Method</h2>
+            <p class="muted" style="margin: 6px 0 0;">
+              Regular expressions detect the presence of each pattern across all CSS files in the
+              extension. The scanner records how frequently each feature appears, and the results
+              are added to the feature set stored in the <code>Extension</code> class.
+            </p>
+          </div>
         </div>
       </section>
+
     </div>
 
     <p class="ml-page-back">
