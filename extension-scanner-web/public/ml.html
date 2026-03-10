@@ -132,47 +132,87 @@
       </section>
 
       <section class="ml-card" id="rf">
-        <h2>Random Forest: Feature Importance + Scoring</h2>
+        <h2>Random Forest: Feature Ranking and Model Selection</h2>
         <p class="muted">
-          We used a Random Forest (RF) model both as a strong baseline and as an interpretable method for computing
-          feature importances. RF aggregates many decision trees to produce a robust prediction, and it provides
-          importance scores indicating how influential each feature is to the final decision.
+          We used <b>Random Forest</b> as the main feature-ranking stage in our machine learning pipeline. Rather than using
+          all extracted features directly, we first used Random Forest to estimate which features contributed most strongly
+          to malicious-versus-benign classification, then passed the top-ranked subset into our final SVM-RBF model.
         </p>
 
         <div class="ml-two">
           <div class="ml-card">
-            <h2>OOB tuning</h2>
+            <h2>Step 1: Optimize forest size</h2>
             <p class="muted" style="margin: 6px 0 0;">
-              We evaluated forests ranging from <b>10 to 400 trees</b> and selected the configuration with the lowest
-              <b>out-of-bag (OOB) error</b>, an internal estimate of generalization error computed using samples not
-              included in each tree's bootstrap sample.
+              To choose the number of trees, we trained forests from <b>15 to 500 estimators</b> and measured
+              <b>out-of-bag error</b> for each one. OOB error is computed from bootstrap samples and gives an internal estimate
+              of how well the forest generalizes without requiring a separate validation split. We selected the forest size
+              that minimized OOB error before running feature selection.
             </p>
             <p class="ml-note" style="margin-top:10px;">
-              Selected forest size: <b>(FILL IN: # trees)</b>
+              Selected forest size: <b>275 trees</b>
             </p>
           </div>
 
           <div class="ml-card">
-            <h2>Feature ranking</h2>
+            <h2>Step 2: Select top-k features</h2>
             <p class="muted" style="margin: 6px 0 0;">
-              Using the optimized forest, we ranked feature importances in descending order. These ranked values were
-              stored and later incorporated into our custom scoring metric and feature-selection workflow.
+              With the tree count fixed, we ran <b>5-fold stratified cross-validation</b> over feature subset sizes. For each
+              fold, we trained a Random Forest on the training split, ranked the features by <b>feature importance</b>, selected
+              the top <b>k</b> features, retrained the model using only those features, and evaluated performance on the validation
+              split.
+            </p>
+            <p class="muted" style="margin: 6px 0 0;">
+              We repeated this process for every subset size from <b>1 to n</b> and chose the value of <b>k</b> with the
+              lowest average <b>Mean Absolute Error (MAE)</b> across folds. In our binary setting, this acts as an average
+              prediction error measure over benign/malicious labels.
+            </p>
+            <p class="ml-note" style="margin-top:10px;">
+              Selection metric: <b>5-fold CV MAE : 0.128</b>
             </p>
           </div>
+        </div>
+
+        <div class="ml-card" style="margin-top: 14px;">
+          <h2>Step 3: Export ranked feature list</h2>
+          <p class="muted" style="margin: 6px 0 0;">
+            After identifying the optimal subset size, we retrained Random Forest on the training data, produced a final
+            descending ranking of all features, and saved that ordering for later use. This ranked list became the basis
+            for the feature subset used in our final calibrated <b>SVM-RBF classifier</b>.
+          </p>
         </div>
       </section>
 
       <section class="ml-card" id="svm">
-        <h2>SVM-RBF: Top-k Feature Selection</h2>
+        <h2>SVM-RBF: Final Classification Model</h2>
+
         <p class="muted">
-          To train our final classifier, we used an SVM with an RBF kernel. We selected an optimized subset of features
-          by evaluating models using the top <b>k</b> RF-ranked features (k from 1 to 49). For each k, we computed mean
-          absolute error (MAE) and chose the k that minimized MAE.
+          We used a <b>Support Vector Machine with an RBF kernel</b> as our final classifier for malicious extension detection.
+          The model was trained on a reduced input space of <b>39 Random-Forest-ranked features</b>, allowing us to focus on
+          the most informative static and behavioral indicators extracted from extension code.
+        </p>
+
+        <p class="muted">
+          The training pipeline consisted of <b>StandardScaler</b> followed by <b>SVC(kernel="rbf")</b>. Feature scaling was
+          necessary because SVMs are sensitive to magnitude differences across input variables, and the RBF kernel was chosen
+          to capture non-linear relationships that a linear separator would miss.
+        </p>
+
+        <p class="muted">
+          Model selection was performed with <b>GridSearchCV</b> over <b>C</b>, <b>gamma</b>, and <b>class_weight</b> using
+          <b>5-fold stratified cross-validation</b>. We optimized for <b>average precision</b> rather than raw accuracy so
+          the chosen model would better handle class imbalance and prioritize malicious-class retrieval quality.
+        </p>
+
+        <p class="muted">
+          After training, we applied <b>sigmoid probability calibration</b> with <b>CalibratedClassifierCV</b> and evaluated
+          threshold-free metrics such as <b>ROC-AUC</b> and <b>PR-AUC</b>, along with thresholded metrics including
+          <b>precision</b>, <b>recall</b>, <b>F1</b>, <b>balanced accuracy</b>, and <b>MCC</b>. We compared predictions at
+          the default threshold of <b>0.5</b>, the <b>max-F1 threshold</b>, and a <b>Youden’s J threshold</b>, then saved
+          the calibrated model, selected feature list, best hyperparameters, and final operating threshold into the deployment bundle.
         </p>
 
         <p class="ml-note">
-          Final feature subset: <b>(FILL IN: k-best features)</b> &nbsp;|&nbsp;
-          Selection metric: <b>lowest MAE</b>
+          Final feature subset: <b>39 features</b>
         </p>
       </section>
 
@@ -184,7 +224,16 @@
 
         <div class="ml-two">
           <div class="ml-card">
-            <h2>Key metrics (Test)</h2>
+            <h2>Key metrics (RF Test)</h2>
+            <div class="ml-code">
+              Accuracy: (FILL IN)<br/>
+              Precision: (FILL IN)<br/>
+              Recall: (FILL IN)<br/>
+              F1-score: (FILL IN)<br/>
+              ROC-AUC: (FILL IN)<br/>
+              PR-AUC / Avg Precision: (FILL IN)
+            </div>
+            <h2>Key metrics (SVM-RBF Test)</h2>
             <div class="ml-code">
               Accuracy: (FILL IN)<br/>
               Precision: (FILL IN)<br/>
@@ -208,21 +257,20 @@
       <section class="ml-card" id="viz">
         <h2>Visualizations</h2>
         <p class="muted">
-          These plots help explain model behavior and performance. Place your exported images into a public folder and
-          update the <code>src</code> paths below.
+          These plots help explain model behavior and performance. 
         </p>
 
         <div class="ml-gallery">
           <figure>
-            <img src="assets/images/roc.png" alt="ROC curve on the test set for our Random Forest" />
+            <img src="assets/images/RFroc.png" alt="ROC curve on the test set for our Random Forest" />
             <figcaption>ROC curve (test).</figcaption>
           </figure>
           <figure>
-            <img src="assets/images/roc.png" alt="ROC curve on the test set for our SVM-RBF" />
+            <img src="assets/images/SVMroc.png" alt="ROC curve on the test set for our SVM-RBF" />
             <figcaption>ROC curve (test).</figcaption>
           </figure>
           <figure>
-            <img src="assets/images/roc.png" alt="Confusion Matrix on the test set for our Random Forest" />
+            <img src="assets/images/RF_cm_thr_max_f1.png" alt="Confusion Matrix on the test set for our Random Forest" />
             <figcaption>ROC curve (test).</figcaption>
           </figure>
           <figure>
@@ -230,7 +278,7 @@
             <figcaption>ROC curve (test).</figcaption>
           </figure>
           <figure>
-            <img src="assets/images/roc.png" alt="Confusion Matrix on the test set for our SVM-RBF" />
+            <img src="assets/images/SVM_cm_thr_max_f1.png" alt="Confusion Matrix on the test set for our SVM-RBF" />
             <figcaption>ROC curve (test).</figcaption>
           </figure>
           <figure>
