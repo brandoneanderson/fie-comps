@@ -37,7 +37,7 @@ document.querySelectorAll(".tab").forEach(btn => {
 const mlMoreButton = document.getElementById("mlMoreButton");
 if (mlMoreButton) {
   mlMoreButton.addEventListener("click", () => {
-    window.location.href = "utils/pages/ml.html";
+    window.location.href = "/ml.html";
   });
 }
 
